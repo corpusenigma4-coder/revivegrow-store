@@ -166,6 +166,82 @@ syncPrices();
   });
 })();
 
+/* ---------- How-it-works videos (chained autoplay + tap to play + sound) ---------- */
+(function videos(){
+  const grid = $("#videoGrid");
+  if (!grid) return;
+  const cards = [...grid.querySelectorAll(".vcard")];
+  const vids = cards.map(c => c.querySelector("video"));
+  let current = 0;
+  let started = false;
+
+  function setActive(i){
+    cards.forEach((c, idx) => c.classList.toggle("is-active", idx === i));
+  }
+  function markPlaying(i, playing){
+    cards[i].classList.toggle("is-playing", playing);
+  }
+
+  function play(i){
+    current = i;
+    setActive(i);
+    // pause the others
+    vids.forEach((v, idx) => { if (idx !== i){ v.pause(); markPlaying(idx, false); } });
+    const v = vids[i];
+    v.currentTime = 0;
+    const p = v.play();
+    if (p && p.catch) p.catch(() => { markPlaying(i, false); });
+  }
+
+  // chain: when one ends, play the next (loop back to first after the last)
+  vids.forEach((v, i) => {
+    v.addEventListener("play",  () => markPlaying(i, true));
+    v.addEventListener("pause", () => markPlaying(i, false));
+    v.addEventListener("ended", () => {
+      markPlaying(i, false);
+      const next = (i + 1) % vids.length;
+      play(next);
+    });
+    // tap the video to (re)play just that one
+    v.addEventListener("click", (e) => {
+      // ignore clicks on the mute button (handled separately)
+      if (e.target.closest(".vcard__mute")) return;
+      if (v.paused) play(i); else { v.pause(); }
+    });
+  });
+
+  // mute / unmute per card (keeps others muted so only one sound plays)
+  cards.forEach((card, i) => {
+    const btn = card.querySelector(".vcard__mute");
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const v = vids[i];
+      const willUnmute = v.muted;
+      // mute all first so only one has sound
+      vids.forEach((vv, idx) => {
+        vv.muted = true;
+        cards[idx].querySelector(".vcard__mute use").setAttribute("href", "#i-muted");
+      });
+      if (willUnmute){
+        v.muted = false;
+        btn.querySelector("use").setAttribute("href", "#i-sound2");
+        if (v.paused) play(i);
+      }
+    });
+  });
+
+  // start chain (muted autoplay) when the section scrolls into view
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting && !started){
+        started = true;
+        play(0);
+      }
+    });
+  }, { threshold: 0.4 });
+  io.observe(grid);
+})();
+
 /* ---------- Contact form ---------- */
 (function contact(){
   const form = $("#contactForm");

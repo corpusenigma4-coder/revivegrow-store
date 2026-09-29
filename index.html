@@ -115,6 +115,41 @@
       </div>
     </section>
 
+    <!-- HOW IT WORKS VIDEOS -->
+    <section class="section videos" id="videos">
+      <div class="wrap">
+        <p class="eyebrow center">SEE IT IN ACTION</p>
+        <h2 class="center">How ReviveGrow&trade; works.</h2>
+        <p class="sub center">Watch how simple it is &mdash; the videos play one after another. Tap any video to replay it, or tap the speaker for sound.</p>
+        <div class="videos__grid" id="videoGrid">
+          <figure class="vcard" data-i="0">
+            <video class="vcard__video" playsinline muted preload="metadata" poster="" >
+              <source src="videos/how-1.mp4" type="video/mp4" />
+            </video>
+            <button class="vcard__play" aria-label="Play video 1"><svg class="i"><use href="#i-play"/></svg></button>
+            <button class="vcard__mute" aria-label="Toggle sound"><svg class="i"><use href="#i-muted"/></svg></button>
+            <figcaption>1 &middot; Place it anywhere</figcaption>
+          </figure>
+          <figure class="vcard" data-i="1">
+            <video class="vcard__video" playsinline muted preload="metadata" poster="" >
+              <source src="videos/how-2.mp4" type="video/mp4" />
+            </video>
+            <button class="vcard__play" aria-label="Play video 2"><svg class="i"><use href="#i-play"/></svg></button>
+            <button class="vcard__mute" aria-label="Toggle sound"><svg class="i"><use href="#i-muted"/></svg></button>
+            <figcaption>2 &middot; Switch it on</figcaption>
+          </figure>
+          <figure class="vcard" data-i="2">
+            <video class="vcard__video" playsinline muted preload="metadata" poster="" >
+              <source src="videos/how-3.mp4" type="video/mp4" />
+            </video>
+            <button class="vcard__play" aria-label="Play video 3"><svg class="i"><use href="#i-play"/></svg></button>
+            <button class="vcard__mute" aria-label="Toggle sound"><svg class="i"><use href="#i-muted"/></svg></button>
+            <figcaption>3 &middot; Enjoy fresher air</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
     <!-- strip -->
     <section class="strip">
       <div class="wrap strip__inner">
@@ -149,9 +184,9 @@
         <h2 class="center">A little change. A better feeling.</h2>
         <p class="sub center">Drag the slider to see the difference a drier home can make.</p>
         <div class="compare" id="compareBox">
-          <img class="compare__after" src="https://i.imgur.com/7VmrLFb.jpeg" alt="After: dry window and healthy wall with ReviveGrow dehumidifier" />
+          <img class="compare__after" src="https://i.imgur.com/O4EzmuJ.png" alt="After: dry window and healthy wall with ReviveGrow dehumidifier" />
           <div class="compare__before" id="beforeWrap">
-            <img src="https://i.imgur.com/S61bljN.jpeg" alt="Before: condensation on window and damp wall" />
+            <img src="https://i.imgur.com/uJ7L1hk.png" alt="Before: condensation on window and damp wall" />
           </div>
           <input type="range" min="0" max="100" value="50" id="slider" class="compare__range" aria-label="Compare before and after" />
           <span class="compare__tag compare__tag--l">BEFORE</span>
@@ -324,6 +359,9 @@
     <symbol id="i-arrows" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 8l-4 4 4 4M16 8l4 4-4 4M4 12h16"/></symbol>
     <symbol id="i-gift" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S11 2 8 2 5 5 12 7zM12 7s1-5 4-5 3 3-4 5z"/></symbol>
     <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 7l9 6 9-6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M17 9l4 6M21 9l-4 6"/></symbol>
+    <symbol id="i-sound2" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M17 9a4 4 0 010 6M19.5 7a7 7 0 010 10"/></symbol>
   </svg>
 
   <script src="reviews.js"></script>
