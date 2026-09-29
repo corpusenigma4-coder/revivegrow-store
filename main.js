@@ -160,22 +160,28 @@ syncPrices();
   const toggle = $("#navToggle");
   const nav = $("#mainNav");
   const scrim = $("#navScrim");
+  const closeBtn = $("#navClose");
   if (!toggle || !nav) return;
   function close(){
     nav.classList.remove("open");
     scrim && scrim.classList.remove("open");
     toggle.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
+    document.body.style.overflow = "";
   }
   function open(){
     nav.classList.add("open");
     scrim && scrim.classList.add("open");
     toggle.setAttribute("aria-expanded", "true");
+    document.body.classList.add("menu-open");
+    document.body.style.overflow = "hidden"; // prevent background scroll while menu open
   }
   toggle.addEventListener("click", () => {
     nav.classList.contains("open") ? close() : open();
   });
+  closeBtn && closeBtn.addEventListener("click", close);
   scrim && scrim.addEventListener("click", close);
-  // close when a link is tapped
+  // close when any link (or the CTA) is tapped
   nav.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
 })();
 
