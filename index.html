@@ -22,12 +22,15 @@
   <!-- Header -->
   <header class="header">
     <div class="wrap header__inner">
-      <a class="brand" href="#top">Revive<span>Grow</span>&trade;</a>
+      <a class="brand" href="#top" aria-label="ReviveGrow home">
+        <img class="brand__logo" src="https://i.imgur.com/ZTlg6jN.jpeg" alt="ReviveGrow" />
+      </a>
       <nav class="nav">
         <a href="#features">Features</a>
         <a href="#compare">Before &amp; After</a>
         <a href="#reviews">Reviews</a>
         <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
       </nav>
       <button class="btn btn--primary btn--sm" id="openCartTop">Buy now &mdash; &pound;29.99</button>
     </div>
@@ -41,7 +44,8 @@
           <div class="gallery">
             <div class="gallery__main">
               <span class="badge-sale">50% OFF</span>
-              <img id="mainImg" src="https://cdn.shopify.com/s/files/1/0749/5234/3703/files/01_ReviveGrow_Hero.jpg?v=1790574236&width=1000" alt="ReviveGrow Smart Dehumidifier" />
+              <span class="badge-gift"><svg class="i"><use href="#i-gift"/></svg> FREE gift included</span>
+              <img id="mainImg" src="https://i.imgur.com/Cxs3KuV.jpeg" alt="ReviveGrow Smart Dehumidifier with 3 free closet moisture absorbers" />
             </div>
             <div class="gallery__thumbs" id="thumbs"></div>
           </div>
@@ -69,19 +73,24 @@
             <small>Only <b>27</b> left &middot; <span id="viewing">31</span> people viewing right now</small>
           </div>
 
+          <p class="variant-label">Choose your model:</p>
           <div class="variants" id="variants">
             <label class="variant" data-variant="pro">
               <input type="radio" name="variant" value="pro" checked />
+              <img class="variant__thumb" src="https://i.imgur.com/dhqEt1m.jpeg" alt="ReviveGrow Pro 1L with free gift" />
               <span class="variant__body">
-                <span class="variant__name">Pro 1L <em>+ Additional free gift</em></span>
-                <span class="variant__price"><b>&pound;29.99</b> <s>&pound;60.00</s> <i class="save">Save 50%</i></span>
+                <span class="variant__name">Pro 1L <em>+ 3 free moisture absorbers</em></span>
+                <span class="variant__desc">Compact everyday model. Perfect for bedrooms &amp; small rooms.</span>
+                <span class="variant__price"><b>&pound;29.99</b> <s>&pound;60.00</s> <i class="save">Save &pound;30.01</i></span>
               </span>
             </label>
             <label class="variant" data-variant="super">
               <input type="radio" name="variant" value="super" />
+              <img class="variant__thumb" src="https://i.imgur.com/YF7On4W.jpeg" alt="ReviveGrow Super 2L Premium with free gift" />
               <span class="variant__body">
-                <span class="variant__name">Super 2L <em>+ Additional free gift</em> <b class="tag">Best value</b></span>
-                <span class="variant__price"><b>&pound;44.99</b> <s>&pound;60.00</s> <i class="save">Save 25%</i></span>
+                <span class="variant__name">Super 2L Premium <em>+ 3 free moisture absorbers</em> <b class="tag">Best value</b></span>
+                <span class="variant__desc">Larger 2L tank &amp; premium finish. Ideal for bigger or damper rooms.</span>
+                <span class="variant__price"><b>&pound;44.99</b> <s>&pound;94.00</s> <i class="save">Save &pound;49.01</i></span>
               </span>
             </label>
           </div>
@@ -140,9 +149,9 @@
         <h2 class="center">A little change. A better feeling.</h2>
         <p class="sub center">Drag the slider to see the difference a drier home can make.</p>
         <div class="compare" id="compareBox">
-          <img class="compare__after" src="https://cdn.shopify.com/s/files/1/0749/5234/3703/files/05_ReviveGrow_Tabletop_Design.jpg?v=1790574236&width=1200" alt="After" />
+          <img class="compare__after" src="https://i.imgur.com/7VmrLFb.jpeg" alt="After: dry window and healthy wall with ReviveGrow dehumidifier" />
           <div class="compare__before" id="beforeWrap">
-            <img src="https://cdn.shopify.com/s/files/1/0749/5234/3703/files/06_ReviveGrow_Water_Tank.jpg?v=1790574236&width=1200" alt="Before" />
+            <img src="https://i.imgur.com/S61bljN.jpeg" alt="Before: condensation on window and damp wall" />
           </div>
           <input type="range" min="0" max="100" value="50" id="slider" class="compare__range" aria-label="Compare before and after" />
           <span class="compare__tag compare__tag--l">BEFORE</span>
@@ -222,6 +231,29 @@
       </div>
     </section>
 
+    <!-- CONTACT -->
+    <section class="section section--tint" id="contact">
+      <div class="wrap wrap--narrow">
+        <p class="eyebrow center">WE'RE HERE TO HELP</p>
+        <h2 class="center">Get in touch.</h2>
+        <p class="sub center">Any questions about your order or the 90-day guarantee? Send us a message and our team will be happy to help.</p>
+        <div class="contact-card">
+          <a class="contact-email" href="mailto:corpusenigma4@gmail.com">
+            <svg class="i"><use href="#i-mail"/></svg> corpusenigma4@gmail.com
+          </a>
+          <form class="contact-form" id="contactForm">
+            <div class="field-row">
+              <div class="field"><label>Your name</label><input id="c_name" placeholder="Jane Smith" required></div>
+              <div class="field"><label>Your email</label><input id="c_email" type="email" placeholder="you@email.co.uk" required></div>
+            </div>
+            <div class="field"><label>Message</label><textarea id="c_msg" rows="4" placeholder="How can we help?" required></textarea></div>
+            <button type="submit" class="btn btn--primary btn--block btn--lg">Send message</button>
+            <p class="contact-note" id="contactNote"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
     <!-- FINAL CTA -->
     <section class="section cta">
       <div class="wrap center">
@@ -235,16 +267,25 @@
 
   <footer class="footer">
     <div class="wrap footer__inner">
-      <div>
-        <a class="brand brand--light" href="#top">Revive<span>Grow</span>&trade;</a>
+      <div class="footer__brand">
+        <img class="footer__logo" src="https://i.imgur.com/ZTlg6jN.jpeg" alt="ReviveGrow" />
         <p>Smart moisture control for modern UK homes.</p>
+        <a class="footer__mail" href="mailto:corpusenigma4@gmail.com"><svg class="i"><use href="#i-mail"/></svg> corpusenigma4@gmail.com</a>
+      </div>
+      <div class="footer__links">
+        <b>Company</b>
+        <a href="#features">Features</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact us</a>
+        <a href="privacy.html">Privacy Policy</a>
       </div>
       <div class="footer__pay">
         <span>Secure checkout</span>
         <div class="paymarks"><b>PayPal</b><b>VISA</b><b>Mastercard</b></div>
       </div>
     </div>
-    <div class="wrap footer__legal">&copy; 2026 ReviveGrow. All rights reserved. &middot; United Kingdom</div>
+    <div class="wrap footer__legal">&copy; 2026 ReviveGrow. All rights reserved. &middot; United Kingdom &middot; <a href="privacy.html">Privacy Policy</a></div>
   </footer>
 
   <!-- STICKY MOBILE BAR -->
@@ -281,6 +322,8 @@
     <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 11l9-8 9 8M5 10v10h14V10"/></symbol>
     <symbol id="i-refund" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 109-9 9 9 0 00-7 3.3M4 3v4h4"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 8v4l3 2"/></symbol>
     <symbol id="i-arrows" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 8l-4 4 4 4M16 8l4 4-4 4M4 12h16"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S11 2 8 2 5 5 12 7zM12 7s1-5 4-5 3 3-4 5z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 7l9 6 9-6"/></symbol>
   </svg>
 
   <script src="reviews.js"></script>

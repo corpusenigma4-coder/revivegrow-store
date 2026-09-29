@@ -1,17 +1,22 @@
 /* ===== ReviveGrow store logic ===== */
 const CDN = "https://cdn.shopify.com/s/files/1/0749/5234/3703/files/";
+const GIFT_IMG = "https://i.imgur.com/Cxs3KuV.jpeg";
+// Gallery: gift/bonus image first (best converter), then real product views
 const IMAGES = [
-  "01_ReviveGrow_Hero.jpg?v=1790574236",
-  "02_ReviveGrow_Retractable_Handle.jpg?v=1790574236",
-  "03_ReviveGrow_Features.jpg?v=1790574236",
-  "04_ReviveGrow_Filtration.jpg?v=1790574236",
-  "05_ReviveGrow_Tabletop_Design.jpg?v=1790574236",
-  "06_ReviveGrow_Water_Tank.jpg?v=1790574236"
-].map(f => CDN + f + "&width=1000");
+  GIFT_IMG,
+  ...[
+    "01_ReviveGrow_Hero.jpg?v=1790574236",
+    "02_ReviveGrow_Retractable_Handle.jpg?v=1790574236",
+    "03_ReviveGrow_Features.jpg?v=1790574236",
+    "04_ReviveGrow_Filtration.jpg?v=1790574236",
+    "05_ReviveGrow_Tabletop_Design.jpg?v=1790574236",
+    "06_ReviveGrow_Water_Tank.jpg?v=1790574236"
+  ].map(f => CDN + f + "&width=1000")
+];
 
 const VARIANTS = {
-  pro:   { name: "ReviveGrow™ Pro 1L + free gift",   price: 29.99, was: 60, img: IMAGES[0] },
-  super: { name: "ReviveGrow™ Super 2L + free gift", price: 44.99, was: 60, img: IMAGES[4] }
+  pro:   { name: "ReviveGrow™ Pro 1L + 3 free absorbers",         price: 29.99, was: 60, img: "https://i.imgur.com/dhqEt1m.jpeg" },
+  super: { name: "ReviveGrow™ Super 2L Premium + 3 free absorbers", price: 44.99, was: 94, img: "https://i.imgur.com/YF7On4W.jpeg" }
 };
 const gbp = n => "£" + n.toFixed(2);
 const $ = s => document.querySelector(s);
@@ -29,7 +34,7 @@ if ($("#summaryStars")) $("#summaryStars").textContent = STAR_FULL.repeat(5);
   const main = $("#mainImg");
   IMAGES.forEach((src, i) => {
     const im = document.createElement("img");
-    im.src = src.replace("width=1000","width=200");
+    im.src = src.includes("cdn.shopify") ? src.replace("width=1000","width=200") : src;
     im.alt = "ReviveGrow view " + (i+1);
     if (i === 0) im.classList.add("is-active");
     im.addEventListener("click", () => {
@@ -44,14 +49,15 @@ if ($("#summaryStars")) $("#summaryStars").textContent = STAR_FULL.repeat(5);
 /* ---------- Variant + qty + price sync ---------- */
 let state = { variant: "pro", qty: 1 };
 function syncPrices(){
-  const p = VARIANTS[state.variant].price;
-  if ($("#atcPrice")) $("#atcPrice").textContent = gbp(p);
-  if ($("#stickyPrice")) $("#stickyPrice").textContent = gbp(p);
+  const v = VARIANTS[state.variant];
+  if ($("#atcPrice")) $("#atcPrice").textContent = gbp(v.price);
+  if ($("#stickyPrice")) $("#stickyPrice").textContent = gbp(v.price);
+  const sWas = document.querySelector(".stickybar__info s");
+  if (sWas) sWas.textContent = gbp(v.was);
 }
 $$('input[name="variant"]').forEach(r => r.addEventListener("change", e => {
   state.variant = e.target.value;
-  $("#mainImg").src = VARIANTS[state.variant].img;
-  $$(".gallery__thumbs img").forEach(t => t.classList.remove("is-active"));
+  // keep the gift/bonus hero image as the main visual; just sync pricing
   syncPrices();
 }));
 $$(".qty button").forEach(b => b.addEventListener("click", () => {
@@ -157,6 +163,30 @@ syncPrices();
   window.addEventListener("scroll", () => {
     const past = hero.getBoundingClientRect().bottom < 0;
     bar.classList.toggle("show", past);
+  });
+})();
+
+/* ---------- Contact form ---------- */
+(function contact(){
+  const form = $("#contactForm");
+  if (!form) return;
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("#c_name").value.trim();
+    const email = $("#c_email").value.trim();
+    const msg = $("#c_msg").value.trim();
+    if (!name || !email.includes("@") || !msg){
+      $("#contactNote").textContent = "Please fill in all fields with a valid email.";
+      $("#contactNote").style.color = "#b4353a";
+      return;
+    }
+    // Open user's email client pre-filled to our support address
+    const subject = encodeURIComponent(`Website enquiry from ${name}`);
+    const body = encodeURIComponent(`${msg}\n\nFrom: ${name} (${email})`);
+    window.location.href = `mailto:corpusenigma4@gmail.com?subject=${subject}&body=${body}`;
+    $("#contactNote").style.color = "var(--brand)";
+    $("#contactNote").textContent = "Opening your email app… if nothing happens, email us at corpusenigma4@gmail.com";
+    form.reset();
   });
 })();
 
