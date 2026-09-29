@@ -21,6 +21,12 @@ const VARIANTS = {
 const gbp = n => "£" + n.toFixed(2);
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
+
+/* ---------- Meta Pixel helper (safe: never throws if blocked/not loaded) ---------- */
+function track(event, params){
+  try { if (typeof fbq === "function") fbq("track", event, params || {}); }
+  catch(e){ /* pixel blocked or not loaded — ignore */ }
+}
 const STAR_FULL = "★", STAR_EMPTY = "☆";
 
 /* ---------- Star rating helper (4.9 -> 5 filled visual) ---------- */
@@ -66,6 +72,15 @@ $$(".qty button").forEach(b => b.addEventListener("click", () => {
   $("#qty").value = state.qty;
 }));
 syncPrices();
+
+/* ---------- Meta Pixel: ViewContent on load ---------- */
+track("ViewContent", {
+  content_name: "ReviveGrow Smart Dehumidifier",
+  content_type: "product",
+  content_ids: ["revivegrow-pro-1l"],
+  value: VARIANTS.pro.price,
+  currency: "GBP"
+});
 
 /* ---------- Live viewing counter (social proof) ---------- */
 (function liveViewers(){
@@ -305,6 +320,13 @@ function addToCart(){
   checkoutStep = 0;
   renderDrawer();
   openDrawer();
+  track("AddToCart", {
+    content_name: order.item.name,
+    content_type: "product",
+    content_ids: [order.item.key],
+    value: order.item.price * order.item.qty,
+    currency: "GBP"
+  });
 }
 $("#addToCart").addEventListener("click", addToCart);
 ["#ctaBuy","#guaranteeBuy"].forEach(id => {
@@ -425,7 +447,16 @@ function renderDrawer(){
     body.innerHTML = steps + editItem + summary +
       `<p class="trust-line"><svg class="i" style="width:1em;height:1em;vertical-align:-.12em"><use href="#i-lock"/></svg> Secure checkout · Free UK shipping · 90-day guarantee</p>`;
     foot.innerHTML = `<button class="btn btn--primary btn--block btn--lg" id="toDetails">Continue — ${gbp(t.total)}</button>`;
-    $("#toDetails").addEventListener("click", () => { checkoutStep = 1; renderDrawer(); });
+    $("#toDetails").addEventListener("click", () => {
+      track("InitiateCheckout", {
+        content_name: order.item.name,
+        content_ids: [order.item.key],
+        num_items: order.item.qty,
+        value: order.item.price * order.item.qty,
+        currency: "GBP"
+      });
+      checkoutStep = 1; renderDrawer();
+    });
     // quantity stepper updates the order and re-renders totals
     $("#cartQty").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
       const d = +b.dataset.cq;
@@ -486,6 +517,19 @@ function renderDrawer(){
   else if (checkoutStep === 3){
     const orderNo = order.paypal?.id || ("RG" + Math.floor(100000 + Math.random()*900000));
     const payerName = order.paypal?.payer?.name?.given_name || order.customer?.first || "friend";
+    // Meta Pixel: Purchase — fires only after a successful payment reaches this confirmation screen
+    if (!order._purchaseTracked){
+      order._purchaseTracked = true;
+      track("Purchase", {
+        content_name: order.item.name,
+        content_type: "product",
+        content_ids: [order.item.key],
+        num_items: order.item.qty,
+        value: order.item.price * order.item.qty,
+        currency: "GBP",
+        order_id: orderNo
+      });
+    }
     title.textContent = "Order confirmed";
     body.innerHTML = `<div class="success">
       <div class="success__ico">✓</div>
