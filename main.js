@@ -15,7 +15,8 @@ const IMAGES = [
 ];
 
 const VARIANTS = {
-  pro:   { name: "ReviveGrow™ Pro 1L + 3 free absorbers",         price: 29.99, was: 60, img: "https://i.imgur.com/dhqEt1m.jpeg" },
+  // ⚠️ TEMPORARY TEST PRICE — Pro 1L set to £0.50 for a live payment test. Restore to 29.99 after testing.
+  pro:   { name: "ReviveGrow™ Pro 1L + 3 free absorbers",         price: 0.50, was: 60, img: "https://i.imgur.com/dhqEt1m.jpeg" },
   super: { name: "ReviveGrow™ Super 2L Premium + 3 free absorbers", price: 44.99, was: 94, img: "https://i.imgur.com/YF7On4W.jpeg" }
 };
 const gbp = n => "£" + n.toFixed(2);
