@@ -155,14 +155,55 @@ syncPrices();
   set(50);
 })();
 
-/* ---------- Sticky mobile bar ---------- */
+/* ---------- Mobile nav menu ---------- */
+(function nav(){
+  const toggle = $("#navToggle");
+  const nav = $("#mainNav");
+  const scrim = $("#navScrim");
+  if (!toggle || !nav) return;
+  function close(){
+    nav.classList.remove("open");
+    scrim && scrim.classList.remove("open");
+    toggle.setAttribute("aria-expanded", "false");
+  }
+  function open(){
+    nav.classList.add("open");
+    scrim && scrim.classList.add("open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+  toggle.addEventListener("click", () => {
+    nav.classList.contains("open") ? close() : open();
+  });
+  scrim && scrim.addEventListener("click", close);
+  // close when a link is tapped
+  nav.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
+})();
+
+/* ---------- Sticky bottom bar ---------- */
 (function stickybar(){
   const bar = $("#stickybar");
-  const hero = $(".hero");
-  if (!bar || !hero) return;
-  window.addEventListener("scroll", () => {
-    const past = hero.getBoundingClientRect().bottom < 0;
-    bar.classList.toggle("show", past);
+  const anchor = $("#addToCart"); // main buy CTA in the hero
+  if (!bar || !anchor) return;
+  document.body.classList.add("has-sticky");
+  function update(){
+    // show the sticky bar once the hero's Add-to-basket button scrolls out of view
+    const r = anchor.getBoundingClientRect();
+    const outOfView = r.bottom < 10 || r.top > window.innerHeight;
+    bar.classList.toggle("show", outOfView);
+  }
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+  // clicking the sticky CTA scrolls to the variant selector so they can choose & buy
+  $("#stickyBuy").addEventListener("click", () => {
+    const target = document.querySelector("#variants") || document.querySelector("#top");
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    // briefly highlight the variants to draw the eye
+    const v = document.querySelector("#variants");
+    if (v){
+      v.classList.add("flash");
+      setTimeout(() => v.classList.remove("flash"), 1400);
+    }
   });
 })();
 
@@ -290,7 +331,7 @@ function addToCart(){
   openDrawer();
 }
 $("#addToCart").addEventListener("click", addToCart);
-["#ctaBuy","#openCartTop","#guaranteeBuy","#stickyBuy"].forEach(id => {
+["#ctaBuy","#guaranteeBuy"].forEach(id => {
   const el = $(id);
   if (el) el.addEventListener("click", () => { addToCart(); });
 });
@@ -367,6 +408,7 @@ function renderDrawer(){
     <div class="summary__row summary__row--total"><span>Total</span><span>${gbp(t.total)}</span></div>
   </div>`;
 
+  // static line item (used on details/payment steps)
   const lineItem = `<div class="line-item">
       <img src="${item.img}" alt="${item.name}" />
       <div class="line-item__info"><b>${item.name}</b><span>Qty: ${item.qty}</span></div>
@@ -375,10 +417,32 @@ function renderDrawer(){
 
   if (checkoutStep === 0){
     title.textContent = "Your basket";
-    body.innerHTML = steps + lineItem + summary +
-      `<p class="trust-line">🔒 Secure checkout · Free UK shipping · 90-day guarantee</p>`;
-    foot.innerHTML = `<button class="btn btn--primary btn--block btn--lg" id="toDetails">Checkout — ${gbp(t.total)}</button>`;
+    // editable line item with quantity stepper
+    const editItem = `<div class="line-item">
+        <img src="${item.img}" alt="${item.name}" />
+        <div class="line-item__info">
+          <b>${item.name}</b>
+          <span>${gbp(item.price)} each</span>
+          <div class="qty qty--sm" id="cartQty">
+            <button type="button" data-cq="-1" aria-label="Remove one">&minus;</button>
+            <input type="text" value="${item.qty}" readonly aria-label="Quantity" />
+            <button type="button" data-cq="1" aria-label="Add one">+</button>
+          </div>
+        </div>
+        <div class="line-item__price">${gbp(item.price*item.qty)}</div>
+      </div>`;
+    body.innerHTML = steps + editItem + summary +
+      `<p class="trust-line"><svg class="i" style="width:1em;height:1em;vertical-align:-.12em"><use href="#i-lock"/></svg> Secure checkout · Free UK shipping · 90-day guarantee</p>`;
+    foot.innerHTML = `<button class="btn btn--primary btn--block btn--lg" id="toDetails">Continue — ${gbp(t.total)}</button>`;
     $("#toDetails").addEventListener("click", () => { checkoutStep = 1; renderDrawer(); });
+    // quantity stepper updates the order and re-renders totals
+    $("#cartQty").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      const d = +b.dataset.cq;
+      order.item.qty = Math.max(1, Math.min(10, order.item.qty + d));
+      state.qty = order.item.qty;
+      const qEl = $("#qty"); if (qEl) qEl.value = state.qty;
+      renderDrawer();
+    }));
   }
   else if (checkoutStep === 1){
     title.textContent = "Your details";

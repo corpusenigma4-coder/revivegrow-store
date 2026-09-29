@@ -18,6 +18,11 @@
       <span><svg class="i"><use href="#i-clock"/></svg> Same-day dispatch before daily cut-off</span>
       <span><svg class="i"><use href="#i-shield"/></svg> 90-day money-back guarantee</span>
       <span><svg class="i"><use href="#i-star"/></svg> 4.9/5 from 6,000+ UK homes</span>
+      <!-- duplicated for seamless infinite scroll -->
+      <span><svg class="i"><use href="#i-truck"/></svg> FREE UK SHIPPING on all orders</span>
+      <span><svg class="i"><use href="#i-clock"/></svg> Same-day dispatch before daily cut-off</span>
+      <span><svg class="i"><use href="#i-shield"/></svg> 90-day money-back guarantee</span>
+      <span><svg class="i"><use href="#i-star"/></svg> 4.9/5 from 6,000+ UK homes</span>
     </div>
   </div>
 
@@ -27,16 +32,20 @@
       <a class="brand" href="#top" aria-label="ReviveGrow home">
         <img class="brand__logo" src="https://i.imgur.com/ZTlg6jN.jpeg" alt="ReviveGrow" />
       </a>
-      <nav class="nav">
-        <a href="#features">Features</a>
+      <nav class="nav" id="mainNav">
+        <a href="#variants">Products</a>
+        <a href="#videos">See in action</a>
         <a href="#compare">Before &amp; After</a>
         <a href="#reviews">Reviews</a>
         <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
       </nav>
-      <button class="btn btn--primary btn--sm" id="openCartTop">Buy now &mdash; &pound;29.99</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+  <div class="nav-scrim" id="navScrim"></div>
 
   <main id="top">
     <!-- HERO -->
@@ -325,10 +334,9 @@
     <div class="wrap footer__legal">&copy; 2026 ReviveGrow. All rights reserved. &middot; United Kingdom &middot; <a href="privacy.html">Privacy Policy</a></div>
   </footer>
 
-  <!-- STICKY MOBILE BAR -->
+  <!-- STICKY BOTTOM BAR -->
   <div class="stickybar" id="stickybar">
-    <div class="stickybar__info"><b id="stickyPrice">&pound;29.99</b> <s>&pound;60.00</s></div>
-    <button class="btn btn--primary" id="stickyBuy">Add to basket</button>
+    <button class="btn btn--primary btn--block" id="stickyBuy">Claim the offer &mdash; 50% OFF</button>
   </div>
 
   <!-- CART DRAWER -->
