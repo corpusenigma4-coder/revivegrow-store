@@ -416,3 +416,11 @@ svg.i use{stroke:currentColor}
   .videos__grid{gap:8px}
   .vcard figcaption{font-size:.65rem;padding:8px 6px 6px}
 }
+
+/* ===== paypal live payment ===== */
+.paypal-live{margin-top:8px}
+.pp-secure{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:.85rem;margin:0 0 14px}
+.pp-secure .i{color:var(--brand);width:1.1em;height:1.1em}
+#paypal-buttons{min-height:48px}
+.pp-fallback{color:#b4353a;font-size:.85rem;margin-top:10px;text-align:center}
+.pp-fallback a{color:var(--brand);text-decoration:underline}

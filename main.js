@@ -295,6 +295,60 @@ $("#addToCart").addEventListener("click", addToCart);
   if (el) el.addEventListener("click", () => { addToCart(); });
 });
 
+/* ---------- PayPal live buttons ---------- */
+function renderPayPalButtons(amount){
+  const mount = $("#paypal-buttons");
+  const fallback = $("#ppFallback");
+  if (!mount) return;
+
+  // If the SDK failed to load (network/blocked/invalid id), show a graceful message
+  if (typeof paypal === "undefined" || !paypal.Buttons){
+    fallback.innerHTML = "Secure PayPal checkout could not load right now. Please refresh, or email us at <a href='mailto:corpusenigma4@gmail.com'>corpusenigma4@gmail.com</a> and we'll help you complete your order.";
+    return;
+  }
+
+  try {
+    paypal.Buttons({
+      style: { layout: "vertical", color: "gold", shape: "pill", label: "paypal" },
+
+      createOrder: function(data, actions){
+        return actions.order.create({
+          purchase_units: [{
+            description: order.item.name,
+            amount: {
+              currency_code: "GBP",
+              value: amount.toFixed(2)
+            }
+          }],
+          application_context: { shipping_preference: "NO_SHIPPING" }
+        });
+      },
+
+      onApprove: function(data, actions){
+        return actions.order.capture().then(function(details){
+          order.paypal = {
+            id: (details && details.id) || data.orderID,
+            payer: details && details.payer
+          };
+          checkoutStep = 3;
+          renderDrawer();
+        });
+      },
+
+      onError: function(err){
+        console.error("PayPal error:", err);
+        fallback.innerHTML = "There was a problem starting the payment. Please try again, or email <a href='mailto:corpusenigma4@gmail.com'>corpusenigma4@gmail.com</a>.";
+      }
+    }).render("#paypal-buttons").catch(function(e){
+      console.error("PayPal render failed:", e);
+      fallback.innerHTML = "Secure PayPal checkout could not load. Please refresh or contact corpusenigma4@gmail.com.";
+    });
+  } catch(e){
+    console.error(e);
+    fallback.textContent = "Secure checkout could not load. Please refresh the page.";
+  }
+}
+
 function renderDrawer(){
   const item = order.item;
   const t = totals(item);
@@ -365,30 +419,26 @@ function renderDrawer(){
   else if (checkoutStep === 2){
     title.textContent = "Payment";
     body.innerHTML = steps + lineItem + summary + `
-      <div class="paypal-mock">
-        <div class="testbadge">TEST MODE — no real payment taken</div>
-        <button class="pp-btn" id="ppBtn">Pay ${gbp(t.total)} with PayPal</button>
-        <p class="pp-note">Secure checkout. When your live PayPal Business account is connected,
-        this button will process real payments in GBP. Card payments (Visa / Mastercard) are handled through PayPal.</p>
+      <div class="paypal-live">
+        <p class="pp-secure"><svg class="i"><use href="#i-lock"/></svg> Pay securely with PayPal, Visa or Mastercard</p>
+        <div id="paypal-buttons"></div>
+        <p class="pp-fallback" id="ppFallback"></p>
       </div>`;
     foot.innerHTML = `<button class="btn btn--ghost btn--block" id="backDetails">Back to details</button>`;
     $("#backDetails").addEventListener("click", () => { checkoutStep = 1; renderDrawer(); });
-    $("#ppBtn").addEventListener("click", () => {
-      const btn = $("#ppBtn");
-      btn.textContent = "Processing…"; btn.disabled = true;
-      setTimeout(() => { checkoutStep = 3; renderDrawer(); }, 1100);
-    });
+    renderPayPalButtons(t.total);
   }
   else if (checkoutStep === 3){
-    const orderNo = "RG" + Math.floor(100000 + Math.random()*900000);
+    const orderNo = order.paypal?.id || ("RG" + Math.floor(100000 + Math.random()*900000));
+    const payerName = order.paypal?.payer?.name?.given_name || order.customer?.first || "friend";
     title.textContent = "Order confirmed";
     body.innerHTML = `<div class="success">
       <div class="success__ico">✓</div>
-      <h3>Thank you, ${order.customer?.first || "friend"}!</h3>
-      <p style="color:var(--muted)">Your test order <b>#${orderNo}</b> has been placed.<br>
-      A confirmation would be sent to <b>${order.customer?.email || ""}</b>.</p>
+      <h3>Thank you, ${payerName}!</h3>
+      <p style="color:var(--muted)">Your payment was successful and your order <b>#${orderNo}</b> has been placed.<br>
+      A confirmation will be sent to <b>${order.customer?.email || (order.paypal?.payer?.email_address || "")}</b>.</p>
       <p style="color:var(--muted);font-size:.85rem;margin-top:14px">
-      This was a test transaction — no payment was taken. Connect your PayPal Business account to go live.</p>
+      We'll dispatch your ReviveGrow&trade; soon. Estimated UK delivery is 3&ndash;5 working days.</p>
     </div>`;
     foot.innerHTML = `<button class="btn btn--primary btn--block" data-close>Continue shopping</button>`;
     foot.querySelector("[data-close]").addEventListener("click", closeDrawer);
