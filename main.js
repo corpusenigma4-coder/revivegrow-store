@@ -15,8 +15,7 @@ const IMAGES = [
 ];
 
 const VARIANTS = {
-  // ⚠️ TEMPORARY TEST PRICE — Pro 1L set to £0.50 for a live payment test. Restore to 29.99 after testing.
-  pro:   { name: "ReviveGrow™ Pro 1L + 3 free absorbers",         price: 0.50, was: 60, img: "https://i.imgur.com/dhqEt1m.jpeg" },
+  pro:   { name: "ReviveGrow™ Pro 1L + 3 free absorbers",         price: 29.99, was: 60, img: "https://i.imgur.com/dhqEt1m.jpeg" },
   super: { name: "ReviveGrow™ Super 2L Premium + 3 free absorbers", price: 44.99, was: 94, img: "https://i.imgur.com/YF7On4W.jpeg" }
 };
 const gbp = n => "£" + n.toFixed(2);
@@ -330,23 +329,38 @@ function renderPayPalButtons(amount){
       style: { layout: "vertical", color: "gold", shape: "pill", label: "paypal" },
 
       createOrder: function(data, actions){
-        return actions.order.create({
-          purchase_units: [{
-            description: order.item.name,
-            amount: {
-              currency_code: "GBP",
-              value: amount.toFixed(2)
+        const c = order.customer || {};
+        const pu = {
+          description: order.item.name,
+          amount: { currency_code: "GBP", value: amount.toFixed(2) }
+        };
+        // Pre-fill shipping address from the details the customer entered,
+        // so shipping (and billing) uses the same address they gave us.
+        if (c.addr && c.city && c.post){
+          pu.shipping = {
+            name: { full_name: [c.first, c.last].filter(Boolean).join(" ") || c.first || "Customer" },
+            address: {
+              address_line_1: c.addr,
+              admin_area_2: c.city,          // town / city
+              postal_code: c.post,
+              country_code: "GB"
             }
-          }],
-          application_context: { shipping_preference: "NO_SHIPPING" }
+          };
+        }
+        return actions.order.create({
+          purchase_units: [pu],
+          // SET_PROVIDED_ADDRESS: use the address we passed; PayPal still lets the buyer confirm/edit it
+          application_context: { shipping_preference: c.addr ? "SET_PROVIDED_ADDRESS" : "GET_FROM_FILE" }
         });
       },
 
       onApprove: function(data, actions){
         return actions.order.capture().then(function(details){
+          const pu = details && details.purchase_units && details.purchase_units[0];
           order.paypal = {
             id: (details && details.id) || data.orderID,
-            payer: details && details.payer
+            payer: details && details.payer,
+            shipping: pu && pu.shipping   // captured shipping address
           };
           checkoutStep = 3;
           renderDrawer();
