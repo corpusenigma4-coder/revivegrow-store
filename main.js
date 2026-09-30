@@ -504,13 +504,37 @@ function renderDrawer(){
         <div class="field"><label>First name</label><input id="f_first" placeholder="Jane"></div>
         <div class="field"><label>Last name</label><input id="f_last" placeholder="Smith"></div>
       </div>
-      <div class="field"><label>Address</label><input id="f_addr" placeholder="12 High Street"></div>
+      <div class="field"><label>Address</label><input id="f_addr" placeholder="Street and house/flat number"></div>
       <div class="field-row">
-        <div class="field"><label>Town / City</label><input id="f_city" placeholder="Manchester"></div>
-        <div class="field"><label>Postcode</label><input id="f_post" placeholder="M1 2AB"></div>
+        <div class="field"><label>Town / City</label><input id="f_city" placeholder="Your town or city"></div>
+        <div class="field"><label>Postcode / ZIP</label><input id="f_post" placeholder="Postcode / ZIP"></div>
       </div>
-      <div class="field"><label>Country</label><input value="United Kingdom" readonly></div>
-      <div class="field"><label>Phone (optional)</label><input id="f_phone" placeholder="07123 456789"></div>
+      <div class="field"><label>Country</label>
+        <select id="f_country">
+          <option value="United Kingdom" selected>United Kingdom</option>
+          <option value="United States">United States</option>
+          <option value="Ireland">Ireland</option>
+          <option value="Canada">Canada</option>
+          <option value="Australia">Australia</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="Germany">Germany</option>
+          <option value="France">France</option>
+          <option value="Spain">Spain</option>
+          <option value="Italy">Italy</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Norway">Norway</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Austria">Austria</option>
+          <option value="Portugal">Portugal</option>
+          <option value="Poland">Poland</option>
+          <option value="Finland">Finland</option>
+          <option value="Other">Other (type in address)</option>
+        </select>
+      </div>
+      <div class="field"><label>Phone (optional)</label><input id="f_phone" placeholder="Your phone number"></div>
       ${summary}`;
     foot.innerHTML = `<button class="btn btn--primary btn--block btn--lg" id="toPay">Continue to payment</button>
       <button class="btn btn--ghost btn--block" id="backBasket" style="margin-top:8px">Back to basket</button>`;
@@ -518,15 +542,18 @@ function renderDrawer(){
     $("#toPay").addEventListener("click", () => {
       const email = $("#f_email").value.trim();
       const first = $("#f_first").value.trim();
-      const post = $("#f_post").value.trim();
-      if (!email || !email.includes("@") || !first || !post){
-        alert("Please fill in your email, first name and postcode to continue.");
+      // Keep it EASY for the buyer: only require a valid email + first name.
+      // Address details are captured/confirmed by PayPal, so we don't block them here.
+      if (!email || !email.includes("@") || !first){
+        alert("Please add your email and first name to continue.");
         return;
       }
       order.customer = {
         email, first, last: $("#f_last").value.trim(),
         addr: $("#f_addr").value.trim(), city: $("#f_city").value.trim(),
-        post, phone: $("#f_phone").value.trim()
+        post: $("#f_post").value.trim(),
+        country: ($("#f_country") && $("#f_country").value) || "United Kingdom",
+        phone: $("#f_phone").value.trim()
       };
       checkoutStep = 2; renderDrawer();
     });
