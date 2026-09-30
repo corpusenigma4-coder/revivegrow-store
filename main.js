@@ -84,12 +84,48 @@ track("ViewContent", {
 
 /* ---------- Live viewing counter (social proof) ---------- */
 (function liveViewers(){
-  const el = $("#viewing");
-  if (!el) return;
-  setInterval(() => {
-    const base = 28 + Math.floor(Math.random() * 12);
-    el.textContent = base;
-  }, 4000);
+  const viewEl = $("#viewing");
+  const stockEl = $("#stockLeft");
+  const barEl = $("#stockBar");
+
+  // ----- People viewing: drifts naturally between ~27 and ~38 -----
+  if (viewEl){
+    setInterval(() => {
+      const n = 27 + Math.floor(Math.random() * 12); // 27..38
+      viewEl.textContent = n;
+    }, 4000);
+  }
+
+  // ----- Stock: starts at 17, ticks down like people are buying, floors at 9 -----
+  if (stockEl){
+    let stock = 17;
+    const STOCK_MAX = 17;   // for the bar %
+    const STOCK_FLOOR = 9;  // never drop below this (stays believable)
+    function updateBar(){
+      if (barEl){
+        const pct = Math.max(10, Math.round((stock / (STOCK_MAX + 15)) * 100));
+        barEl.style.width = pct + "%";
+      }
+    }
+    updateBar();
+    function scheduleDrop(){
+      // random gap between "purchases": 12s to 30s, feels organic
+      const delay = 12000 + Math.floor(Math.random() * 18000);
+      setTimeout(() => {
+        if (stock > STOCK_FLOOR){
+          stock -= 1;                 // one "purchase"
+          stockEl.textContent = stock;
+          updateBar();
+          // small flash so the eye catches the change
+          stockEl.style.transition = "color .3s";
+          stockEl.style.color = "#e5484d";
+          setTimeout(() => { stockEl.style.color = ""; }, 500);
+        }
+        if (stock > STOCK_FLOOR) scheduleDrop();
+      }, delay);
+    }
+    scheduleDrop();
+  }
 })();
 
 /* ---------- Reviews ---------- */
