@@ -105,12 +105,12 @@ track("ViewContent", {
     }, 5500);
   }
 
-  // ----- Stock number: starts at 17, ticks down like people are buying, floors at 9 -----
+  // ----- Stock number: starts at 17, ticks down quickly & visibly (every 3-6s), floors at 9 -----
   if (stockEl){
     let stock = 17;
     const STOCK_FLOOR = 9;  // never drop below this (stays believable)
     function scheduleDrop(){
-      const delay = 12000 + Math.floor(Math.random() * 18000);
+      const delay = 3000 + Math.floor(Math.random() * 3000); // 3s to 6s — noticeable
       setTimeout(() => {
         if (stock > STOCK_FLOOR){
           stock -= 1;                 // one "purchase"
