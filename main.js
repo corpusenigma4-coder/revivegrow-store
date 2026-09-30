@@ -385,42 +385,37 @@ function renderPayPalButtons(amount){
       style: { layout: "vertical", color: "gold", shape: "pill", label: "paypal" },
 
       createOrder: function(data, actions){
-        const c = order.customer || {};
-        const pu = {
-          description: order.item.name,
-          amount: { currency_code: "GBP", value: amount.toFixed(2) }
-        };
-        // Pre-fill shipping address from the details the customer entered,
-        // so shipping (and billing) uses the same address they gave us.
-        if (c.addr && c.city && c.post){
-          pu.shipping = {
-            name: { full_name: [c.first, c.last].filter(Boolean).join(" ") || c.first || "Customer" },
-            address: {
-              address_line_1: c.addr,
-              admin_area_2: c.city,          // town / city
-              postal_code: c.post,
-              country_code: "GB"
-            }
-          };
-        }
+        // Keep the order simple & robust — let PayPal collect/confirm the shipping
+        // address on their side. This avoids any silent order rejection from a
+        // mismatched or unusual address format the buyer may have typed.
         return actions.order.create({
-          purchase_units: [pu],
-          // SET_PROVIDED_ADDRESS: use the address we passed; PayPal still lets the buyer confirm/edit it
-          application_context: { shipping_preference: c.addr ? "SET_PROVIDED_ADDRESS" : "GET_FROM_FILE" }
+          purchase_units: [{
+            description: order.item.name,
+            amount: { currency_code: "GBP", value: amount.toFixed(2) }
+          }]
         });
       },
 
       onApprove: function(data, actions){
+        if (fallback) fallback.textContent = "";
         return actions.order.capture().then(function(details){
           const pu = details && details.purchase_units && details.purchase_units[0];
           order.paypal = {
             id: (details && details.id) || data.orderID,
             payer: details && details.payer,
-            shipping: pu && pu.shipping   // captured shipping address
+            shipping: pu && pu.shipping   // captured shipping address from PayPal
           };
           checkoutStep = 3;
           renderDrawer();
+        }).catch(function(e){
+          console.error("Capture failed:", e);
+          if (fallback) fallback.innerHTML = "Your payment could not be completed. No money was taken. Please try again or email <a href='mailto:corpusenigma4@gmail.com'>corpusenigma4@gmail.com</a>.";
         });
+      },
+
+      onCancel: function(){
+        // buyer closed the PayPal window — no dead-end, invite to retry
+        if (fallback) fallback.textContent = "Payment cancelled — you can try again whenever you're ready.";
       },
 
       onError: function(err){
