@@ -41,6 +41,54 @@
   <script src="https://www.paypal.com/sdk/js?client-id=BAAQ-8n51AMovSQJMduZqWI5bu7ey6YdzkXHePhKeqSIIzkxH37XKZmzIWFFXQeoXaoOhGR0tXEvtFEE0w&currency=GBP&components=buttons&enable-funding=card" data-sdk-integration-source="button-factory"></script>
 </head>
 <body>
+  <!-- ===== WINNER DISCOUNT POPUP (20,000th visitor) ===== -->
+  <div class="winpop" id="winPop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="winPopTitle">
+    <div class="winpop__scrim" data-winclose></div>
+    <div class="winpop__card" role="document">
+      <button class="winpop__x" data-winclose aria-label="Close">&times;</button>
+
+      <!-- confetti layer -->
+      <span class="winpop__confetti" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
+
+      <div class="winpop__top">
+        <span class="winpop__badge"><svg class="i"><use href="#i-gift"/></svg> WINNER &middot; EXTRA 20% OFF</span>
+        <div class="winpop__trophy" aria-hidden="true">🏆</div>
+        <h2 class="winpop__title" id="winPopTitle">Congratulations!</h2>
+        <p class="winpop__you">You&rsquo;re our <b>20,000<sup>th</sup> visitor</b> &mdash; and that means you&rsquo;ve just unlocked an <b>exclusive extra&nbsp;20% off</b>.</p>
+      </div>
+
+      <div class="winpop__offer">
+        <p class="winpop__lead">Your special winner&rsquo;s price is already applied:</p>
+        <div class="winpop__prices">
+          <div class="winpop__price">
+            <span class="winpop__plabel">Pro 1L</span>
+            <span class="winpop__pnew">&pound;29.99</span>
+            <span class="winpop__pold">&pound;60.00</span>
+            <span class="winpop__psave">You save &pound;30.01</span>
+          </div>
+          <div class="winpop__price winpop__price--best">
+            <span class="winpop__tag">Best value</span>
+            <span class="winpop__plabel">Super 2L Premium</span>
+            <span class="winpop__pnew">&pound;44.99</span>
+            <span class="winpop__pold">&pound;94.00</span>
+            <span class="winpop__psave">You save &pound;49.01</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="winpop__timer">
+        <svg class="i"><use href="#i-clock"/></svg>
+        <span>Winner&rsquo;s offer reserved for <b id="winTimer">10:00</b></span>
+      </div>
+
+      <button class="btn btn--primary btn--block btn--lg winpop__cta" id="winClaim">Claim my 20% off now &rarr;</button>
+
+      <p class="winpop__fine"><svg class="i"><use href="#i-lock"/></svg> Free UK shipping &middot; 90-day money-back guarantee</p>
+    </div>
+  </div>
+
   <!-- Announcement bar -->
   <div class="announce">
     <div class="announce__track">
