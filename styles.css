@@ -78,8 +78,10 @@ h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800}
 .variant__name{font-weight:700}
 .variant__name em{font-style:normal;color:var(--muted);font-weight:500;font-size:.9em}
 .variant__price b{font-size:1.1rem}
-.variant__price s{color:var(--muted);margin:0 6px}
+.variant__price s{color:var(--muted);margin:0}
+.variant__price s.was2{color:#b4353a;font-weight:600;opacity:1}
 .save{font-style:normal;background:#fdeccb;color:#8a5a00;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px}
+.save--extra{background:var(--brand);color:#fff;letter-spacing:.02em}
 .tag{background:var(--brand);color:#fff;font-size:.65rem;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
 
 .qty-row{display:flex;gap:12px;margin-bottom:20px}
