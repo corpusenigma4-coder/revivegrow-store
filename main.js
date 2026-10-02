@@ -605,11 +605,13 @@ function renderDrawer(){
   const pop = $("#winPop");
   if (!pop) return;
 
-  const SHOW_DELAY = 2500;        // appears ~2.5s after landing — long enough to not feel jarring
-  const COUNTDOWN_SECONDS = 10 * 60; // 10-minute winner's reservation countdown
+  const SHOW_DELAY = 2500;         // appears ~2.5s after landing — long enough to not feel jarring
+  const COUNTDOWN_SECONDS = 15 * 60; // 15-minute winner's reservation countdown
   let countdownTimer = null;
 
   function openPop(){
+    // the inline display:none is cleared so the .show class (flex, centred) takes over
+    pop.style.display = "flex";
     pop.classList.add("show");
     pop.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden"; // lock background scroll while open
@@ -619,6 +621,7 @@ function renderDrawer(){
 
   function closePop(){
     pop.classList.remove("show");
+    pop.style.display = "none";
     pop.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     if (countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
@@ -668,6 +671,8 @@ function renderDrawer(){
     });
   }
 
-  // Show it to every visitor, shortly after they land
-  setTimeout(openPop, SHOW_DELAY);
+  // Show it to every visitor, shortly after they land.
+  // Wrapped so any unexpected error can never block or freeze the page.
+  function safeOpen(){ try { openPop(); } catch(e){ /* never break the page */ } }
+  setTimeout(safeOpen, SHOW_DELAY);
 })();
