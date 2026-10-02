@@ -12,6 +12,15 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <meta name="theme-color" content="#1f7a63" />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Critical popup styles inlined so the winner popup is NEVER shown as unstyled plain text,
+       even if styles.css is cached/slow/blocked. Full styling lives in styles.css. -->
+  <style>
+    #winPop{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px}
+    #winPop.show{display:flex}
+    #winPop .winpop__scrim{position:absolute;inset:0;background:rgba(10,20,16,.62)}
+    #winPop .winpop__card{position:relative;z-index:2;width:100%;max-width:430px;max-height:92vh;overflow:auto;background:#fff;border-radius:22px;text-align:center;padding:0 22px 22px;box-shadow:0 24px 70px rgba(10,20,16,.45)}
+    #winPop .winpop__confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  </style>
   <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDKPFLYTSR"></script>
   <script>
@@ -42,7 +51,7 @@
 </head>
 <body>
   <!-- ===== WINNER DISCOUNT POPUP (20,000th visitor) ===== -->
-  <div class="winpop" id="winPop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="winPopTitle">
+  <div class="winpop" id="winPop" style="display:none" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="winPopTitle">
     <div class="winpop__scrim" data-winclose></div>
     <div class="winpop__card" role="document">
       <button class="winpop__x" data-winclose aria-label="Close">&times;</button>
@@ -86,7 +95,7 @@
 
       <div class="winpop__timer">
         <svg class="i"><use href="#i-clock"/></svg>
-        <span>Winner&rsquo;s offer reserved for <b id="winTimer">10:00</b></span>
+        <span>Winner&rsquo;s offer reserved for <b id="winTimer">15:00</b></span>
       </div>
 
       <button class="btn btn--primary btn--block btn--lg winpop__cta" id="winClaim">Claim my 20% off now &rarr;</button>
