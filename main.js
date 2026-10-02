@@ -599,3 +599,75 @@ function renderDrawer(){
     foot.querySelector("[data-close]").addEventListener("click", closeDrawer);
   }
 }
+
+/* ---------- Winner discount popup (20,000th visitor) ---------- */
+(function winnerPopup(){
+  const pop = $("#winPop");
+  if (!pop) return;
+
+  const SHOW_DELAY = 2500;        // appears ~2.5s after landing — long enough to not feel jarring
+  const COUNTDOWN_SECONDS = 10 * 60; // 10-minute winner's reservation countdown
+  let countdownTimer = null;
+
+  function openPop(){
+    pop.classList.add("show");
+    pop.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden"; // lock background scroll while open
+    startCountdown();
+    track("ViewContent", { content_name: "Winner 20% popup", content_type: "promo" });
+  }
+
+  function closePop(){
+    pop.classList.remove("show");
+    pop.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (countdownTimer){ clearInterval(countdownTimer); countdownTimer = null; }
+  }
+
+  function startCountdown(){
+    const el = $("#winTimer");
+    if (!el) return;
+    let left = COUNTDOWN_SECONDS;
+    const render = () => {
+      const m = Math.floor(left / 60);
+      const s = left % 60;
+      el.textContent = m + ":" + (s < 10 ? "0" + s : s);
+    };
+    render();
+    countdownTimer = setInterval(() => {
+      left = Math.max(0, left - 1);
+      render();
+      if (left === 0){ clearInterval(countdownTimer); countdownTimer = null; }
+    }, 1000);
+  }
+
+  // Close actions (X button + scrim)
+  pop.querySelectorAll("[data-winclose]").forEach(el =>
+    el.addEventListener("click", closePop)
+  );
+  // Close on Escape
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && pop.classList.contains("show")) closePop();
+  });
+
+  // CTA: close popup, scroll to the variant selector and flash it so they buy on impulse
+  const claim = $("#winClaim");
+  if (claim){
+    claim.addEventListener("click", () => {
+      track("Lead", { content_name: "Winner 20% popup claim" });
+      closePop();
+      const target = document.querySelector("#variants") || document.querySelector("#top");
+      if (target){
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        const v = document.querySelector("#variants");
+        if (v){
+          v.classList.add("flash");
+          setTimeout(() => v.classList.remove("flash"), 1400);
+        }
+      }
+    });
+  }
+
+  // Show it to every visitor, shortly after they land
+  setTimeout(openPop, SHOW_DELAY);
+})();
