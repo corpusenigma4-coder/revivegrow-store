@@ -526,22 +526,33 @@ body.has-sticky{padding-bottom:74px}
 .winpop__prices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .winpop__price{
   border:1.5px solid var(--line);border-radius:16px;
-  padding:16px 10px 14px;position:relative;background:#fff;
+  padding:18px 10px 16px;position:relative;background:#fff;
   display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:transform .15s ease;
 }
-.winpop__price--best{border-color:var(--brand);background:var(--tint);box-shadow:0 0 0 3px rgba(31,122,99,.08)}
+.winpop__price:hover{transform:translateY(-2px)}
+.winpop__price--best{
+  border-color:var(--brand);
+  background:linear-gradient(180deg,var(--tint) 0%,#fff 100%);
+  box-shadow:0 8px 22px rgba(31,122,99,.14);
+}
 .winpop__tag{
   position:absolute;top:-10px;left:50%;transform:translateX(-50%);
   background:var(--brand);color:#fff;font-size:.62rem;font-weight:800;
   letter-spacing:.06em;padding:3px 10px;border-radius:999px;white-space:nowrap;
 }
-.winpop__plabel{font-weight:700;font-size:.9rem;margin-bottom:4px}
-.winpop__pnew{font-weight:800;font-size:1.5rem;color:var(--brand);line-height:1}
-.winpop__pold{color:var(--muted);text-decoration:line-through;font-size:.9rem}
+.winpop__plabel{font-weight:700;font-size:.92rem;margin-bottom:6px}
+/* two struck-through prices stacked: original + already-reduced */
+.winpop__polds{display:inline-flex;align-items:baseline;justify-content:center;gap:9px;margin-bottom:3px}
+.winpop__polds s{color:var(--muted);text-decoration:line-through;font-size:.86rem;opacity:.85;text-decoration-thickness:2px}
+.winpop__polds s:last-child{color:#b4353a;opacity:1;font-weight:600}
+.winpop__pnew{font-weight:800;font-size:1.65rem;color:var(--brand);line-height:1;letter-spacing:-.02em}
 .winpop__psave{
-  margin-top:4px;background:rgba(240,165,0,.16);color:#8a5a00;
-  font-weight:700;font-size:.72rem;padding:3px 8px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:4px;
+  margin-top:7px;background:rgba(240,165,0,.18);color:#8a5a00;
+  font-weight:800;font-size:.68rem;letter-spacing:.02em;padding:4px 9px;border-radius:999px;
 }
+.winpop__psave .i{width:.9em;height:.9em}
 
 /* timer */
 .winpop__timer{
