@@ -15,10 +15,20 @@
     return '<svg class="cat__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>';
   }
 
+  /* Cada categoría con su propio fondo pastel, tono de dibujo y texto de acento. */
+  var CAT_THEME = {
+    animalitos:  { bg: "var(--c-mint-soft)",     dot: "rgba(154,219,196,.55)", ink: "#2f8a6c" },
+    halloween:   { bg: "var(--c-butter-soft)",   dot: "rgba(255,217,116,.5)",  ink: "#9a7210" },
+    conjuntos:   { bg: "var(--c-pink-soft)",     dot: "rgba(245,140,148,.4)",  ink: "#c0535d" },
+    especiales:  { bg: "var(--c-lavender-soft)", dot: "rgba(185,154,232,.45)", ink: "#7a56b8" }
+  };
+
   function renderCategories() {
     var grid = $("#catGrid"); if (!grid) return;
     grid.innerHTML = MD.CATEGORIES.map(function (c) {
-      return '<button class="cat" data-cat="' + c.id + '" style="--cat-accent:' + c.accent + '">' +
+      var t = CAT_THEME[c.id] || { bg: "var(--c-pink-soft)", dot: "rgba(255,255,255,.5)", ink: "var(--c-accent-ink)" };
+      var style = "--cat-bg:" + t.bg + ";--cat-dot:" + t.dot + ";--cat-ink:" + t.ink;
+      return '<button class="cat" data-cat="' + c.id + '" style="' + style + '">' +
         catIcon() +
         '<span class="cat__name">' + esc(c.name) + '</span>' +
         '<span class="cat__blurb">' + esc(c.blurb) + '</span>' +
