@@ -14,7 +14,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Baloo+2:wght@500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -27,8 +27,6 @@
         <span></span><span></span><span></span>
       </button>
 
-      <!-- Logo provisional tipográfico. Para sustituir por imagen:
-           reemplaza el contenido de .brand por <img ...> sin tocar el resto. -->
       <a class="brand" href="#top" data-nav="home" aria-label="Mini Dreams — inicio">
         <span class="brand__mark" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="26" height="26"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
@@ -53,7 +51,6 @@
       </div>
     </div>
 
-    <!-- Barra de búsqueda desplegable -->
     <div class="searchbar" id="searchBar" hidden>
       <div class="wrap">
         <label class="sr-only" for="searchInput">Buscar productos</label>
@@ -61,7 +58,6 @@
       </div>
     </div>
 
-    <!-- Menú móvil -->
     <nav class="mobilenav" id="mobileNav" aria-label="Menú móvil" hidden>
       <a href="#top" data-nav="home">Inicio</a>
       <a href="#catalogo" data-nav="catalogo">Catálogo</a>
@@ -71,27 +67,41 @@
 
   <main>
     <!-- ===================== HERO ===================== -->
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="wrap hero__grid">
-        <div class="hero__copy">
-          <p class="eyebrow">Boutique infantil · Mini Dreams</p>
-          <h1 id="heroTitle">Pequeños outfits,<br/><span class="hl">grandes sonrisas.</span></h1>
-          <p class="lede">Prendas y disfraces llenos de ternura para acompañar las aventuras de tu bebé.</p>
-          <div class="hero__cta">
+    <section class="hero2" aria-labelledby="heroTitle">
+      <div class="wrap hero2__grid">
+        <div class="hero2__copy">
+          <p class="hero2__eyebrow">Mini Dreams Collection</p>
+          <h1 id="heroTitle" class="hero2__title">Pequeños outfits,<br/><span class="hero2__title-em">grandes sonrisas.</span></h1>
+          <p class="hero2__lede">Prendas y disfraces llenos de ternura para acompañar las aventuras de tu bebé.</p>
+          <div class="hero2__cta">
             <a class="btn btn--primary btn--lg" href="#catalogo" data-nav="catalogo">Explorar colección</a>
+            <a class="btn btn--text" href="#colecciones" data-nav="colecciones">Ver colecciones →</a>
           </div>
+          <ul class="hero2__trust">
+            <li><span class="dotmark"></span> Diseños tiernos</li>
+            <li><span class="dotmark"></span> Pensado para bebés</li>
+            <li><span class="dotmark"></span> Hecho con cariño</li>
+          </ul>
         </div>
 
-        <div class="hero__media" aria-hidden="true">
-          <span class="blob blob--1"></span>
-          <span class="blob blob--2"></span>
-          <div class="hero__frame">
-            <span class="hero__dot hero__dot--a"></span>
-            <span class="hero__dot hero__dot--b"></span>
-            <div class="hero__placeholder">
-              <svg viewBox="0 0 24 24" width="56" height="56"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-              <p>Espacio para fotografía principal</p>
-            </div>
+        <div class="hero2__media" aria-hidden="true">
+          <div class="hero2__stage">
+            <span class="hero2__blob hero2__blob--y"></span>
+            <span class="hero2__blob hero2__blob--b"></span>
+            <!-- Marco principal: reemplazar .hero2__ph por <img> de la foto protagonista. -->
+            <figure class="hero2__card hero2__card--main">
+              <div class="hero2__ph">
+                <svg viewBox="0 0 24 24" width="48" height="48"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
+                <span>Fotografía protagonista</span>
+              </div>
+            </figure>
+            <figure class="hero2__card hero2__card--small">
+              <div class="hero2__ph hero2__ph--mini">
+                <svg viewBox="0 0 24 24" width="26" height="26"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
+              </div>
+            </figure>
+            <span class="hero2__chip hero2__chip--a">Animalitos</span>
+            <span class="hero2__chip hero2__chip--b">Halloween</span>
           </div>
         </div>
       </div>
@@ -101,8 +111,8 @@
     <section class="section" id="colecciones" aria-labelledby="catsTitle">
       <div class="wrap">
         <p class="eyebrow center">Explora por temática</p>
-        <h2 class="center" id="catsTitle">Un pequeño mundo de ternura</h2>
-        <div class="cats" id="catGrid"><!-- generado por JS --></div>
+        <h2 class="center section__title" id="catsTitle">Un pequeño mundo de ternura</h2>
+        <div class="cats" id="catGrid"></div>
       </div>
     </section>
 
@@ -110,12 +120,10 @@
     <section class="section section--tint" id="catalogo" aria-labelledby="catalogTitle">
       <div class="wrap">
         <p class="eyebrow center">Nuestra colección</p>
-        <h2 class="center" id="catalogTitle">Catálogo</h2>
-        <p class="sub center">Elige una categoría para filtrar. Los productos sin datos definitivos se muestran como <b>en preparación</b>.</p>
-
-        <div class="filters" id="filters" role="tablist" aria-label="Filtrar por categoría"><!-- generado por JS --></div>
-
-        <div class="grid" id="productGrid"><!-- generado por JS --></div>
+        <h2 class="center section__title" id="catalogTitle">Descubre su próximo outfit favorito</h2>
+        <p class="sub center catalog__lede">Prendas adorables para hacer aún más especiales sus pequeños momentos.</p>
+        <div class="filters" id="filters" role="tablist" aria-label="Filtrar por categoría"></div>
+        <div class="grid" id="productGrid"></div>
         <p class="grid__empty" id="gridEmpty" hidden>No encontramos productos con ese filtro.</p>
       </div>
     </section>
@@ -169,10 +177,9 @@
     </div>
   </footer>
 
-  <!-- ===================== OVERLAY (menú/búsqueda/carrito) ===================== -->
+  <!-- ===================== CHROME COMPARTIDO (carrito / overlay / toast) ===================== -->
   <div class="overlay" id="overlay" hidden></div>
 
-  <!-- ===================== CARRITO LATERAL ===================== -->
   <aside class="cart" id="cartDrawer" aria-hidden="true" aria-label="Carrito de compras">
     <div class="cart__head">
       <h3>Tu carrito</h3>
@@ -180,34 +187,16 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <div class="cart__body" id="cartBody"><!-- generado por JS --></div>
-    <div class="cart__foot" id="cartFoot"><!-- generado por JS --></div>
+    <div class="cart__body" id="cartBody"></div>
+    <div class="cart__foot" id="cartFoot"></div>
   </aside>
 
-  <!-- ===================== MODAL DETALLE DE PRODUCTO ===================== -->
-  <div class="pdp" id="pdp" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pdpName">
-    <div class="pdp__scrim" data-pdp-close></div>
-    <div class="pdp__panel" role="document">
-      <button class="pdp__x" data-pdp-close aria-label="Cerrar">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <div class="pdp__body" id="pdpBody"><!-- generado por JS --></div>
-    </div>
-  </div>
-
-  <!-- ===================== LIGHTBOX (ampliar imagen) ===================== -->
-  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
-    <button class="lightbox__x" id="lightboxClose" aria-label="Cerrar imagen ampliada">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-    </button>
-    <img id="lightboxImg" alt="" />
-  </div>
-
-  <!-- Aviso flotante al añadir al carrito -->
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <!-- Datos primero, luego la lógica. Sin librerías externas. -->
+  <!-- Datos → núcleo → PayPal → lógica de la home -->
   <script src="data/products.js"></script>
-  <script src="main.js"></script>
+  <script src="store.js"></script>
+  <script src="paypal.js"></script>
+  <script src="catalog.js"></script>
 </body>
 </html>

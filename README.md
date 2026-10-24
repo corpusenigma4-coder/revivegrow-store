@@ -1,43 +1,66 @@
-# Mini Dreams — V1 (previsualización)
+# Mini Dreams — V2 (previsualización)
 
 Boutique infantil: ropa y disfraces adorables para bebés. Web estática (HTML + CSS + JS), sin frameworks ni build step.
 
-> **Estado:** versión de previsualización. Sin checkout real, sin trackers, sin precios inventados. Pendiente de aprobación antes de publicar.
+> **Estado:** previsualización. Checkout PayPal **desactivado** por seguridad (ver abajo), sin precios reales, sin trackers. Pendiente de aprobación antes de publicar.
 
 ## Estructura
 
 ```
-index.html        Página principal (hero, categorías, catálogo, sección emocional, footer)
-privacy.html      Política de privacidad (en preparación)
-styles.css        Estilos de marca (mobile-first, paleta Mini Dreams)
-main.js           Lógica: catálogo, filtros, búsqueda, PDP, galería, lightbox, carrito
+index.html        Home: hero, categorías, catálogo, sección emocional, footer
+producto.html     Página individual de producto (?slug=patito, ?slug=conejito, …)
+privacy.html      Privacidad (en preparación)
+styles.css        Estilos de marca (mobile-first, boutique premium)
+
 data/products.js  FUENTE ÚNICA de productos y categorías
+store.js          Núcleo compartido: helpers de producto, carrito, header/menú/búsqueda/toast
+paypal.js         Integración PayPal (recuperada de ReviveGrow, adaptada a USD + carrito)
+catalog.js        Lógica de la home (categorías, filtros, búsqueda, tarjetas)
+product.js        Lógica de la página de producto (galería, tallas, cantidad, relacionados)
+
 assets/
-  brand/logo/     Para el logo definitivo (PNG/SVG)
-  products/<slug>/ Fotos reales de cada producto (una carpeta por producto)
-  ui/             Elementos de interfaz (placeholder.svg)
-CNAME             Dominio (revivegrow.store) — MIGRACIÓN PENDIENTE a dominio Mini Dreams
+  brand/logo/     Logo definitivo (PNG/SVG)
+  products/<slug>/ Fotos reales por producto
+  ui/             placeholder.svg (imagen neutra de respaldo)
+CNAME             Dominio (revivegrow.store) — MIGRACIÓN PENDIENTE
 .nojekyll         Necesario para GitHub Pages con carpetas
 ```
 
-## Cómo añadir / completar un producto
+## Páginas individuales de producto
 
-Todo se edita en **un solo lugar**: `data/products.js`.
+Cada producto tiene su **propia URL compartible**: `producto.html?slug=<slug>`.
+Funciona al abrir directamente, al recargar y con atrás/adelante del navegador.
+En el catálogo, **la tarjeta entera** (foto, nombre y "Ver producto") enlaza a esa página.
 
-1. Copia un objeto del array `PRODUCTS` y cambia `id` y `slug` (únicos, sin espacios).
-2. Guarda las fotos en `assets/products/<slug>/` con nombres descriptivos:
-   `patito-principal.webp`, `patito-frontal.webp`, `patito-lateral.webp`, `patito-trasera.webp`, `patito-detalle.webp`.
-3. Apunta esas rutas en `images`.
-4. Cuando el precio y las tallas estén confirmados:
-   - `price`: número en **USD** (ej. `24.90`)
-   - `sizes`: array (ej. `["0-3m", "3-6m", "6-12m"]`)
-   - `stockStatus: "available"`
+## Modelo de datos (data/products.js)
 
-Mientras `stockStatus` no sea `"available"` (o falten precio/tallas), el producto se muestra como **en preparación** y **no se puede comprar**. Si una imagen falta o falla, se muestra un marcador neutro — nunca una foto de otro producto.
+Cada producto admite: nombre, categoría, etiqueta, `descShort`, `descLong`,
+`images` (main/front/back/side/details), `price` (USD), `sizes`, `availability`,
+`materials`, `care`, `sizeGuide`.
 
-## Pendiente (ver respuesta del chat para la lista completa)
+- **Tallas**: array de `{ label, stock }`. Solo las de `stock > 0` son seleccionables;
+  las agotadas se muestran tachadas. No se puede comprar sin elegir una talla válida.
+- **Comprable** solo si `availability: "in-stock"` + `price` numérico + alguna talla con stock.
+  Si no, se muestra como **en preparación** y no se puede comprar.
+- **Datos de desarrollo**: el producto marcado `__dev: true` (ahora: *patito*) usa datos
+  de PRUEBA (no reales) para poder verificar tallas/carrito/PayPal. Quitar `__dev` y poner
+  datos reales antes de vender.
 
-- Logo definitivo, fotografías reales, precios/tallas en USD.
-- Checkout real (deshabilitado en V1).
+## PayPal — estado y seguridad
+
+La integración del lado del cliente se recuperó de ReviveGrow y se adaptó a **USD + carrito
+multi-artículo con tallas y cantidades**. Está **desactivada** (`CONFIG.enabled = false` en
+`paypal.js`): en previsualización se muestra el botón de pago como "en preparación" y **no se
+inicia ninguna transacción**.
+
+Motivo: un checkout 100% client-side no puede verificar el precio del pedido de forma fiable.
+Para producción se necesita una función de servidor que cree/capture la orden validando precios
+contra el catálogo y guardando el secreto de PayPal como variable de entorno (nunca en el
+frontend). La propuesta está documentada en `paypal.js` (bloque NOTA_SERVIDOR).
+
+## Pendiente
+
+- Logo definitivo, fotos reales, precios/tallas/materiales/cuidados/guía reales en USD.
+- Backend de verificación de pedidos + activar PayPal (sandbox primero).
 - Textos legales, contacto, FAQ, envíos y devoluciones.
 - Migración de dominio a la identidad definitiva de Mini Dreams.
