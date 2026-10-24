@@ -164,11 +164,31 @@ h1, h2, h3 { margin: 0; line-height: 1.12; color: var(--c-ink); }
    CATÁLOGO PROTAGONISTA — fotos grandes 4:5, tarjetas premium
    ============================================================ */
 .catalog__lede { text-align: center; }
-.filters { display: flex; flex-wrap: nowrap; gap: 8px; justify-content: flex-start; margin: 22px -4px 26px; padding: 0 4px 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-.filters::-webkit-scrollbar { display: none; }
-.filter { flex: none; border: 1.5px solid var(--c-line); background: #fff; color: var(--c-ink-soft); border-radius: var(--radius-pill); padding: .56rem 1.05rem; font-weight: 700; font-size: .9rem; font-family: var(--font-head); transition: all .15s; min-height: 40px; }
-.filter:hover { border-color: var(--c-coral); color: var(--c-accent-ink); }
-.filter.is-active { background: var(--c-coral); border-color: var(--c-coral); color: #fff; }
+
+/* Barra de 3 secciones: Todo | Halloween | Navidad */
+.segbar {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  max-width: 460px; margin: 20px auto 24px; padding: 5px;
+  background: #fff; border-radius: var(--radius-pill); box-shadow: var(--shadow-xs);
+}
+.seg {
+  border: 0; background: transparent; color: var(--c-ink-soft);
+  border-radius: var(--radius-pill); padding: .62rem .4rem; min-height: 44px;
+  font-family: var(--font-head); font-weight: 700; font-size: .95rem;
+  transition: background .18s var(--ease), color .18s var(--ease);
+  white-space: nowrap;
+}
+.seg:hover { color: var(--c-accent-ink); }
+.seg.is-active { background: var(--c-coral); color: #fff; box-shadow: 0 4px 12px rgba(245,140,148,.35); }
+
+/* Acento sutil del catálogo según la sección activa (set por JS) */
+#catalogo { --sec-ink: var(--c-accent-ink); --sec-soft: var(--c-pink-soft); }
+
+/* Estado vacío atractivo */
+.grid.grid--empty { display: block; }
+.empty-state { text-align: center; padding: 40px 18px; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); }
+.empty-state__ico { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 50%; background: var(--sec-soft, var(--c-pink-soft)); color: var(--sec-ink, var(--c-accent-ink)); }
+.empty-state__msg { color: var(--c-ink-soft); font-size: 1rem; max-width: 34ch; margin: 0 auto 16px; }
 
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid__empty { text-align: center; color: var(--c-ink-soft); padding: 30px 0; }

@@ -1,71 +1,96 @@
 /* =============================================================
    MINI DREAMS — HOME (catalog.js)
-   Categorías, filtros, búsqueda y grid de tarjetas. Las tarjetas
-   enlazan a la página individual del producto (producto.html).
+   Catálogo en 3 secciones: Todo | Halloween | Navidad.
+   "Todo" es el filtro por defecto (muestra todos los productos).
+   Las tarjetas enlazan a la página individual del producto.
    ============================================================= */
 (function () {
   "use strict";
   var MD = window.MD; if (!MD) return;
   var $ = MD.$, $$ = MD.$$, esc = MD.esc;
 
-  var activeFilter = "all";
+  /* Secciones del catálogo. "todo" es un filtro, no una categoría. */
+  var SECTIONS = [{ id: "todo", name: "Todo" }].concat(
+    (MD.COLLECTIONS || []).map(function (c) { return { id: c.id, name: c.name }; })
+  );
+
+  var activeSection = "todo";   // seleccionada por defecto
   var searchTerm = "";
 
-  function catIcon() {
-    return '<svg class="cat__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>';
-  }
-
-  /* Cada categoría con su propio fondo pastel, tono de dibujo y texto de acento. */
-  var CAT_THEME = {
-    animalitos:  { bg: "var(--c-mint-soft)",     dot: "rgba(154,219,196,.55)", ink: "#2f8a6c" },
-    halloween:   { bg: "var(--c-butter-soft)",   dot: "rgba(255,217,116,.5)",  ink: "#9a7210" },
-    conjuntos:   { bg: "var(--c-pink-soft)",     dot: "rgba(245,140,148,.4)",  ink: "#c0535d" },
-    especiales:  { bg: "var(--c-lavender-soft)", dot: "rgba(185,154,232,.45)", ink: "#7a56b8" }
+  /* Acento visual sutil por sección (conserva la identidad premium). */
+  var SECTION_ACCENT = {
+    todo:      { ink: "var(--c-accent-ink)", soft: "var(--c-pink-soft)" },
+    halloween: { ink: "#b5600f",             soft: "var(--c-butter-soft)" },  /* naranja cálido + crema */
+    navidad:   { ink: "#9c2b33",             soft: "#F6E2E0" }                 /* rojo cálido + crema */
   };
 
-  function renderCategories() {
+  /* ----- Tarjetas de colección en la home (Halloween / Navidad) ----- */
+  var COLL_THEME = {
+    halloween: { bg: "var(--c-butter-soft)",   dot: "rgba(255,217,116,.5)",  ink: "#9a7210" },
+    navidad:   { bg: "#F6E2E0",                dot: "rgba(156,43,51,.18)",   ink: "#9c2b33" }
+  };
+
+  function collIcon(id) {
+    if (id === "navidad") {
+      // arbolito
+      return '<svg class="cat__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3l5 7h-3l4 6H7l4-6H8z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 16v5"/></svg>';
+    }
+    // calabaza / Halloween
+    return '<svg class="cat__ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 6c4 0 7 3 7 7s-3 5-7 5-7-2-7-5 3-7 7-7z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 6V3"/></svg>';
+  }
+
+  function renderCollectionCards() {
     var grid = $("#catGrid"); if (!grid) return;
-    grid.innerHTML = MD.CATEGORIES.map(function (c) {
-      var t = CAT_THEME[c.id] || { bg: "var(--c-pink-soft)", dot: "rgba(255,255,255,.5)", ink: "var(--c-accent-ink)" };
+    grid.innerHTML = (MD.COLLECTIONS || []).map(function (c) {
+      var t = COLL_THEME[c.id] || { bg: "var(--c-pink-soft)", dot: "rgba(255,255,255,.5)", ink: "var(--c-accent-ink)" };
       var style = "--cat-bg:" + t.bg + ";--cat-dot:" + t.dot + ";--cat-ink:" + t.ink;
-      return '<button class="cat" data-cat="' + c.id + '" style="' + style + '">' +
-        catIcon() +
+      var count = MD.productsInCollection(c.id).length;
+      var meta = count > 0 ? (count + (count === 1 ? " producto" : " productos")) : "Próximamente";
+      return '<button class="cat" data-section="' + c.id + '" style="' + style + '">' +
+        collIcon(c.id) +
         '<span class="cat__name">' + esc(c.name) + '</span>' +
         '<span class="cat__blurb">' + esc(c.blurb) + '</span>' +
-        '<span class="cat__go">Ver <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '<span class="cat__go">' + esc(meta) + ' <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
       '</button>';
     }).join("");
     $$(".cat", grid).forEach(function (b) {
-      b.addEventListener("click", function () {
-        applyFilter(b.getAttribute("data-cat"));
-        var c = $("#catalogo"); if (c) c.scrollIntoView({ behavior: "smooth" });
-      });
+      b.addEventListener("click", function () { goToSection(b.getAttribute("data-section")); });
     });
   }
 
-  function renderFilters() {
+  /* ----- Barra de 3 secciones (Todo | Halloween | Navidad) ----- */
+  function renderSectionBar() {
     var wrap = $("#filters"); if (!wrap) return;
-    var items = [{ id: "all", name: "Todos" }].concat(MD.CATEGORIES.map(function (c) { return { id: c.id, name: c.name }; }));
-    wrap.innerHTML = items.map(function (f) {
-      return '<button class="filter' + (f.id === activeFilter ? " is-active" : "") + '" role="tab" aria-selected="' + (f.id === activeFilter) + '" data-filter="' + f.id + '">' + esc(f.name) + '</button>';
+    wrap.innerHTML = SECTIONS.map(function (s) {
+      var on = s.id === activeSection;
+      return '<button class="seg' + (on ? " is-active" : "") + '" role="tab" aria-selected="' + on + '" data-section="' + s.id + '">' + esc(s.name) + '</button>';
     }).join("");
-    $$(".filter", wrap).forEach(function (b) { b.addEventListener("click", function () { applyFilter(b.getAttribute("data-filter")); }); });
+    $$(".seg", wrap).forEach(function (b) { b.addEventListener("click", function () { setSection(b.getAttribute("data-section")); }); });
   }
 
-  function applyFilter(id) {
-    activeFilter = id;
-    $$(".filter").forEach(function (b) {
-      var on = b.getAttribute("data-filter") === id;
+  function setSection(id) {
+    activeSection = id;
+    $$(".seg").forEach(function (b) {
+      var on = b.getAttribute("data-section") === id;
       b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on));
     });
+    // Acento sutil del catálogo según sección
+    var a = SECTION_ACCENT[id] || SECTION_ACCENT.todo;
+    var sec = $("#catalogo");
+    if (sec) { sec.style.setProperty("--sec-ink", a.ink); sec.style.setProperty("--sec-soft", a.soft); }
     renderProducts();
+  }
+
+  function goToSection(id) {
+    setSection(id);
+    var c = $("#catalogo"); if (c) c.scrollIntoView({ behavior: "smooth" });
   }
 
   function visible() {
     return MD.PRODUCTS.filter(function (p) {
-      var okCat = activeFilter === "all" || p.category === activeFilter;
-      var hay = (p.name + " " + (p.descShort || "") + " " + p.category).toLowerCase();
-      return okCat && (!searchTerm || hay.indexOf(searchTerm) !== -1);
+      var okSec = MD.productInCollection(p, activeSection);
+      var hay = (p.name + " " + (p.descShort || "") + " " + MD.catsOf(p).join(" ")).toLowerCase();
+      return okSec && (!searchTerm || hay.indexOf(searchTerm) !== -1);
     });
   }
 
@@ -77,7 +102,6 @@
     var price = buyable
       ? '<span class="card__price">' + MD.fmtPrice(p) + '</span>'
       : '<span class="card__price card__price--pending">Precio en preparación</span>';
-    // La tarjeta ENTERA es un enlace a la página del producto.
     return '<a class="card" href="' + href + '" aria-label="Ver ' + esc(p.name) + '">' +
       '<span class="card__media">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
         '<span class="card__shade"></span>' +
@@ -90,11 +114,31 @@
     '</a>';
   }
 
+  /* Estado vacío atractivo, con mensaje propio de cada sección. */
+  function emptyState() {
+    var coll = MD.getCollection(activeSection);
+    var msg;
+    if (searchTerm) msg = "No encontramos productos para tu búsqueda en esta sección.";
+    else if (coll && coll.emptyMsg) msg = coll.emptyMsg;
+    else msg = "Pronto habrá productos en esta sección.";
+    return '<div class="empty-state">' +
+      '<span class="empty-state__ico"><svg viewBox="0 0 24 24" width="40" height="40"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg></span>' +
+      '<p class="empty-state__msg">' + esc(msg) + '</p>' +
+      '<button class="btn btn--ghost" id="emptyAll">Ver todo el catálogo</button>' +
+    '</div>';
+  }
+
   function renderProducts() {
-    var grid = $("#productGrid"), empty = $("#gridEmpty"); if (!grid) return;
+    var grid = $("#productGrid"); if (!grid) return;
     var list = visible();
-    if (!list.length) { grid.innerHTML = ""; if (empty) empty.hidden = false; return; }
-    if (empty) empty.hidden = true;
+    if (!list.length) {
+      grid.classList.add("grid--empty");
+      grid.innerHTML = emptyState();
+      var allBtn = $("#emptyAll");
+      if (allBtn) allBtn.addEventListener("click", function () { if (searchTerm && $("#searchInput")) { $("#searchInput").value = ""; searchTerm = ""; } setSection("todo"); });
+      return;
+    }
+    grid.classList.remove("grid--empty");
     grid.innerHTML = list.map(cardFor).join("");
   }
 
@@ -102,14 +146,12 @@
 
   function init() {
     MD.initChrome({ onSearch: function (term) { searchTerm = term; renderProducts(); } });
-    renderCategories();
-    renderFilters();
-    renderProducts();
+    renderCollectionCards();
+    renderSectionBar();
+    setSection("todo");   // Todo seleccionado por defecto
 
     $$('a[href^="#"]').forEach(function (a) {
-      a.addEventListener("click", function () {
-        var nav = a.getAttribute("data-nav"); if (nav) markNav(nav);
-      });
+      a.addEventListener("click", function () { var nav = a.getAttribute("data-nav"); if (nav) markNav(nav); });
     });
 
     var map = [{ id: "top", nav: "home" }, { id: "colecciones", nav: "colecciones" }, { id: "catalogo", nav: "catalogo" }]

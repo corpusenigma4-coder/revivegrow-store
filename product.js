@@ -40,7 +40,8 @@
     var p = state.product, root = $("#productRoot");
     var buyable = MD.isBuyable(p);
     state.images = galleryImages(p);
-    var cat = MD.getCategory(p.category);
+    var firstCat = MD.catsOf(p)[0];
+    var cat = firstCat ? MD.getCollection(firstCat) : null;
 
     document.title = p.name + " — Mini Dreams";
 
@@ -123,8 +124,14 @@
   }
 
   function relatedBlock(p) {
-    var rel = MD.PRODUCTS.filter(function (r) { return r.id !== p.id && r.category === p.category; });
-    if (rel.length < 3) {
+    var myCats = MD.catsOf(p);
+    // Primero: productos que comparten alguna colección.
+    var rel = MD.PRODUCTS.filter(function (r) {
+      if (r.id === p.id) return false;
+      return MD.catsOf(r).some(function (c) { return myCats.indexOf(c) !== -1; });
+    });
+    // Rellenar hasta 4 con el resto del catálogo.
+    if (rel.length < 4) {
       MD.PRODUCTS.forEach(function (r) { if (r.id !== p.id && rel.indexOf(r) === -1) rel.push(r); });
     }
     rel = rel.slice(0, 4);

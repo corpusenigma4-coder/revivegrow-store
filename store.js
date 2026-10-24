@@ -7,8 +7,8 @@
 (function () {
   "use strict";
 
-  var DATA = window.MINI_DREAMS_DATA || { CATEGORIES: [], PRODUCTS: [] };
-  var CATEGORIES = DATA.CATEGORIES;
+  var DATA = window.MINI_DREAMS_DATA || { COLLECTIONS: [], PRODUCTS: [] };
+  var COLLECTIONS = DATA.COLLECTIONS || [];
   var PRODUCTS = DATA.PRODUCTS;
   var PLACEHOLDER = "assets/ui/placeholder.svg";
   var CART_KEY = "miniDreams.cart.v2";
@@ -20,7 +20,11 @@
   /* ---------- Helpers de producto ---------- */
   function getProduct(id) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i]; return null; }
   function getBySlug(slug) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].slug === slug) return PRODUCTS[i]; return null; }
-  function getCategory(id) { for (var i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].id === id) return CATEGORIES[i]; return null; }
+  function getCollection(id) { for (var i = 0; i < COLLECTIONS.length; i++) if (COLLECTIONS[i].id === id) return COLLECTIONS[i]; return null; }
+  function catsOf(p) { return Array.isArray(p && p.categories) ? p.categories : []; }
+  /* "todo" (o vacío) => todos los productos; cualquier otro id => filtra por colección. */
+  function productInCollection(p, id) { return !id || id === "todo" || catsOf(p).indexOf(id) !== -1; }
+  function productsInCollection(id) { return PRODUCTS.filter(function (p) { return productInCollection(p, id); }); }
 
   function inStockSizes(p) { return (p.sizes || []).filter(function (s) { return s && s.stock > 0; }); }
   function hasAnyStock(p) { return inStockSizes(p).length > 0; }
@@ -230,9 +234,11 @@
 
   /* ---------- API pública ---------- */
   window.MD = {
-    CATEGORIES: CATEGORIES, PRODUCTS: PRODUCTS, PLACEHOLDER: PLACEHOLDER,
+    COLLECTIONS: COLLECTIONS, PRODUCTS: PRODUCTS, PLACEHOLDER: PLACEHOLDER,
     $: $, $$: $$, esc: esc, imgTag: imgTag,
-    getProduct: getProduct, getBySlug: getBySlug, getCategory: getCategory,
+    getProduct: getProduct, getBySlug: getBySlug,
+    getCollection: getCollection, catsOf: catsOf,
+    productInCollection: productInCollection, productsInCollection: productsInCollection,
     inStockSizes: inStockSizes, hasAnyStock: hasAnyStock, isBuyable: isBuyable, sizeInStock: sizeInStock,
     fmtPrice: fmtPrice, availabilityLabel: availabilityLabel, productUrl: productUrl,
     addToCart: addToCart, removeLine: removeLine, changeQty: changeQty, totals: totals,
