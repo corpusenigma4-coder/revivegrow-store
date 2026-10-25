@@ -1,32 +1,50 @@
 /* =============================================================
-   MINI DREAMS — FUENTE ÚNICA DE DATOS (V2)
+   MINI DREAMS — FUENTE ÚNICA DE DATOS
    -------------------------------------------------------------
    ÚNICA fuente de verdad: catálogo, página de producto y carrito
    leen de aquí. No dupliques nombres, precios ni rutas de imagen.
 
+   ---- Secciones del catálogo ----
+   El catálogo se organiza en tres secciones:
+     • "todo"       -> FILTRO que muestra TODOS los productos.
+                       NO es una categoría que se asigne a productos.
+     • "halloween"  -> colección de Halloween.
+     • "navidad"    -> colección navideña (puede estar vacía).
+   Un producto declara a qué colecciones pertenece en "categories"
+   (un arreglo). Puede pertenecer a varias sin duplicar el registro.
+   Si "categories" está vacío, el producto solo aparece en "Todo".
+
    ---- Añadir / completar un producto ----
    1. Copia un objeto de PRODUCTS y cambia "id" y "slug" (únicos).
-   2. Guarda fotos en assets/products/<slug>/ con nombres
-      descriptivos y apunta las rutas en "images".
-   3. Cuando el precio y las tallas estén CONFIRMADOS:
+   2. Asigna "categories" (p.ej. ["halloween"] o ["navidad"] o ambas).
+   3. Guarda fotos en assets/products/<slug>/ y apunta rutas en "images".
+   4. Cuando el precio y las tallas estén CONFIRMADOS:
         - price: número en USD
         - sizes: array de objetos { label, stock }  (stock>0 => comprable)
         - availability: "in-stock"
-      El producto solo es comprable si price es número y hay al
-      menos una talla con stock. Si no, se muestra "en preparación".
+      El producto solo es comprable si price es número y hay al menos
+      una talla con stock. Si no, se muestra "en preparación".
 
    ---- Datos de desarrollo ----
    Un producto marcado con  __dev: true  usa datos de PRUEBA (no
-   reales) para poder verificar tallas / carrito / PayPal. Están
-   claramente identificados y NO deben confundirse con stock real.
-   Quitar __dev y poner datos reales antes de vender.
+   reales) para verificar tallas / carrito / PayPal. Quitar __dev y
+   poner datos reales antes de vender.
    ============================================================= */
 
-var CATEGORIES = [
-  { id: "animalitos",  name: "Animalitos adorables",     blurb: "Orejitas, colitas y mucha ternura.", accent: "var(--c-blue)" },
-  { id: "halloween",   name: "Disfraces de Halloween",   blurb: "Para la noche más dulce del año.",   accent: "var(--c-yellow)" },
-  { id: "conjuntos",   name: "Conjuntos y pijamas",      blurb: "Comodidad suave para cada día.",     accent: "var(--c-pink)" },
-  { id: "especiales",  name: "Colecciones especiales",   blurb: "Piezas únicas para momentos únicos.", accent: "var(--c-blue)" }
+/* Colecciones temáticas reales (sin contar el filtro "Todo"). */
+var COLLECTIONS = [
+  {
+    id: "halloween",
+    name: "Halloween",
+    blurb: "Disfraces llenos de ternura para la noche más dulce.",
+    emptyMsg: "Pronto llegarán nuevos disfraces de Halloween."
+  },
+  {
+    id: "navidad",
+    name: "Navidad",
+    blurb: "Prendas cálidas y adorables para las fiestas.",
+    emptyMsg: "La colección de Navidad está en preparación. ¡Muy pronto!"
+  }
 ];
 
 /* Tallas de ejemplo para el producto de desarrollo. NO son medidas
@@ -43,7 +61,7 @@ var PRODUCTS = [
     id: "disfraz-espantapajaros",
     slug: "espantapajaros",
     name: "Disfraz Espantapájaros",
-    category: "halloween",
+    categories: ["halloween"],
     tag: "Colección especial",
     price: null,
     currency: "USD",
@@ -61,7 +79,7 @@ var PRODUCTS = [
     id: "disfraz-patito",
     slug: "patito",
     name: "Disfraz Patito",
-    category: "animalitos",
+    categories: [],               /* solo aparece en "Todo" por ahora */
     tag: "Vista previa de desarrollo",
     /* ---- DATOS DE DESARROLLO (no reales) para probar el flujo ---- */
     __dev: true,
@@ -81,7 +99,7 @@ var PRODUCTS = [
     id: "disfraz-calabaza",
     slug: "calabaza",
     name: "Disfraz Calabaza",
-    category: "halloween",
+    categories: ["halloween"],
     tag: "Colección especial",
     price: null,
     currency: "USD",
@@ -99,7 +117,7 @@ var PRODUCTS = [
     id: "disfraz-conejito",
     slug: "conejito",
     name: "Disfraz Conejito",
-    category: "animalitos",
+    categories: [],               /* solo aparece en "Todo" por ahora */
     tag: "Nuevo",
     price: null,
     currency: "USD",
@@ -115,4 +133,4 @@ var PRODUCTS = [
   }
 ];
 
-window.MINI_DREAMS_DATA = { CATEGORIES: CATEGORIES, PRODUCTS: PRODUCTS };
+window.MINI_DREAMS_DATA = { COLLECTIONS: COLLECTIONS, PRODUCTS: PRODUCTS };
