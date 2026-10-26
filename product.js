@@ -57,13 +57,14 @@
           MD.imgTag(state.images[0], p.name, "gallery__img") +
           '<button class="gallery__zoom" id="galZoom" aria-label="Ampliar imagen"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.2-3.2M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>' +
           (buyable ? "" : '<span class="gallery__badge">' + esc(MD.availabilityLabel(p)) + '</span>') +
+          (p.previewArt ? '<span class="gallery__concept">Ilustración conceptual · no es una foto real</span>' : "") +
         '</div>' +
         (state.images.length > 1 ? '<div class="gallery__thumbs">' + thumbs + '</div>' : '') +
       '</div>';
 
     /* --- Precio / disponibilidad --- */
     var priceHtml = buyable
-      ? '<p class="pp-price">' + MD.fmtPrice(p) + '</p>'
+      ? '<p class="pp-price">' + MD.fmtPrice(p) + (p.__dev ? ' <small>precio de prueba</small>' : '') + '</p>'
       : '<p class="pp-price pp-price--pending">Precio en preparación</p>';
     var availHtml = '<p class="pp-avail pp-avail--' + (buyable ? "ok" : "pending") + '">' +
       '<span class="dot"></span>' + esc(MD.availabilityLabel(p)) + '</p>';
