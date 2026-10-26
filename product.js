@@ -170,7 +170,7 @@
         if (mainImg) { if (state.product.gallerySprite) {mainImg.style.objectPosition=(25*i)+"% center";mainImg.alt=state.product.name+" — "+state.product.gallerySprite.labels[i];} else mainImg.src=state.images[i] || MD.PLACEHOLDER; }
         $$(".gallery__thumb").forEach(function (x) { x.classList.remove("is-active"); });
         t.classList.add("is-active");
-        $(".gallery__thumb").forEach(function(x){x.setAttribute("aria-pressed",String(x===t));});
+        $$(".gallery__thumb").forEach(function(x){x.setAttribute("aria-pressed",String(x===t));});
       });
     });
     function zoom() { if (mainImg) openLightbox(mainImg.src, state.product.name, state.product.gallerySprite ? state.activeImg : null); }
