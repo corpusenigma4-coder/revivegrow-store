@@ -416,3 +416,5 @@ body[data-view="product"] .gallery__main{background:#f6ede2}
  .cart__body{padding-inline:18px}
  .cart__foot{padding-inline:18px}
 }
+/* Menú móvil siempre por encima del fondo oscurecido; carrito conserva prioridad. */
+.header:has(.mobilenav:not([hidden])){z-index:75}
