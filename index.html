@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-view="home" id="top">
+<div class="topline">✦ &nbsp; Una boutique de pequeños sueños &nbsp; ✦</div>
 
   <!-- ===================== HEADER ===================== -->
   <header class="header" id="siteHeader">
@@ -70,11 +71,11 @@
     <section class="hero2" aria-labelledby="heroTitle">
       <div class="wrap hero2__grid">
         <div class="hero2__copy">
-          <p class="hero2__eyebrow">Mini Dreams Collection</p>
-          <h1 id="heroTitle" class="hero2__title">Pequeños outfits,<br/><span class="hero2__title-em">grandes sonrisas.</span></h1>
-          <p class="hero2__lede">Prendas y disfraces llenos de ternura para acompañar las aventuras de tu bebé.</p>
+          <p class="hero2__eyebrow">La boutique de sus pequeños sueños</p>
+          <h1 id="heroTitle" class="hero2__title">Pequeños sueños.<br/><span class="hero2__title-em">Momentos enormes.</span></h1>
+          <p class="hero2__lede">Disfraces y looks irresistibles para esos recuerdos que querrás guardar para siempre.</p>
           <div class="hero2__cta">
-            <a class="btn btn--primary btn--lg" href="#catalogo" data-nav="catalogo">Explorar colección</a>
+            <a class="btn btn--primary btn--lg" href="#catalogo" data-nav="catalogo">Descubrir el catálogo</a>
             <a class="btn btn--text" href="#colecciones" data-nav="colecciones">Ver colecciones →</a>
           </div>
           <ul class="hero2__trust">
@@ -89,17 +90,8 @@
             <span class="hero2__blob hero2__blob--y"></span>
             <span class="hero2__blob hero2__blob--b"></span>
             <!-- Marco principal: reemplazar .hero2__ph por <img> de la foto protagonista. -->
-            <figure class="hero2__card hero2__card--main">
-              <div class="hero2__ph">
-                <svg viewBox="0 0 24 24" width="48" height="48"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-                <span>Fotografía protagonista</span>
-              </div>
-            </figure>
-            <figure class="hero2__card hero2__card--small">
-              <div class="hero2__ph hero2__ph--mini">
-                <svg viewBox="0 0 24 24" width="26" height="26"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-              </div>
-            </figure>
+            <figure class="hero2__card hero2__card--main"><img src="assets/ui/concept-patito.svg" alt="" width="800" height="1000" fetchpriority="high"/><figcaption class="hero2__label">Patito encantador ✦</figcaption></figure>
+            <figure class="hero2__card hero2__card--small"><img src="assets/ui/concept-conejito.svg" alt="" width="800" height="1000"/><figcaption class="hero2__label hero2__label--mini">Conejito</figcaption></figure>
             <span class="hero2__chip hero2__chip--a">Halloween</span>
             <span class="hero2__chip hero2__chip--b">Navidad</span>
           </div>
@@ -107,34 +99,39 @@
       </div>
     </section>
 
-    <!-- ===================== COLECCIONES ===================== -->
-    <section class="section" id="colecciones" aria-labelledby="catsTitle">
+    <!-- El catálogo es la sección principal; Todo por defecto -->
+    <section class="section section--tint catalog-section" id="catalogo" aria-labelledby="catalogTitle">
+      <div class="wrap"><div class="catalog-head"><div>
+        <p class="eyebrow">Diseños que enamoran</p>
+        <h2 class="section__title" id="catalogTitle">El armario de sus sueños</h2>
+        <p class="sub catalog__lede">Un look para cada pequeña aventura. Descubre todos los diseños o elige tu colección favorita.</p>
+      </div><span class="catalog-head__symbol" aria-hidden="true">✳</span></div>
+      <div class="segbar" id="filters" role="tablist" aria-label="Secciones del catálogo"></div>
+      <p class="catalog-count" id="catalogCount" role="status" aria-live="polite"></p>
+      <div class="grid" id="productGrid"></div>
+      <p class="concept-note">✦ Las imágenes son ilustraciones conceptuales. Las fotos, tallas y precios reales se confirmarán antes de iniciar las ventas.</p>
+      </div>
+    </section>
+    <section class="section collections-section" id="colecciones" aria-labelledby="catsTitle">
       <div class="wrap">
-        <p class="eyebrow center">Nuestras colecciones</p>
-        <h2 class="center section__title" id="catsTitle">Un pequeño mundo de ternura</h2>
+        <p class="eyebrow center">Un mundo para explorar</p>
+        <h2 class="center section__title" id="catsTitle">Cada temporada tiene su magia</h2>
+        <p class="sub center">De la noche más dulce a las fiestas más especiales.</p>
         <div class="cats" id="catGrid"></div>
       </div>
     </section>
-
-    <!-- ===================== CATÁLOGO (3 secciones) ===================== -->
-    <section class="section section--tint" id="catalogo" aria-labelledby="catalogTitle">
-      <div class="wrap">
-        <p class="eyebrow center">Nuestra colección</p>
-        <h2 class="center section__title" id="catalogTitle">Descubre su próximo outfit favorito</h2>
-        <p class="sub center catalog__lede">Prendas adorables para hacer aún más especiales sus pequeños momentos.</p>
-        <div class="segbar" id="filters" role="tablist" aria-label="Secciones del catálogo"></div>
-        <div class="grid" id="productGrid"></div>
+    <section class="story-strip" aria-label="Descubre Mini Dreams">
+      <div class="wrap story-strip__grid">
+        <div><span aria-hidden="true">✿</span><strong>Explora</strong><p>Descubre disfraces con personalidad.</p></div>
+        <div><span aria-hidden="true">♡</span><strong>Enamórate</strong><p>Elige el look que más te guste.</p></div>
+        <div><span aria-hidden="true">✧</span><strong>Guárdalo</strong><p>Comparte el enlace de tu favorito.</p></div>
       </div>
     </section>
-
     <!-- ===================== SECCIÓN EMOCIONAL ===================== -->
     <section class="emotional" aria-labelledby="emoTitle">
       <div class="wrap emotional__inner">
         <div class="emotional__media" aria-hidden="true">
-          <div class="emotional__placeholder">
-            <svg viewBox="0 0 24 24" width="44" height="44"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-            <p>Composición fotográfica (pendiente)</p>
-          </div>
+          <div class="emotional__look"><img src="assets/ui/concept-conejito.svg" alt="Ilustración de un disfraz de conejito" loading="lazy"/><span>La magia está en los detalles ✦</span></div>
         </div>
         <div class="emotional__copy">
           <h2 id="emoTitle">Sus momentos más pequeños se convierten en nuestros recuerdos favoritos.</h2>

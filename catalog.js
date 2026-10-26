@@ -100,11 +100,12 @@
     var tag = p.tag ? '<span class="card__tag">' + esc(p.tag) + '</span>' : "";
     var badge = buyable ? "" : '<span class="card__badge">' + esc(MD.availabilityLabel(p)) + '</span>';
     var price = buyable
-      ? '<span class="card__price">' + MD.fmtPrice(p) + '</span>'
+      ? '<span class="card__price">' + MD.fmtPrice(p) + (p.__dev ? ' <small>de prueba</small>' : '') + '</span>'
       : '<span class="card__price card__price--pending">Precio en preparación</span>';
     return '<a class="card" href="' + href + '" aria-label="Ver ' + esc(p.name) + '">' +
       '<span class="card__media">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
         '<span class="card__shade"></span>' +
+        (p.previewArt ? '<span class="card__concept">Ilustración conceptual</span>' : '') +
       '</span>' +
       '<span class="card__body">' +
         '<span class="card__name">' + esc(p.name) + '</span>' +
@@ -131,6 +132,8 @@
   function renderProducts() {
     var grid = $("#productGrid"); if (!grid) return;
     var list = visible();
+    var count = $("#catalogCount");
+    if (count) count.textContent = list.length + (list.length === 1 ? " diseño" : " diseños") + " en esta selección";
     if (!list.length) {
       grid.classList.add("grid--empty");
       grid.innerHTML = emptyState();
@@ -148,7 +151,11 @@
     MD.initChrome({ onSearch: function (term) { searchTerm = term; renderProducts(); } });
     renderCollectionCards();
     renderSectionBar();
-    setSection("todo");   // Todo seleccionado por defecto
+    var params = new URLSearchParams(window.location.search);
+    var wanted = params.get("coleccion");
+    setSection(SECTIONS.some(function (section) { return section.id === wanted; }) ? wanted : "todo");
+    var q = params.get("q");
+    if (q) { searchTerm = q.trim().toLowerCase(); if ($("#searchInput")) $("#searchInput").value = q; renderProducts(); }
 
     $$('a[href^="#"]').forEach(function (a) {
       a.addEventListener("click", function () { var nav = a.getAttribute("data-nav"); if (nav) markNav(nav); });
