@@ -1,198 +1,181 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini Dreams — Ropa y disfraces adorables para bebés</title>
-  <meta name="description" content="Mini Dreams es una boutique infantil con ropa y disfraces llenos de ternura para bebés: animalitos, Halloween, conjuntos y colecciones especiales." />
-  <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" href="assets/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#FFF9F5" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Baloo+2:wght@500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#FBF8F2">
+  <meta name="description" content="Mini Dreams — disfraces y ropa para bebés. Explora nuestras colecciones de animalitos, Halloween y Navidad.">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Mini Dreams | Pequeños looks, grandes recuerdos</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400,30,1;9..144,500,30,1;9..144,600,30,1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body data-view="home" id="top">
-<div class="topline">✦ &nbsp; Una boutique de pequeños sueños &nbsp; ✦</div>
+  <a href="#catalogo" class="skip-link">Ir al catálogo</a>
+  <div class="announcement"><span class="announcement__asterisk">✳</span> Un pequeño universo de looks adorables <span class="announcement__asterisk">✳</span></div>
 
-  <!-- ===================== HEADER ===================== -->
   <header class="header" id="siteHeader">
     <div class="wrap header__inner">
-      <button class="header__burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
+      <button class="header__burger" id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
         <span></span><span></span><span></span>
       </button>
-
-      <a class="brand" href="#top" data-nav="home" aria-label="Mini Dreams — inicio">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-        </span>
-        <span class="brand__text">Mini&nbsp;Dreams</span>
+      <a class="brand" href="#top" data-nav="home" aria-label="Mini Dreams, ir al inicio">
+        <span class="brand__text">mini<span class="brand__word">dreams</span><span class="brand__spark">✳</span></span>
       </a>
-
-      <nav class="nav" aria-label="Principal">
+      <nav class="nav" aria-label="Navegación principal">
         <a href="#top" data-nav="home">Inicio</a>
-        <a href="#catalogo" data-nav="catalogo">Catálogo</a>
+        <a href="#catalogo" data-nav="catalogo">Todos los looks</a>
         <a href="#colecciones" data-nav="colecciones">Colecciones</a>
       </nav>
-
       <div class="header__actions">
-        <button class="iconbtn" id="searchToggle" aria-label="Buscar productos" aria-expanded="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.2-3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <button class="iconbtn" id="searchToggle" type="button" aria-label="Buscar productos" aria-expanded="false" aria-controls="searchBar">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
-        <button class="iconbtn iconbtn--cart" id="cartToggle" aria-label="Abrir carrito">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h2l1.6 10.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L21 8H7"/><circle cx="10" cy="20" r="1.4" fill="currentColor"/><circle cx="18" cy="20" r="1.4" fill="currentColor"/></svg>
+        <button class="iconbtn iconbtn--cart" id="cartToggle" type="button" aria-label="Abrir carrito">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 8h15l-1.2 12H5.7L4.5 8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           <span class="cart-count" id="cartCount" aria-live="polite" hidden>0</span>
         </button>
       </div>
     </div>
-
-    <div class="searchbar" id="searchBar" hidden>
-      <div class="wrap">
-        <label class="sr-only" for="searchInput">Buscar productos</label>
-        <input type="search" id="searchInput" placeholder="Buscar: patito, calabaza, conejito…" autocomplete="off" />
-      </div>
-    </div>
-
+    <div class="searchbar" id="searchBar" hidden><div class="wrap searchbar__inner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.8"/></svg>
+      <label class="sr-only" for="searchInput">Buscar disfraces</label>
+      <input id="searchInput" type="search" autocomplete="off" placeholder="Busca tu próximo look favorito...">
+      <a href="#catalogo" class="searchbar__go">Ver resultados ↗</a>
+    </div></div>
     <nav class="mobilenav" id="mobileNav" aria-label="Menú móvil" hidden>
-      <a href="#top" data-nav="home">Inicio</a>
-      <a href="#catalogo" data-nav="catalogo">Catálogo</a>
-      <a href="#colecciones" data-nav="colecciones">Colecciones</a>
+      <a href="#top" data-nav="home">Inicio <span>01</span></a>
+      <a href="#catalogo" data-nav="catalogo">Todos los looks <span>02</span></a>
+      <a href="#colecciones" data-nav="colecciones">Colecciones <span>03</span></a>
     </nav>
   </header>
 
   <main>
-    <!-- ===================== HERO ===================== -->
-    <section class="hero2" aria-labelledby="heroTitle">
-      <div class="wrap hero2__grid">
-        <div class="hero2__copy">
-          <p class="hero2__eyebrow">La boutique de sus pequeños sueños</p>
-          <h1 id="heroTitle" class="hero2__title">Pequeños sueños.<br/><span class="hero2__title-em">Momentos enormes.</span></h1>
-          <p class="hero2__lede">Disfraces y looks irresistibles para esos recuerdos que querrás guardar para siempre.</p>
-          <div class="hero2__cta">
-            <a class="btn btn--primary btn--lg" href="#catalogo" data-nav="catalogo">Descubrir el catálogo</a>
-            <a class="btn btn--text" href="#colecciones" data-nav="colecciones">Ver colecciones →</a>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <div class="eyebrow eyebrow--hero"><span class="eyebrow__line"></span> WELCOME TO MINI DREAMS</div>
+          <h1 id="heroTitle">Pequeños<br><em>looks.</em><br>Grandes<br><span class="hero__last">historias<span class="hero__period">.</span></span></h1>
+          <p class="hero__lead">Disfraces y conjuntos para convertir los momentos más simples en recuerdos inolvidables.</p>
+          <div class="hero__buttons">
+            <a class="btn btn--dark" href="#catalogo">Explorar colección <span aria-hidden="true">↗</span></a>
+            <a class="hero__inline" href="#colecciones">Descubrir colecciones <span aria-hidden="true">→</span></a>
           </div>
-          <ul class="hero2__trust">
-            <li><span class="dotmark"></span> Diseños tiernos</li>
-            <li><span class="dotmark"></span> Pensado para bebés</li>
-            <li><span class="dotmark"></span> Hecho con cariño</li>
-          </ul>
+          <div class="hero__detail"><span class="hero__detail-mark">✳</span> Hecho para imaginar, jugar y sonreír.</div>
         </div>
+        <div class="hero__visual" aria-label="Presentación ilustrada de disfraces infantiles">
+          <div class="hero__backdrop"></div>
+          <span class="hero__star hero__star--a" aria-hidden="true">✳</span>
+          <span class="hero__star hero__star--b" aria-hidden="true">✦</span>
+          <div class="hero__main-photo"><img src="assets/ui/concept-conejito.svg" width="800" height="1000" fetchpriority="high" alt="Ilustración conceptual de un disfraz de conejito">
+            <span class="hero__photo-tag">Hello, cutie!</span>
+          </div>
+          <div class="hero__mini-photo"><img src="assets/ui/concept-patito.svg" width="800" height="1000" alt="Ilustración conceptual de un disfraz de patito">
+            <span class="hero__mini-caption">little sunshine ☼</span>
+          </div>
+          <div class="hero__stamp" aria-hidden="true"><span>MADE FOR</span><b>♥</b><span>LITTLE JOYS</span></div>
+          <div class="hero__visual-foot">Mini Dreams <span>—</span> Edición conceptual</div>
+        </div>
+      </div>
+      <div class="hero__bottomline wrap"><span>01 / THE LITTLE WARDROBE</span><span>Descubre nuestro universo <span aria-hidden="true">↓</span></span></div>
+    </section>
 
-        <div class="hero2__media" aria-hidden="true">
-          <div class="hero2__stage">
-            <span class="hero2__blob hero2__blob--y"></span>
-            <span class="hero2__blob hero2__blob--b"></span>
-            <!-- Marco principal: reemplazar .hero2__ph por <img> de la foto protagonista. -->
-            <figure class="hero2__card hero2__card--main"><img src="assets/ui/concept-patito.svg" alt="" width="800" height="1000" fetchpriority="high"/><figcaption class="hero2__label">Patito encantador ✦</figcaption></figure>
-            <figure class="hero2__card hero2__card--small"><img src="assets/ui/concept-conejito.svg" alt="" width="800" height="1000"/><figcaption class="hero2__label hero2__label--mini">Conejito</figcaption></figure>
-            <span class="hero2__chip hero2__chip--a">Halloween</span>
-            <span class="hero2__chip hero2__chip--b">Navidad</span>
-          </div>
-        </div>
+    <section class="benefits" aria-label="Nuestra inspiración">
+      <div class="wrap benefits__inner">
+        <div><span class="benefits__symbol">♡</span><span>Momentos para recordar</span></div>
+        <div><span class="benefits__symbol">✿</span><span>Looks con personalidad</span></div>
+        <div><span class="benefits__symbol">✳</span><span>Pequeñas grandes aventuras</span></div>
       </div>
     </section>
 
-    <!-- El catálogo es la sección principal; Todo por defecto -->
-    <section class="section section--tint catalog-section" id="catalogo" aria-labelledby="catalogTitle">
-      <div class="wrap"><div class="catalog-head"><div>
-        <p class="eyebrow">Diseños que enamoran</p>
-        <h2 class="section__title" id="catalogTitle">El armario de sus sueños</h2>
-        <p class="sub catalog__lede">Un look para cada pequeña aventura. Descubre todos los diseños o elige tu colección favorita.</p>
-      </div><span class="catalog-head__symbol" aria-hidden="true">✳</span></div>
-      <div class="segbar" id="filters" role="tablist" aria-label="Secciones del catálogo"></div>
-      <p class="catalog-count" id="catalogCount" role="status" aria-live="polite"></p>
-      <div class="grid" id="productGrid"></div>
-      <p class="concept-note">✦ Las imágenes son ilustraciones conceptuales. Las fotos, tallas y precios reales se confirmarán antes de iniciar las ventas.</p>
-      </div>
-    </section>
-    <section class="section collections-section" id="colecciones" aria-labelledby="catsTitle">
+    <section class="section section--catalog" id="catalogo" aria-labelledby="catalogTitle">
       <div class="wrap">
-        <p class="eyebrow center">Un mundo para explorar</p>
-        <h2 class="center section__title" id="catsTitle">Cada temporada tiene su magia</h2>
-        <p class="sub center">De la noche más dulce a las fiestas más especiales.</p>
+        <div class="section__intro catalog__intro">
+          <div><div class="eyebrow"><span class="eyebrow__line"></span> THE LITTLE WARDROBE / 01</div>
+            <h2 class="section__title" id="catalogTitle">Amor a <em>primera vista.</em></h2>
+            <p class="section__desc">Animalitos, personajes y disfraces irresistibles. Encuentra ese look que merece una foto más.</p>
+          </div>
+          <span class="section__flower" aria-hidden="true">✳</span>
+        </div>
+        <div class="catalog__toolbar">
+          <div class="segbar" id="filters" role="tablist" aria-label="Filtrar catálogo por colección"></div>
+          <p id="catalogCount" class="catalog-count" role="status" aria-live="polite"></p>
+        </div>
+        <div class="grid" id="productGrid"></div>
+        <div class="catalog__after"><span>✳</span><p>Esta es una previsualización del catálogo. Las ilustraciones, precios de prueba y disponibilidad no representan una oferta comercial final.</p></div>
+      </div>
+    </section>
+
+    <section class="campaign" aria-label="Descubre nuestros disfraces">
+      <div class="wrap campaign__inner">
+        <div class="campaign__copy">
+          <span class="eyebrow">DRESS UP & DREAM BIG</span>
+          <h2>Demasiado<br><em>tiernos</em> para<br>ser verdad.</h2>
+          <p>Un disfraz, una sonrisa y mil historias por contar. Así empieza la magia.</p>
+          <a href="#catalogo" class="btn btn--light">Ver todos los looks <span>↗</span></a>
+        </div>
+        <div class="campaign__gallery">
+          <div class="campaign__shape"></div>
+          <img class="campaign__duck" src="assets/ui/concept-patito.svg" alt="Ilustración conceptual de un disfraz de patito" loading="lazy" width="800" height="1000">
+          <span class="campaign__spark" aria-hidden="true">✷</span>
+          <div class="campaign__sticker">100%<br><small>ADORABLE</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--collections" id="colecciones" aria-labelledby="catsTitle">
+      <div class="wrap">
+        <div class="section__intro section__intro--center">
+          <div class="eyebrow"><span class="eyebrow__line"></span> MAGIC SEASONS / 02</div>
+          <h2 class="section__title" id="catsTitle">Cada temporada,<br><em>una nueva historia.</em></h2>
+          <p class="section__desc">Colecciones para celebrar los días que se vuelven especiales.</p>
+        </div>
         <div class="cats" id="catGrid"></div>
       </div>
     </section>
-    <section class="story-strip" aria-label="Descubre Mini Dreams">
-      <div class="wrap story-strip__grid">
-        <div><span aria-hidden="true">✿</span><strong>Explora</strong><p>Descubre disfraces con personalidad.</p></div>
-        <div><span aria-hidden="true">♡</span><strong>Enamórate</strong><p>Elige el look que más te guste.</p></div>
-        <div><span aria-hidden="true">✧</span><strong>Guárdalo</strong><p>Comparte el enlace de tu favorito.</p></div>
-      </div>
-    </section>
-    <!-- ===================== SECCIÓN EMOCIONAL ===================== -->
-    <section class="emotional" aria-labelledby="emoTitle">
-      <div class="wrap emotional__inner">
-        <div class="emotional__media" aria-hidden="true">
-          <div class="emotional__look"><img src="assets/ui/concept-conejito.svg" alt="Ilustración de un disfraz de conejito" loading="lazy"/><span>La magia está en los detalles ✦</span></div>
+
+    <section class="editorial" aria-label="Nuestra filosofía">
+      <div class="wrap editorial__grid">
+        <div class="editorial__art"><span class="editorial__halo"></span>
+          <img src="assets/ui/concept-espantapajaros.svg" alt="Ilustración conceptual de un pequeño disfraz de espantapájaros" loading="lazy" width="800" height="1000">
+          <span class="editorial__pin">a little magic<br>every day ✦</span>
         </div>
-        <div class="emotional__copy">
-          <h2 id="emoTitle">Sus momentos más pequeños se convierten en nuestros recuerdos favoritos.</h2>
-          <p>Cada prenda de Mini Dreams está pensada para acompañar esos instantes que no vuelven: la primera noche de disfraces, la siesta de la tarde, la foto que mirarás durante años.</p>
+        <div class="editorial__copy">
+          <div class="eyebrow"><span class="eyebrow__line"></span> MADE OF LITTLE MOMENTS / 03</div>
+          <h2>Porque la infancia<br>es <em>pura magia.</em></h2>
+          <p>Hay cosas que pasan tan rápido que quisiéramos detener el tiempo: una risa inesperada, su primer disfraz, una foto que se convierte en tesoro.</p>
+          <p>Mini Dreams nace para acompañar esos momentos con un toque de imaginación.</p>
+          <a href="#catalogo" class="editorial__link">Encuentra su próximo look <span>↗</span></a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- ===================== FOOTER ===================== -->
   <footer class="footer">
-    <div class="wrap footer__inner">
-      <div class="footer__brand">
-        <a class="brand brand--footer" href="#top" data-nav="home" aria-label="Mini Dreams — inicio">
-          <span class="brand__mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-          </span>
-          <span class="brand__text">Mini&nbsp;Dreams</span>
-        </a>
-        <p>Ropa y disfraces llenos de ternura para bebés.</p>
+    <div class="wrap">
+      <div class="footer__top"><div><div class="footer__eyebrow">A LITTLE DREAM IN EVERY LOOK</div><h2>Hagamos <em>recuerdos.</em></h2></div><a href="#top" class="footer__back">Volver arriba ↑</a></div>
+      <div class="footer__grid">
+        <div class="footer__about"><a href="#top" class="brand brand--footer" aria-label="Mini Dreams, volver al inicio"><span class="brand__text">mini<span class="brand__word">dreams</span><span class="brand__spark">✳</span></span></a><p>Un universo de pequeños looks y grandes historias. Diseñado para imaginar.</p></div>
+        <nav class="footer__links" aria-label="Explorar"><b>Explorar</b><a href="#catalogo">Todos los looks</a><a href="#colecciones">Colecciones</a><a href="index.html?coleccion=halloween#catalogo">Halloween</a><a href="index.html?coleccion=navidad#catalogo">Navidad</a></nav>
+        <div class="footer__links"><b>Información</b><a href="privacy.html">Privacidad</a><a href="mailto:corpusenigma4@gmail.com">Contacto</a><span>Envíos y devoluciones: pendiente</span></div>
+        <div class="footer__message"><div class="footer__flower">✿</div><b>Pequeñas cosas.<br>Mucho amor.</b></div>
       </div>
-      <nav class="footer__links" aria-label="Tienda">
-        <b>Tienda</b>
-        <a href="#catalogo" data-nav="catalogo">Catálogo</a>
-        <a href="#colecciones" data-nav="colecciones">Colecciones</a>
-      </nav>
-      <nav class="footer__links" aria-label="Ayuda">
-        <b>Ayuda</b>
-        <a href="privacy.html">Privacidad</a>
-        <span class="footer__pending" title="Pendiente de revisión">Contacto · próximamente</span>
-        <span class="footer__pending" title="Pendiente de revisión">Preguntas frecuentes · próximamente</span>
-        <span class="footer__pending" title="Pendiente de revisión">Envíos · próximamente</span>
-        <span class="footer__pending" title="Pendiente de revisión">Cambios y devoluciones · próximamente</span>
-      </nav>
-    </div>
-    <div class="wrap footer__legal">
-      <span>© <span id="year"></span> Mini Dreams. Boutique infantil.</span>
-      <span class="footer__note">Versión de previsualización · información comercial pendiente de confirmar.</span>
+      <div class="footer__bottom"><span>© <span id="year">2026</span> Mini Dreams</span><span>Previsualización de diseño · pagos no habilitados</span><span>Made with ♡</span></div>
     </div>
   </footer>
 
-  <!-- ===================== CHROME COMPARTIDO (carrito / overlay / toast) ===================== -->
   <div class="overlay" id="overlay" hidden></div>
-
   <aside class="cart" id="cartDrawer" aria-hidden="true" aria-label="Carrito de compras">
-    <div class="cart__head">
-      <h3>Tu carrito</h3>
-      <button class="iconbtn" id="cartClose" aria-label="Cerrar carrito">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
+    <div class="cart__head"><div><span class="eyebrow">YOUR LITTLE BAG</span><h3>Tu carrito <span>♡</span></h3></div>
+      <button class="iconbtn" id="cartClose" aria-label="Cerrar carrito" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
-    <div class="cart__body" id="cartBody"></div>
-    <div class="cart__foot" id="cartFoot"></div>
+    <div class="cart__body" id="cartBody"></div><div class="cart__foot" id="cartFoot"></div>
   </aside>
-
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
-  <!-- Datos → núcleo → PayPal → lógica de la home -->
-  <script src="data/products.js"></script>
-  <script src="store.js"></script>
-  <script src="paypal.js"></script>
-  <script src="catalog.js"></script>
+  <script src="data/products.js"></script><script src="store.js"></script><script src="paypal.js"></script><script src="catalog.js"></script>
+  <script src="experience.js"></script>
 </body>
 </html>
