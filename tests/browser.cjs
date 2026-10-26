@@ -14,6 +14,8 @@ async function run(){
   assert.equal(await page.locator("#productGrid .card").count(),4,"All designs must be visible by default");
   assert.equal(await page.locator(".card__concept").count(),4,"Concept imagery must be labeled");
   assert.equal(await page.locator("#catalogCount").textContent(),"4 diseños en esta selección");
+  await page.locator("#productGrid .card").first().scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>[...document.querySelectorAll("#productGrid .card img")].every(img=>img.complete&&img.naturalWidth>0));
   assert.ok(await page.locator("#productGrid .card img").evaluateAll(imgs=>imgs.every(i=>i.complete&&i.naturalWidth>0)),"Product images must load");
   await page.screenshot({path:"screenshots/home-full-desktop.png",fullPage:true});
   await page.locator('#filters button[data-section="halloween"]').click();
