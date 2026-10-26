@@ -150,11 +150,7 @@ var PRODUCTS = [
     returns: "Tienes hasta 90 días desde la entrega para solicitar una devolución.",
     care: "Lavar del revés con agua fría, en ciclo delicado. No usar blanqueador. Secar al aire y evitar planchar los bordados.",
     images: {
-      main: "assets/products/conejito/bunny-front.jpg",
-      front: "assets/products/conejito/bunny-baby.jpg",
-      side: "assets/products/conejito/bunny-hood.jpg",
-      back: "assets/products/conejito/bunny-back.jpg",
-      details: ["assets/products/conejito/bunny-texture.jpg"]
+      main: "assets/products/conejito/bunny-gallery.webp", front: "", side: "", back: "", details: []
     },
     descShort: "El conejito más tierno: una pieza suave y abrigadita con orejitas largas. Color blanco, estilo unisex.",
     descLong: "Un abrazo suave convertido en enterizo. Bunny Dream combina un diseño acogedor con capucha de conejito, orejas largas con interior rosado y un práctico cierre frontal. Perfecto para días frescos, paseos y esas fotos que querrás guardar para siempre.",
