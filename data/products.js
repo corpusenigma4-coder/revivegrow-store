@@ -137,6 +137,7 @@ var PRODUCTS = [
     ],
     availability: "in-stock",
     previewArt: false,
+    gallerySprite: { src: "assets/products/conejito/bunny-gallery.webp", labels: ["Vista frontal", "Así luce puesto", "Detalles de la capucha", "Vista posterior", "Textura y acabados"] },
     color: "Blanco",
     fit: "Unisex · abrigadito",
     materialHighlights: [
