@@ -472,3 +472,6 @@ body[data-view="product"] .gallery__main{background:#f6ede2}
 .pp-fulfillment p{font-size:9px}
 .gallery__thumb{width:62px;height:76px}
 }
+
+.card__media--sprite img{object-position:0% center}
+.campaign__duck[src*='bunny-gallery']{object-position:25% center}
