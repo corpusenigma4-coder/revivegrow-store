@@ -392,3 +392,27 @@ h1,h2,h3,p,figure{margin:0}
   .footer__grid{gap:24px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Consistent collection landing and product-page finish */
+.pp-banner{background:#f4ece1;border-bottom:1px solid var(--line)}
+.pp-banner__inner{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-block:14px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#84766c;font-weight:800}
+.pp-banner a{color:#815c4b}
+.pp-banner a:hover{text-decoration:underline}
+.pp-promise{padding:32px 0;background:#e9ddcd}
+.pp-promise__inner{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center}
+.pp-promise__inner>span{font-size:31px;color:#b86a4e;line-height:1}
+.pp-promise p{font:500 clamp(18px,3vw,27px) var(--display);letter-spacing:-.04em}
+.pp-promise a{font-size:11px;font-weight:800;text-decoration:underline}
+body[data-view="product"] .pp-wrap{min-height:55vh}
+body[data-view="product"] .footer{margin-top:0}
+body[data-view="product"] .pp-crumbs{letter-spacing:.02em}
+body[data-view="product"] .gallery__main{background:#f6ede2}
+@media(max-width:559px){
+ .pp-banner__inner>span{display:none}
+ .pp-promise__inner{gap:8px}
+ .pp-promise a{width:100%}
+ .pp-wrap{padding-top:20px}
+ .gallery__main{max-height:620px}
+ .cart__body{padding-inline:18px}
+ .cart__foot{padding-inline:18px}
+}
