@@ -20,7 +20,7 @@ function testHTML(name,html){
   if(!relative)continue;
   assert.ok(fs.existsSync(path.join(root,relative)),name+": missing "+relative);
  }
- assert.ok(html.includes('src="store.js"')&&html.includes('src="experience.js"'),name+" scripts missing");
+ assert.ok(html.includes('src="store.js')&&html.includes('src="experience.js'),name+" scripts missing");
 }
 testHTML("home",home);testHTML("product",detail);
 for(const id of ["catalogo","colecciones","filters","productGrid","catGrid","catalogCount"]){
