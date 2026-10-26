@@ -36,6 +36,7 @@ async function run(){
   await page.locator(".pp-name").waitFor();
   assert.ok((await page.locator(".pp-name").textContent()).includes("Bunny Dream"));
   assert.equal(await page.locator(".gallery__thumb").count(),5,"Five real photo views");
+  await page.waitForFunction(()=>Array.from(document.querySelectorAll(".gallery__thumb img")).every(el=>el.complete && el.naturalWidth >= 800));
   await page.locator(".gallery__thumb").nth(2).click();
   assert.ok((await page.locator(".gallery__img").getAttribute("src")).includes("bunny-hood.webp"),"Third photo should show hood close-up");
   await page.locator(".gallery__thumb").first().click();
