@@ -103,7 +103,7 @@
       ? '<span class="card__price">' + MD.fmtPrice(p) + (p.__dev ? ' <small>de prueba</small>' : '') + '</span>'
       : '<span class="card__price card__price--pending">Precio en preparación</span>';
     return '<a class="card" href="' + href + '" aria-label="Ver ' + esc(p.name) + '">' +
-      '<span class="card__media">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
+      '<span class="card__media' + (p.gallerySprite ? " card__media--sprite" : "") + '">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
         '<span class="card__shade"></span>' +
         (p.previewArt ? '<span class="card__concept">Ilustración conceptual</span>' : '') +
       '</span>' +
