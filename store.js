@@ -172,7 +172,7 @@
     mobileNav.hidden = !open;
     burger.classList.toggle("is-open", open);
     burger.setAttribute("aria-expanded", String(open));
-    if (open) showOverlay(); else maybeHideOverlay();
+    if (open) { showOverlay(); lockScroll(true); } else maybeHideOverlay();
   }
   function toggleSearch(force) {
     if (!searchBar || !searchToggle) return;
@@ -223,7 +223,7 @@
         searchInput.addEventListener("input", function () { opts.onSearch(this.value.trim().toLowerCase()); });
       } else {
         searchInput.addEventListener("keydown", function (e) {
-          if (e.key === "Enter") { var q = this.value.trim(); window.location.href = "index.html#catalogo" + (q ? "" : ""); }
+          if (e.key === "Enter") { var q = this.value.trim(); window.location.href = "index.html" + (q ? "?q=" + encodeURIComponent(q) : "") + "#catalogo"; }
         });
       }
     }
