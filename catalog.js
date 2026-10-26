@@ -91,7 +91,7 @@
       var okSec = MD.productInCollection(p, activeSection);
       var hay = (p.name + " " + (p.descShort || "") + " " + MD.catsOf(p).join(" ")).toLowerCase();
       return okSec && (!searchTerm || hay.indexOf(searchTerm) !== -1);
-    });
+    }).sort(function (a,b) { return (a.published === false ? 1 : 0) - (b.published === false ? 1 : 0); });
   }
 
   function cardFor(p) {
