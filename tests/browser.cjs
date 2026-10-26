@@ -37,13 +37,14 @@ async function run(){
   assert.ok((await page.locator(".pp-name").textContent()).includes("Bunny Dream"));
   assert.equal(await page.locator(".gallery__thumb").count(),5,"Five real photo views");
   await page.locator(".gallery__thumb").nth(2).click();
-  assert.equal(await page.locator(".gallery__img").evaluate(el=>el.style.objectPosition),"50% center");
+  assert.ok((await page.locator(".gallery__img").getAttribute("src")).includes("bunny-hood.webp"),"Third photo should show hood close-up");
   await page.locator(".gallery__thumb").first().click();
-  assert.equal(await page.locator(".gallery__img").evaluate(el=>el.style.objectPosition),"0% center");
+  assert.ok((await page.locator(".gallery__img").getAttribute("src")).includes("bunny-front.webp"),"First photo should show front");
   assert.equal(await page.locator("#sizes .size").count(),5);
   await page.locator("#sizeGuideAcc").evaluate(el=>el.open=true);
   assert.equal(await page.locator(".sizeguide tbody tr").count(),5);
   assert.ok((await page.locator(".pp-fulfillment").textContent()).includes("90 días"));
+  assert.ok(await page.locator(".gallery__img").evaluate(el=>el.naturalWidth>=800),"Main product photo must be high resolution");
   await page.screenshot({path:"screenshots/product-desktop.png",fullPage:true});
   await page.locator('#sizes .size:not([disabled])').first().click();
   assert.equal(await page.locator("#addBtn").isDisabled(),false);
