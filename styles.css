@@ -475,3 +475,20 @@ body[data-view="product"] .gallery__main{background:#f6ede2}
 
 .card__media--sprite img{object-position:0% center}
 .campaign__duck[src*='bunny-gallery']{object-position:25% center}
+
+/* Multi-item catalog, including clear coming-soon placeholders. */
+.grid.grid--single{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:none;margin:0}
+.grid--single .card{background:transparent;border:0;border-radius:0;box-shadow:none}
+.grid--single .card__media{aspect-ratio:4/5;border-radius:6px}
+.grid--single .card__body{padding:14px 2px 0}
+.card--coming{opacity:.85;cursor:default}
+.card--coming .card__media{background:#f1e7df}
+.card--coming .card__media img{filter:saturate(.7)}
+.card--coming .card__tag{background:#fff9f2;color:#745b54}
+.card--coming .card__price{color:#786b60}
+.card--coming .card__cta{border:0;color:#a87767}
+.card--coming:hover .card__media img{transform:none}
+.card:not(.card--coming):hover .card__cta{text-decoration:underline}
+.card:not(.card--coming) .card__name{color:#433326}
+@media(min-width:560px){.grid.grid--single{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:850px){.grid.grid--single{grid-template-columns:repeat(4,minmax(0,1fr))}}

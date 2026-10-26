@@ -87,32 +87,33 @@
   }
 
   function visible() {
-    return MD.PRODUCTS.filter(function (p) { if (p.published === false) return false;
+    return MD.PRODUCTS.filter(function (p) {
       var okSec = MD.productInCollection(p, activeSection);
       var hay = (p.name + " " + (p.descShort || "") + " " + MD.catsOf(p).join(" ")).toLowerCase();
       return okSec && (!searchTerm || hay.indexOf(searchTerm) !== -1);
-    });
+    }).sort(function (a,b) { return (a.published === false ? 1 : 0) - (b.published === false ? 1 : 0); });
   }
 
   function cardFor(p) {
-    var buyable = MD.isBuyable(p);
-    var href = MD.productUrl(p);
-    var tag = p.tag ? '<span class="card__tag">' + esc(p.tag) + '</span>' : "";
-    var badge = buyable ? "" : '<span class="card__badge">' + esc(MD.availabilityLabel(p)) + '</span>';
-    var price = buyable
-      ? '<span class="card__price">' + MD.fmtPrice(p) + (p.__dev ? ' <small>de prueba</small>' : '') + '</span>'
-      : '<span class="card__price card__price--pending">Precio en preparación</span>';
-    return '<a class="card" href="' + href + '" aria-label="Ver ' + esc(p.name) + '">' +
-      '<span class="card__media' + (p.gallerySprite ? " card__media--sprite" : "") + '">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
-        '<span class="card__shade"></span>' +
-        (p.previewArt ? '<span class="card__concept">Ilustración conceptual</span>' : '') +
-      '</span>' +
-      '<span class="card__body">' +
-        '<span class="card__name">' + esc(p.name) + '</span>' +
-        price +
-        '<span class="card__cta">Ver producto <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
-      '</span>' +
-    '</a>';
+    var coming = p.published === false;
+    var href = coming ? "" : MD.productUrl(p);
+    var price = !coming && MD.isBuyable(p)
+      ? '<span class="card__price">'+MD.fmtPrice(p)+'</span>'
+      : '<span class="card__price card__price--pending">Próximamente</span>';
+    var start = coming
+      ? '<article class="card card--coming" aria-label="'+esc(p.name)+' próximamente">'
+      : '<a class="card" href="'+href+'" aria-label="Ver detalles de '+esc(p.name)+'">';
+    var end = coming ? '</article>' : '</a>';
+    return start+
+      '<span class="card__media">'+MD.imgTag(p.images&&p.images.main,p.name)+
+        '<span class="card__tag">'+(coming?'En preparación':'Nuevo · Premium')+'</span>'+
+        (p.previewArt?'<span class="card__concept">Imagen ilustrativa</span>':'')+
+      '</span>'+
+      '<span class="card__body">'+
+        '<span class="card__name">'+esc(p.name)+'</span>'+
+        price+
+        '<span class="card__cta">'+(coming?'Próximamente':'Ver detalles y elegir talla ↗')+'</span>'+
+      '</span>'+end;
   }
 
   /* Estado vacío atractivo, con mensaje propio de cada sección. */
