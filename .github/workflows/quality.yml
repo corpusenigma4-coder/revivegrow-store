@@ -36,11 +36,11 @@ jobs:
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           test -n "$CHROME"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/index.html" > /tmp/md-home.html 2>/tmp/md-chrome-home.log
-          grep -q "Disfraz Conejito" /tmp/md-home.html
-          grep -q "Ilustración conceptual" /tmp/md-home.html
-          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/producto.html?slug=patito" > /tmp/md-product.html 2>/tmp/md-chrome-product.log
-          grep -q "Disfraz Patito" /tmp/md-product.html
-          grep -q "precio de prueba" /tmp/md-product.html
+          grep -q "Bunny Dream" /tmp/md-home.html
+          grep -q "23.55" /tmp/md-home.html
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/producto.html?slug=conejito" > /tmp/md-product.html 2>/tmp/md-chrome-product.log
+          grep -q "Bunny Dream" /tmp/md-product.html
+          grep -q "90 días" /tmp/md-product.html
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/index.html?coleccion=navidad" > /tmp/md-navidad.html 2>/tmp/md-chrome-navidad.log
           grep -q "La colección de Navidad está en preparación" /tmp/md-navidad.html
           mkdir -p screenshots
