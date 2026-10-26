@@ -48,7 +48,7 @@
 
     /* --- Galería --- */
     var thumbs = state.images.map(function(src,i) {
-      var caption=p.gallerySprite ? p.gallerySprite.labels[i] : "Imagen "+(i+1);
+      var caption=(p.galleryLabels&&p.galleryLabels[i]) || (p.gallerySprite ? p.gallerySprite.labels[i] : "Imagen "+(i+1));
       var position=p.gallerySprite ? ' style="object-position:'+(25*i)+'% center"' : "";
       var thumbImg=p.gallerySprite
         ? '<img src="'+esc(p.gallerySprite.src)+'" alt="'+esc(caption)+'"'+position+' loading="lazy">'
