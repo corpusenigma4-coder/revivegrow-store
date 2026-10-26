@@ -24,12 +24,12 @@
   function catsOf(p) { return Array.isArray(p && p.categories) ? p.categories : []; }
   /* "todo" (o vacío) => todos los productos; cualquier otro id => filtra por colección. */
   function productInCollection(p, id) { return !id || id === "todo" || catsOf(p).indexOf(id) !== -1; }
-  function productsInCollection(id) { return PRODUCTS.filter(function (p) { return productInCollection(p, id); }); }
+  function productsInCollection(id) { return PRODUCTS.filter(function (p) { return p.published !== false && productInCollection(p, id); }); }
 
-  function inStockSizes(p) { return (p.sizes || []).filter(function (s) { return s && s.stock > 0; }); }
+  function inStockSizes(p) { return (p.sizes || []).filter(function (s) { return s && (s.available === true || (typeof s.stock === "number" && s.stock > 0)); }); }
   function hasAnyStock(p) { return inStockSizes(p).length > 0; }
   function isBuyable(p) { return !!p && p.availability === "in-stock" && typeof p.price === "number" && hasAnyStock(p); }
-  function sizeInStock(p, label) { var s = (p.sizes || []).filter(function (x) { return x.label === label; })[0]; return !!(s && s.stock > 0); }
+  function sizeInStock(p, label) { var s = (p.sizes || []).filter(function (x) { return x.label === label; })[0]; return !!(s && (s.available === true || (typeof s.stock === "number" && s.stock > 0))); }
 
   function fmtPrice(p) { return "$" + Number(p.price).toFixed(2) + " " + (p.currency || "USD"); }
   function availabilityLabel(p) {
