@@ -52,14 +52,14 @@
       var position=p.gallerySprite ? ' style="object-position:'+(25*i)+'% center"' : "";
       var thumbImg=p.gallerySprite
         ? '<img src="'+esc(p.gallerySprite.src)+'" alt="'+esc(caption)+'"'+position+' loading="lazy">'
-        : MD.imgTag(src,caption);
+        : MD.imgTag(src,caption).replace('loading="lazy"','loading="eager"');
       return '<button class="gallery__thumb'+(i===0?' is-active':'')+'" data-thumb="'+i+'" aria-label="Ver '+esc(caption)+'" aria-pressed="'+(i===0)+'">'+thumbImg+'</button>';
     }).join("");
 
     var gallery =
       '<div class="gallery">' +
         '<div class="gallery__main">' +
-          (p.gallerySprite ? '<img class="gallery__img gallery__img--sprite" src="'+esc(p.gallerySprite.src)+'" style="object-position:0% center" alt="'+esc(p.name)+'" fetchpriority="high">' : MD.imgTag(state.images[0],p.name,"gallery__img")) +
+          (p.gallerySprite ? '<img class="gallery__img gallery__img--sprite" src="'+esc(p.gallerySprite.src)+'" style="object-position:0% center" alt="'+esc(p.name)+'" fetchpriority="high">' : MD.imgTag(state.images[0],p.name,"gallery__img").replace('loading="lazy"','loading="eager" fetchpriority="high"')) +
           '<button class="gallery__zoom" id="galZoom" aria-label="Ampliar imagen"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.2-3.2M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>' +
           (buyable ? "" : '<span class="gallery__badge">' + esc(MD.availabilityLabel(p)) + '</span>') +
           (p.previewArt ? '<span class="gallery__concept">Ilustración conceptual · no es una foto real</span>' : "") +
