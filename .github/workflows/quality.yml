@@ -1,0 +1,56 @@
+name: Mini Dreams Quality
+on:
+  push:
+    branches:
+      - main
+      - 'feat/**'
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  quality:
+    name: Static + browser smoke checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check catalog.js
+          node --check store.js
+          node --check paypal.js
+          node --check product.js
+          node --check experience.js
+          node --check data/products.js
+      - name: Site structure, assets, and commercial-safety checks
+        run: node tests/smoke.cjs
+      - name: Render homepage and product with Chrome
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/mini-dreams-server.log 2>&1 &
+          sleep 2
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/index.html" > /tmp/md-home.html 2>/tmp/md-chrome-home.log
+          grep -q "Disfraz Conejito" /tmp/md-home.html
+          grep -q "Ilustración conceptual" /tmp/md-home.html
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/producto.html?slug=patito" > /tmp/md-product.html 2>/tmp/md-chrome-product.log
+          grep -q "Disfraz Patito" /tmp/md-product.html
+          grep -q "precio de prueba" /tmp/md-product.html
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --virtual-time-budget=4500 --dump-dom "http://127.0.0.1:8765/index.html?coleccion=navidad" > /tmp/md-navidad.html 2>/tmp/md-chrome-navidad.log
+          grep -q "La colección de Navidad está en preparación" /tmp/md-navidad.html
+          mkdir -p screenshots
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=420,900 --screenshot=screenshots/home-mobile.png "http://127.0.0.1:8765/index.html" > /dev/null 2>/dev/null
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=1440,1000 --screenshot=screenshots/home-desktop.png "http://127.0.0.1:8765/index.html" > /dev/null 2>/dev/null
+          test -s screenshots/home-mobile.png
+          test -s screenshots/home-desktop.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mini-dreams-design-captures
+          path: screenshots/
+          if-no-files-found: ignore
