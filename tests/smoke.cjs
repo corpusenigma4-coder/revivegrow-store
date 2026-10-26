@@ -45,5 +45,5 @@ for(const p of data.PRODUCTS){
  if(!p.__dev)assert.ok(p.price===null||typeof p.price==="number","invalid price "+p.slug);
 }
 assert.match(read("paypal.js"),/enabled:\s*false/,"PayPal must remain disabled");
-assert.ok(home.includes("ilustraciones conceptuales"),"preview disclosure missing");
+assert.ok(home.includes("previsualización del catálogo") && home.includes("Ilustración conceptual"),"preview disclosure missing");
 console.log("OK: structure, unique IDs, valid links and assets, catalog data, responsive styles, safe PayPal settings.");
