@@ -59,6 +59,7 @@ var DEV_SIZES = [
 var PRODUCTS = [
   {
     id: "disfraz-espantapajaros",
+    published: false,
     slug: "espantapajaros",
     name: "Disfraz Espantapájaros",
     categories: ["halloween"],
@@ -78,6 +79,7 @@ var PRODUCTS = [
   },
   {
     id: "disfraz-patito",
+    published: false,
     slug: "patito",
     name: "Disfraz Patito",
     categories: [],               /* solo aparece en "Todo" por ahora */
@@ -99,6 +101,7 @@ var PRODUCTS = [
   },
   {
     id: "disfraz-calabaza",
+    published: false,
     slug: "calabaza",
     name: "Disfraz Calabaza",
     categories: ["halloween"],
@@ -119,20 +122,43 @@ var PRODUCTS = [
   {
     id: "disfraz-conejito",
     slug: "conejito",
-    name: "Disfraz Conejito",
-    categories: [],               /* solo aparece en "Todo" por ahora */
-    tag: "Nuevo",
-    price: null,
+    name: "Enterizo Conejito · Bunny Dream",
+    categories: [],
+    tag: "Mini Dreams Collection",
+    published: true,
+    price: 23.55,
     currency: "USD",
-    sizes: [],
-    availability: "pending",
-    previewArt: true,
-    images: { main: "assets/ui/concept-conejito.svg", front: "", back: "", side: "", details: [] },
-    descShort: "",
-    descLong: "",
-    materials: "",
-    care: "",
-    sizeGuide: "",
+    sizes: [
+      { label: "3–6 meses", code: "62", height: "61–67 cm", weight: "5,7–7,5 kg", available: true },
+      { label: "6–12 meses", code: "68–74", height: "67–74 cm", weight: "7,5–9,3 kg", available: true },
+      { label: "9–12 meses", code: "80", height: "74–79 cm", weight: "9,3–11,1 kg", available: true },
+      { label: "12–18 meses", code: "86", height: "79–84 cm", weight: "11,1–12,5 kg", available: true },
+      { label: "18–24 meses", code: "92", height: "84–89 cm", weight: "12,5–13,6 kg", available: true }
+    ],
+    availability: "in-stock",
+    previewArt: false,
+    color: "Blanco",
+    fit: "Unisex · abrigadito",
+    materialHighlights: [
+      { title: "Algodón orgánico interlock", detail: "Tejido suave y flexible, elegido para la comodidad del bebé." },
+      { title: "Abrigo acogedor", detail: "Diseño calentito para días frescos y momentos de descanso." },
+      { title: "Detalles encantadores", detail: "Capucha con orejitas largas, carita bordada y cierre frontal." }
+    ],
+    shipping: "Enviamos a todo el mundo.",
+    shippingTime: "Entrega estimada de 3 a 5 días hábiles; puede variar según el país y los trámites aduaneros.",
+    returns: "Tienes hasta 90 días desde la entrega para solicitar una devolución.",
+    care: "Lavar del revés con agua fría, en ciclo delicado. No usar blanqueador. Secar al aire y evitar planchar los bordados.",
+    images: {
+      main: "assets/products/conejito/bunny-front.jpg",
+      front: "assets/products/conejito/bunny-baby.jpg",
+      side: "assets/products/conejito/bunny-hood.jpg",
+      back: "assets/products/conejito/bunny-back.jpg",
+      details: ["assets/products/conejito/bunny-texture.jpg"]
+    },
+    descShort: "El conejito más tierno: una pieza suave y abrigadita con orejitas largas. Color blanco, estilo unisex.",
+    descLong: "Un abrazo suave convertido en enterizo. Bunny Dream combina un diseño acogedor con capucha de conejito, orejas largas con interior rosado y un práctico cierre frontal. Perfecto para días frescos, paseos y esas fotos que querrás guardar para siempre.",
+    materials: "Algodón orgánico interlock premium, según las especificaciones facilitadas para la colección.",
+    sizeGuide: "Elige la talla según la estatura de tu bebé. Si está entre dos medidas, recomendamos la mayor.",
     featured: true
   }
 ];
