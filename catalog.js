@@ -87,7 +87,7 @@
   }
 
   function visible() {
-    return MD.PRODUCTS.filter(function (p) {
+    return MD.PRODUCTS.filter(function (p) { if (p.published === false) return false;
       var okSec = MD.productInCollection(p, activeSection);
       var hay = (p.name + " " + (p.descShort || "") + " " + MD.catsOf(p).join(" ")).toLowerCase();
       return okSec && (!searchTerm || hay.indexOf(searchTerm) !== -1);
@@ -143,6 +143,7 @@
     }
     grid.classList.remove("grid--empty");
     grid.innerHTML = list.map(cardFor).join("");
+    grid.classList.toggle("grid--single",list.length===1);
   }
 
   function markNav(id) { $$(".nav a, .mobilenav a").forEach(function (a) { a.classList.toggle("is-active", a.getAttribute("data-nav") === id); }); }
