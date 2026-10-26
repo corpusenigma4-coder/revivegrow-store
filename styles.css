@@ -418,3 +418,60 @@ body[data-view="product"] .gallery__main{background:#f6ede2}
 }
 /* Menú móvil siempre por encima del fondo oscurecido; carrito conserva prioridad. */
 .header:has(.mobilenav:not([hidden])){z-index:75}
+
+/* Mini Dreams — primer producto real | editorial e-commerce refinements */
+.brand__text{white-space:nowrap;letter-spacing:-.065em}
+.brand__word{margin-left:.22em}
+@media(max-width:390px){.brand__text{font-size:clamp(23px,7vw,29px)}.brand__spark{margin-left:1px;font-size:11px}.header__inner{gap:2px}.header__actions{gap:0}}
+.grid.grid--single{grid-template-columns:minmax(0,1fr);max-width:450px;margin:0 auto}
+.grid--single .card{border-radius:12px;overflow:hidden;background:var(--paper);border:1px solid #ebe2d7;box-shadow:0 12px 35px #392e2514}
+.grid--single .card__media{aspect-ratio:4/5;border-radius:0}
+.grid--single .card__body{padding:16px 20px 22px;gap:9px}
+.grid--single .card__name{font:500 clamp(22px,3vw,29px) var(--display);letter-spacing:-.04em}
+.grid--single .card__price{font-size:18px}
+.grid--single .card__cta{font-size:12px}
+.gallery__main .gallery__img--sprite,.gallery__thumb img{object-fit:cover}
+.gallery__img--sprite{object-fit:cover;object-position:0% center;width:100%;height:100%;aspect-ratio:4/5}
+.gallery__thumb{position:relative}
+.gallery__thumb.is-active{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+.gallery__thumb img{width:100%;height:100%;aspect-ratio:4/5}
+.lightbox__sprite{width:min(84vw,550px);height:min(80vh,680px);max-width:unset!important;max-height:unset!important;aspect-ratio:4/5;object-fit:cover;object-position:0% center}
+.pp-attributes{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 3px}
+.pp-attributes>span{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid #ece0d2;border-radius:99px;font-size:11px;line-height:1.2;font-weight:700;background:#fffdf8}
+.pp-attributes strong{font-weight:800}
+.pp-highlights{width:100%;display:grid;gap:0;margin:20px 0 4px;border-block:1px solid var(--line)}
+.pp-feature{display:flex;align-items:flex-start;gap:14px;padding:15px 0}
+.pp-feature+.pp-feature{border-top:1px solid #f0e7de}
+.pp-feature__mark{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#f8ede3;color:#af674d;font-size:18px;line-height:1}
+.pp-feature strong{display:block;font-size:12px;font-weight:800}
+.pp-feature p{margin:4px 0 0;font-size:11px;line-height:1.6;color:#7b7169}
+.pp-fulfillment{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:12px;margin-top:24px}
+.pp-fulfillment>div{display:flex;align-items:flex-start;gap:10px;padding:16px 12px;border:1px solid var(--line);border-radius:9px;background:#fbf6ef}
+.pp-fulfillment>div>span{font-size:22px;line-height:1;color:#b36047}
+.pp-fulfillment strong{display:block;font-size:11px;line-height:1.4}
+.pp-fulfillment p{font-size:10px;margin:5px 0 0;color:#77685d;line-height:1.5}
+.pp-fulfillment section{min-width:0}
+.pp-checkoutnote{font-size:11px;color:#8b7568;text-align:center;line-height:1.65;margin-top:6px}
+.sizeguide>p{font-size:12px;color:#73675f;line-height:1.7;padding:1px 0 12px}
+.sizeguide__scroll{overflow-x:auto;padding-bottom:12px}
+.sizeguide table{border-collapse:collapse;width:100%;min-width:355px;font-size:11px;white-space:nowrap}
+.sizeguide thead{background:#f6ebdf}
+.sizeguide th,.sizeguide td{text-align:left;padding:11px 8px;border-bottom:1px solid #eae0d6}
+.sizeguide tbody th{font-weight:800}
+.pp-meta .pp-acc a{text-decoration:underline}
+.pp-meta .pp-acc p+p{margin-top:10px}
+.pp-gallery-counter{position:absolute;left:13px;bottom:13px;background:#fffcf1e9;color:#594638;border-radius:99px;padding:5px 9px;font-size:10px;font-weight:800}
+.hero__main-photo--real img{object-position:0% center}
+.hero__mini-photo--real img{object-position:25% center}
+@media(min-width:660px){.grid.grid--single{max-width:495px}.grid--single .card__name{font-size:28px}}
+@media(max-width:400px){
+.pp-fulfillment{gap:8px}
+.pp-fulfillment>div{padding:12px 9px;gap:7px}
+.pp-fulfillment>div>span{font-size:19px}
+.pp-fulfillment strong{font-size:10px}
+.pp-fulfillment p{font-size:9px}
+.gallery__thumb{width:62px;height:76px}
+}
+
+.card__media--sprite img{object-position:0% center}
+.campaign__duck[src*='bunny-gallery']{object-position:25% center}

@@ -41,9 +41,17 @@ for(const p of data.PRODUCTS){
  assert.ok(!seen.has(p.slug),"duplicate slug "+p.slug);seen.add(p.slug);
  assert.ok(p.images.main,"missing main illustration "+p.slug);
  assert.ok(fs.existsSync(path.join(root,p.images.main)),"image missing "+p.images.main);
- assert.ok(p.previewArt,"concept asset not labeled "+p.slug);
+ assert.ok(p.previewArt || p.gallerySprite,"every image must be a concept or a gallery photo "+p.slug);
  if(!p.__dev)assert.ok(p.price===null||typeof p.price==="number","invalid price "+p.slug);
 }
 assert.match(read("paypal.js"),/enabled:\s*false/,"PayPal must remain disabled");
-assert.ok(home.includes("previsualización del catálogo") && home.includes("Ilustración conceptual"),"preview disclosure missing");
+assert.ok(home.includes("Bunny Dream") && detail.includes("productRoot"),"featured product missing");
+const bunny=data.PRODUCTS.find(p=>p.slug==="conejito");
+assert.equal(bunny.price,23.55);
+assert.equal(bunny.sizes.length,5);
+assert.ok(bunny.sizes.every(s=>s.available===true));
+assert.ok(fs.existsSync(path.join(root,bunny.gallerySprite.src)),"gallery asset missing");
+assert.equal(bunny.gallerySprite.labels.length,5);
+assert.ok(data.PRODUCTS.filter(p=>p.published!==false).length===1,"only Bunny Dream should be public");
+assert.equal(bunny.returns.includes("90"),true);
 console.log("OK: structure, unique IDs, valid links and assets, catalog data, responsive styles, safe PayPal settings.");

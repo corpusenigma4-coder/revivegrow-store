@@ -87,7 +87,7 @@
   }
 
   function visible() {
-    return MD.PRODUCTS.filter(function (p) {
+    return MD.PRODUCTS.filter(function (p) { if (p.published === false) return false;
       var okSec = MD.productInCollection(p, activeSection);
       var hay = (p.name + " " + (p.descShort || "") + " " + MD.catsOf(p).join(" ")).toLowerCase();
       return okSec && (!searchTerm || hay.indexOf(searchTerm) !== -1);
@@ -103,7 +103,7 @@
       ? '<span class="card__price">' + MD.fmtPrice(p) + (p.__dev ? ' <small>de prueba</small>' : '') + '</span>'
       : '<span class="card__price card__price--pending">Precio en preparación</span>';
     return '<a class="card" href="' + href + '" aria-label="Ver ' + esc(p.name) + '">' +
-      '<span class="card__media">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
+      '<span class="card__media' + (p.gallerySprite ? " card__media--sprite" : "") + '">' + tag + badge + MD.imgTag(p.images && p.images.main, p.name) +
         '<span class="card__shade"></span>' +
         (p.previewArt ? '<span class="card__concept">Ilustración conceptual</span>' : '') +
       '</span>' +
@@ -143,6 +143,7 @@
     }
     grid.classList.remove("grid--empty");
     grid.innerHTML = list.map(cardFor).join("");
+    grid.classList.toggle("grid--single",list.length===1);
   }
 
   function markNav(id) { $$(".nav a, .mobilenav a").forEach(function (a) { a.classList.toggle("is-active", a.getAttribute("data-nav") === id); }); }

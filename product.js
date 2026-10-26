@@ -17,6 +17,7 @@
   var state = { product: null, images: [], activeImg: 0, size: null, qty: 1 };
 
   function galleryImages(p) {
+    if (p.gallerySprite) return p.gallerySprite.labels.map(function (_,i) { return p.gallerySprite.src+"#view-"+i; });
     var im = p.images || {}, out = [];
     [im.main, im.front, im.side, im.back].forEach(function (s) { if (s) out.push(s); });
     (im.details || []).forEach(function (s) { if (s) out.push(s); });
@@ -46,15 +47,19 @@
     document.title = p.name + " — Mini Dreams";
 
     /* --- Galería --- */
-    var thumbs = state.images.map(function (src, i) {
-      return '<button class="gallery__thumb' + (i === 0 ? " is-active" : "") + '" data-thumb="' + i + '" aria-label="Ver imagen ' + (i + 1) + '">' +
-        MD.imgTag(src, p.name + " miniatura " + (i + 1)) + '</button>';
+    var thumbs = state.images.map(function(src,i) {
+      var caption=p.gallerySprite ? p.gallerySprite.labels[i] : "Imagen "+(i+1);
+      var position=p.gallerySprite ? ' style="object-position:'+(25*i)+'% center"' : "";
+      var thumbImg=p.gallerySprite
+        ? '<img src="'+esc(p.gallerySprite.src)+'" alt="'+esc(caption)+'"'+position+' loading="lazy">'
+        : MD.imgTag(src,caption);
+      return '<button class="gallery__thumb'+(i===0?' is-active':'')+'" data-thumb="'+i+'" aria-label="Ver '+esc(caption)+'" aria-pressed="'+(i===0)+'">'+thumbImg+'</button>';
     }).join("");
 
     var gallery =
       '<div class="gallery">' +
         '<div class="gallery__main">' +
-          MD.imgTag(state.images[0], p.name, "gallery__img") +
+          (p.gallerySprite ? '<img class="gallery__img gallery__img--sprite" src="'+esc(p.gallerySprite.src)+'" style="object-position:0% center" alt="'+esc(p.name)+'" fetchpriority="high">' : MD.imgTag(state.images[0],p.name,"gallery__img")) +
           '<button class="gallery__zoom" id="galZoom" aria-label="Ampliar imagen"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.2-3.2M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>' +
           (buyable ? "" : '<span class="gallery__badge">' + esc(MD.availabilityLabel(p)) + '</span>') +
           (p.previewArt ? '<span class="gallery__concept">Ilustración conceptual · no es una foto real</span>' : "") +
@@ -76,7 +81,7 @@
     var sizesBlock;
     if (buyable) {
       var sizeBtns = (p.sizes || []).map(function (s) {
-        var out = s.stock > 0;
+        var out = s.available === true || s.stock > 0;
         return '<button class="size' + (out ? "" : " is-out") + '" data-size="' + esc(s.label) + '"' +
           (out ? "" : ' disabled aria-disabled="true"') + '>' + esc(s.label) + (out ? "" : '<span class="size__x">agotada</span>') + '</button>';
       }).join("");
@@ -92,7 +97,7 @@
         '</div>' +
         '<div class="pp-actions">' +
           '<button class="btn btn--primary btn--block btn--lg" id="addBtn" disabled aria-disabled="true">Añadir al carrito</button>' +
-          '<button class="btn btn--ghost btn--block" id="buyBtn" disabled aria-disabled="true" title="El pago se activará próximamente">Comprar ahora</button>' +
+          '<p class="pp-checkoutnote">Elige tu talla y prepara el carrito. El pago en línea estará disponible próximamente.</p>' +
         '</div>';
     } else {
       sizesBlock =
@@ -102,18 +107,25 @@
 
     var devNote = p.__dev ? '<p class="pp-dev">⚠️ Vista previa con <b>datos de desarrollo</b> (no reales) para probar la compra.</p>' : "";
 
+    var finePrint=p.color ? '<div class="pp-attributes"><span>Color <strong>'+esc(p.color)+'</strong></span><span>Unisex</span><span>Abrigadito</span></div>' : "";
+    var highlights=(p.materialHighlights||[]).map(function(h){return '<div class="pp-feature"><span class="pp-feature__mark" aria-hidden="true">✳</span><div><strong>'+esc(h.title)+'</strong><p>'+esc(h.detail)+'</p></div></div>';}).join("");
+    var sizeRows=(p.sizes||[]).map(function(t){return '<tr><th scope="row">'+esc(t.label)+'</th><td>'+esc(t.height||"—")+'</td><td>'+esc(t.weight||"—")+'</td></tr>';}).join("");
+    var guide='<div class="sizeguide"><p>'+esc(p.sizeGuide||"Usa la estatura como referencia.")+'</p><div class="sizeguide__scroll"><table><thead><tr><th>Edad aproximada</th><th>Estatura</th><th>Peso</th></tr></thead><tbody>'+sizeRows+'</tbody></table></div></div>';
+    var shipping=p.shipping ? '<div class="pp-fulfillment"><div><span aria-hidden="true">✈</span><section><strong>Envíos a todo el mundo</strong><p>'+esc(p.shippingTime)+'</p></section></div><div><span aria-hidden="true">↺</span><section><strong>90 días de devolución</strong><p>'+esc(p.returns)+'</p></section></div></div>' : "";
     var info =
       '<div class="pp-info">' +
         '<nav class="pp-crumbs" aria-label="miga de pan"><a href="index.html">Inicio</a> › <a href="index.html#catalogo">Catálogo</a>' + (cat ? ' › <span>' + esc(cat.name) + '</span>' : '') + '</nav>' +
         (p.tag ? '<span class="pp-tag">' + esc(p.tag) + '</span>' : '') +
         '<h1 class="pp-name">' + esc(p.name) + '</h1>' +
-        priceHtml + availHtml + devNote +
+        priceHtml + availHtml + devNote + finePrint +
         '<p class="pp-desc">' + descLong + '</p>' +
+        (highlights?'<div class="pp-highlights">'+highlights+'</div>':"") +
         sizesBlock +
+        shipping +
         '<div class="pp-meta">' +
-          '<details class="pp-acc"><summary>Materiales</summary><p>' + (p.materials ? esc(p.materials) : "<em>Información en preparación.</em>") + '</p></details>' +
-          '<details class="pp-acc"><summary>Cuidados</summary><p>' + (p.care ? esc(p.care) : "<em>Información en preparación.</em>") + '</p></details>' +
-          '<details class="pp-acc" id="sizeGuideAcc"><summary>Guía de tallas</summary><p>' + (p.sizeGuide ? esc(p.sizeGuide) : "<em>Guía de medidas en preparación.</em>") + '</p></details>' +
+        '<details class="pp-acc" id="sizeGuideAcc"><summary>Guía de tallas</summary>'+guide+'</details>' +
+        '<details class="pp-acc"><summary>Material y cuidados</summary><p>'+esc(p.materials||"En preparación")+'</p><p>'+esc(p.care||"En preparación")+'</p></details>' +
+        '<details class="pp-acc"><summary>Envíos y devoluciones</summary><p>'+esc(p.shipping||"")+' '+esc(p.shippingTime||"")+'</p><p>'+esc(p.returns||"")+'</p><p>¿Necesitas ayuda? <a href="mailto:corpusenigma4@gmail.com">Contáctanos</a>.</p></details>' +
         '</div>' +
       '</div>';
 
@@ -127,13 +139,13 @@
   function relatedBlock(p) {
     var myCats = MD.catsOf(p);
     // Primero: productos que comparten alguna colección.
-    var rel = MD.PRODUCTS.filter(function (r) {
+    var rel = MD.PRODUCTS.filter(function (r) { if (r.published === false) return false;
       if (r.id === p.id) return false;
       return MD.catsOf(r).some(function (c) { return myCats.indexOf(c) !== -1; });
     });
     // Rellenar hasta 4 con el resto del catálogo.
     if (rel.length < 4) {
-      MD.PRODUCTS.forEach(function (r) { if (r.id !== p.id && rel.indexOf(r) === -1) rel.push(r); });
+      MD.PRODUCTS.forEach(function (r) { if (r.published !== false && r.id !== p.id && rel.indexOf(r) === -1) rel.push(r); });
     }
     rel = rel.slice(0, 4);
     if (!rel.length) return "";
@@ -155,21 +167,24 @@
       t.addEventListener("click", function () {
         var i = parseInt(t.getAttribute("data-thumb"), 10);
         state.activeImg = i;
-        if (mainImg) mainImg.src = state.images[i] || MD.PLACEHOLDER;
+        if (mainImg) { if (state.product.gallerySprite) {mainImg.style.objectPosition=(25*i)+"% center";mainImg.alt=state.product.name+" — "+state.product.gallerySprite.labels[i];} else mainImg.src=state.images[i] || MD.PLACEHOLDER; }
         $$(".gallery__thumb").forEach(function (x) { x.classList.remove("is-active"); });
         t.classList.add("is-active");
+        $$(".gallery__thumb").forEach(function(x){x.setAttribute("aria-pressed",String(x===t));});
       });
     });
-    function zoom() { if (mainImg) openLightbox(mainImg.src, state.product.name); }
+    function zoom() { if (mainImg) openLightbox(mainImg.src, state.product.name, state.product.gallerySprite ? state.activeImg : null); }
     var zb = $("#galZoom"); if (zb) zb.addEventListener("click", zoom);
     if (mainImg) { mainImg.style.cursor = "zoom-in"; mainImg.addEventListener("click", zoom); }
   }
 
   var lb, lbImg;
-  function openLightbox(src, alt) {
+  function openLightbox(src, alt, spriteIndex) {
     lb = $("#lightbox"); lbImg = $("#lightboxImg");
     if (!lb || !lbImg) return;
     lbImg.src = src; lbImg.alt = alt || "";
+    lbImg.classList.toggle("lightbox__sprite",spriteIndex !== null && spriteIndex !== undefined);
+    lbImg.style.objectPosition = (spriteIndex !== null && spriteIndex !== undefined ? spriteIndex*25 : 50) + "% center";
     lb.classList.add("is-open"); lb.setAttribute("aria-hidden", "false");
     MD.lockScroll(true);
   }
@@ -235,7 +250,7 @@
     MD.initChrome({});
     var slug = getSlug();
     var p = slug ? MD.getBySlug(slug) : null;
-    if (!p) { renderNotFound(); return; }
+    if (!p || p.published === false) { renderNotFound(); return; }
     state.product = p;
     render();
   }
