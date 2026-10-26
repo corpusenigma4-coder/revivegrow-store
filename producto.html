@@ -1,131 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Producto — Mini Dreams</title>
-  <meta name="description" content="Ficha de producto de Mini Dreams." />
-  <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" href="assets/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#FFF9F5" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Baloo+2:wght@500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#FBF8F2">
+  <meta name="description" content="Descubre los disfraces y looks para bebés en Mini Dreams. Información del diseño, tallas y disponibilidad.">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Look para bebé | Mini Dreams</title>
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400,30,1;9..144,500,30,1;9..144,600,30,1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body data-view="product" id="top">
-
-  <!-- ===================== HEADER ===================== -->
+  <a href="#productRoot" class="skip-link">Ir al producto</a>
+  <div class="announcement"><span class="announcement__asterisk">✳</span> Un pequeño universo de looks adorables <span class="announcement__asterisk">✳</span></div>
   <header class="header" id="siteHeader">
     <div class="wrap header__inner">
-      <button class="header__burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
+      <button class="header__burger" id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileNav">
         <span></span><span></span><span></span>
       </button>
-      <a class="brand" href="index.html" aria-label="Mini Dreams — inicio">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-        </span>
-        <span class="brand__text">Mini&nbsp;Dreams</span>
+      <a class="brand" href="index.html#top" aria-label="Mini Dreams, ir al inicio">
+        <span class="brand__text">mini<span class="brand__word">dreams</span><span class="brand__spark">✳</span></span>
       </a>
-      <nav class="nav" aria-label="Principal">
-        <a href="index.html">Inicio</a>
-        <a href="index.html#catalogo">Catálogo</a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="index.html#top">Inicio</a>
+        <a href="index.html#catalogo">Todos los looks</a>
         <a href="index.html#colecciones">Colecciones</a>
       </nav>
       <div class="header__actions">
-        <button class="iconbtn" id="searchToggle" aria-label="Buscar productos" aria-expanded="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.2-3.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <button class="iconbtn" id="searchToggle" type="button" aria-label="Buscar productos" aria-expanded="false" aria-controls="searchBar">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
-        <button class="iconbtn iconbtn--cart" id="cartToggle" aria-label="Abrir carrito">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h2l1.6 10.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L21 8H7"/><circle cx="10" cy="20" r="1.4" fill="currentColor"/><circle cx="18" cy="20" r="1.4" fill="currentColor"/></svg>
+        <button class="iconbtn iconbtn--cart" id="cartToggle" type="button" aria-label="Abrir carrito">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 8h15l-1.2 12H5.7L4.5 8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           <span class="cart-count" id="cartCount" aria-live="polite" hidden>0</span>
         </button>
       </div>
     </div>
-
-    <div class="searchbar" id="searchBar" hidden>
-      <div class="wrap">
-        <label class="sr-only" for="searchInput">Buscar productos</label>
-        <input type="search" id="searchInput" placeholder="Buscar en el catálogo…" autocomplete="off" />
-      </div>
-    </div>
-
+    <div class="searchbar" id="searchBar" hidden><div class="wrap searchbar__inner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.6" cy="10.6" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="1.8"/></svg>
+      <label class="sr-only" for="searchInput">Buscar disfraces</label>
+      <input id="searchInput" type="search" autocomplete="off" placeholder="Busca tu próximo look favorito...">
+      <a href="index.html#catalogo" class="searchbar__go">Ver resultados ↗</a>
+    </div></div>
     <nav class="mobilenav" id="mobileNav" aria-label="Menú móvil" hidden>
-      <a href="index.html">Inicio</a>
-      <a href="index.html#catalogo">Catálogo</a>
-      <a href="index.html#colecciones">Colecciones</a>
+      <a href="index.html#top">Inicio <span>01</span></a>
+      <a href="index.html#catalogo">Todos los looks <span>02</span></a>
+      <a href="index.html#colecciones">Colecciones <span>03</span></a>
     </nav>
   </header>
-
   <main>
-    <div class="wrap pp-wrap">
-      <div id="productRoot">
-        <!-- generado por product.js -->
-        <div class="pp-loading">Cargando producto…</div>
-      </div>
-    </div>
+    <section class="pp-banner" aria-label="Volver al catálogo">
+      <div class="wrap pp-banner__inner"><a href="index.html#catalogo">← Seguir explorando</a><span>THE LITTLE WARDROBE / MINI DREAMS</span></div>
+    </section>
+    <div class="wrap pp-wrap"><div id="productRoot"><div class="pp-loading">Preparando este pequeño sueño…</div></div></div>
+    <section class="pp-promise" aria-label="Conoce Mini Dreams">
+      <div class="wrap pp-promise__inner"><span aria-hidden="true">✳</span><p>Los pequeños momentos merecen grandes recuerdos.</p><a href="index.html#catalogo">Explorar más looks ↗</a></div>
+    </section>
   </main>
-
-  <!-- ===================== FOOTER ===================== -->
   <footer class="footer">
-    <div class="wrap footer__inner">
-      <div class="footer__brand">
-        <a class="brand brand--footer" href="index.html" aria-label="Mini Dreams — inicio">
-          <span class="brand__mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20.5S3.5 14.8 3.5 8.9A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8.5 1.9c0 5.9-8.5 11.6-8.5 11.6z"/></svg>
-          </span>
-          <span class="brand__text">Mini&nbsp;Dreams</span>
-        </a>
-        <p>Ropa y disfraces llenos de ternura para bebés.</p>
+    <div class="wrap">
+      <div class="footer__top"><div><div class="footer__eyebrow">A LITTLE DREAM IN EVERY LOOK</div><h2>Hagamos <em>recuerdos.</em></h2></div><a href="index.html#top" class="footer__back">Volver arriba ↑</a></div>
+      <div class="footer__grid">
+        <div class="footer__about"><a href="index.html#top" class="brand brand--footer" aria-label="Mini Dreams, volver al inicio"><span class="brand__text">mini<span class="brand__word">dreams</span><span class="brand__spark">✳</span></span></a><p>Un universo de pequeños looks y grandes historias. Diseñado para imaginar.</p></div>
+        <nav class="footer__links" aria-label="Explorar"><b>Explorar</b><a href="index.html#catalogo">Todos los looks</a><a href="index.html#colecciones">Colecciones</a><a href="index.html?coleccion=halloween#catalogo">Halloween</a><a href="index.html?coleccion=navidad#catalogo">Navidad</a></nav>
+        <div class="footer__links"><b>Información</b><a href="privacy.html">Privacidad</a><a href="mailto:corpusenigma4@gmail.com">Contacto</a><span>Envíos y devoluciones: pendiente</span></div>
+        <div class="footer__message"><div class="footer__flower">✿</div><b>Pequeñas cosas.<br>Mucho amor.</b></div>
       </div>
-      <nav class="footer__links" aria-label="Tienda">
-        <b>Tienda</b>
-        <a href="index.html#catalogo">Catálogo</a>
-        <a href="index.html#colecciones">Colecciones</a>
-      </nav>
-      <nav class="footer__links" aria-label="Ayuda">
-        <b>Ayuda</b>
-        <a href="privacy.html">Privacidad</a>
-        <span class="footer__pending">Contacto · próximamente</span>
-        <span class="footer__pending">Envíos · próximamente</span>
-        <span class="footer__pending">Cambios y devoluciones · próximamente</span>
-      </nav>
-    </div>
-    <div class="wrap footer__legal">
-      <span>© <span id="year"></span> Mini Dreams. Boutique infantil.</span>
-      <span class="footer__note">Versión de previsualización · información comercial pendiente de confirmar.</span>
+      <div class="footer__bottom"><span>© <span id="year">2026</span> Mini Dreams</span><span>Previsualización de diseño · pagos no habilitados</span><span>Made with ♡</span></div>
     </div>
   </footer>
-
-  <!-- ===================== CHROME COMPARTIDO ===================== -->
-  <div class="overlay" id="overlay" hidden></div>
-
+    <div class="overlay" id="overlay" hidden></div>
   <aside class="cart" id="cartDrawer" aria-hidden="true" aria-label="Carrito de compras">
-    <div class="cart__head">
-      <h3>Tu carrito</h3>
-      <button class="iconbtn" id="cartClose" aria-label="Cerrar carrito">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
+    <div class="cart__head"><div><span class="eyebrow">YOUR LITTLE BAG</span><h3>Tu carrito <span>♡</span></h3></div>
+      <button class="iconbtn" id="cartClose" aria-label="Cerrar carrito" type="button"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
-    <div class="cart__body" id="cartBody"></div>
-    <div class="cart__foot" id="cartFoot"></div>
+    <div class="cart__body" id="cartBody"></div><div class="cart__foot" id="cartFoot"></div>
   </aside>
-
-  <!-- Lightbox para ampliar imágenes de la galería -->
-  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
-    <button class="lightbox__x" id="lightboxClose" aria-label="Cerrar imagen ampliada">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
-    </button>
-    <img id="lightboxImg" alt="" />
-  </div>
-
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
-  <script src="data/products.js"></script>
-  <script src="store.js"></script>
-  <script src="paypal.js"></script>
-  <script src="product.js"></script>
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+    <button class="lightbox__x" id="lightboxClose" type="button" aria-label="Cerrar imagen">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button><img id="lightboxImg" alt="">
+  </div>
+  <script src="data/products.js"></script><script src="store.js"></script><script src="paypal.js"></script><script src="product.js"></script><script src="experience.js"></script>
 </body>
 </html>
