@@ -147,7 +147,7 @@ var PRODUCTS = [
     materials: "Algodón orgánico interlock premium, según las especificaciones facilitadas para la colección.",
     sizeGuide: "Elige la talla según la estatura de tu bebé. Si está entre dos medidas, recomendamos la mayor.",
     featured: true
-  }
+  },
   {
     id: "disfraz-conejito",
     slug: "conejito",
