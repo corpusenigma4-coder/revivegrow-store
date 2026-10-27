@@ -52,6 +52,17 @@ assert.equal(bunny.sizes.length,5);
 assert.ok(bunny.sizes.every(s=>s.available===true));
 for(const src of [bunny.images.main,bunny.images.front,bunny.images.side,bunny.images.back,...bunny.images.details])assert.ok(fs.existsSync(path.join(root,src)),"high-res image missing "+src);
 assert.equal(bunny.galleryLabels.length,5);
-assert.ok(data.PRODUCTS.filter(p=>p.published!==false).length===1,"only Bunny Dream should be public");
+assert.equal(data.PRODUCTS.filter(p=>p.published!==false).length,2,"Exactly Bunny Dream and Pumpkin Dream should be public");
+const pumpkin=data.PRODUCTS.find(p=>p.slug==="calabaza");
+assert.equal(pumpkin.name,"Pijama Calabacita · Pumpkin Dream");
+assert.equal(pumpkin.price,19.35);
+assert.deepEqual(Array.from(pumpkin.categories),["halloween"]);
+assert.equal(pumpkin.sizes.length,5);
+assert.ok(pumpkin.sizes.every(t=>t.available===true),"all supplied sizes must be selectable");
+assert.equal(pumpkin.galleryLabels.length,5);
+assert.ok(pumpkin.shipping.includes("todo el mundo"));
+assert.ok(pumpkin.returns.includes("90"));
+for(const src of [pumpkin.images.main,pumpkin.images.front,pumpkin.images.side,pumpkin.images.back,...pumpkin.images.details])
+  assert.ok(fs.existsSync(path.join(root,src)),"Full resolution Pumpkin Dream photo missing: "+src);
 assert.equal(bunny.returns.includes("90"),true);
 console.log("OK: structure, unique IDs, valid links and assets, catalog data, responsive styles, safe PayPal settings.");
