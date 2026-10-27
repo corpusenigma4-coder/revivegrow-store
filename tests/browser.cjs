@@ -76,7 +76,8 @@ async function run(){
   await page.locator('#sizes .size:not([disabled])').nth(2).click();
   assert.equal(await page.locator("#addBtn").isDisabled(),false);
   await page.locator("#addBtn").click();
-  assert.ok((await page.locator("#cartFoot").textContent()).includes("19.35"),"Pumpkin Dream subtotal");
+  assert.ok((await page.locator("#cartBody").textContent()).includes("19.35"),"Pumpkin Dream line item price");
+  assert.ok((await page.locator("#cartFoot").textContent()).includes("42.90"),"Two products subtotal");
   assert.ok((await page.locator("#cartFoot").textContent()).includes("en preparación"),"PayPal still disabled");
   await page.locator("#cartClose").click();
   await page.goto(BASE+"producto.html?slug=does-not-exist",{waitUntil:"domcontentloaded"});
