@@ -14,7 +14,7 @@ async function run(){
   assert.equal(await page.locator("#productGrid .card").count(),4,"All four catalog designs should be visible");
   assert.equal(await page.locator("#productGrid a.card").count(),2,"Bunny Dream and Pumpkin Dream must both open detail pages");
   assert.equal(await page.locator("#productGrid article.card--coming").count(),2,"Only unfinished designs are coming soon");
-  assert.ok((await page.locator("#productGrid a.card").getAttribute("href")).includes("slug=conejito"));
+  assert.ok((await page.locator('#productGrid a.card[href="producto.html?slug=conejito"]').getAttribute("href")).includes("slug=conejito"));
   assert.equal(await page.locator(".card__concept").count(),2,"Two preview-only designs show concept labels");
   assert.equal(await page.locator("#catalogCount").textContent(),"4 diseños en esta selección");
   assert.ok((await page.locator('#productGrid a.card[href="producto.html?slug=calabaza"]').textContent()).includes("19.35"),"Pumpkin catalog card must have real $19.35 price");
