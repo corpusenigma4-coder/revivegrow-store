@@ -9,8 +9,8 @@ export type CheckoutProvider = "paypal-hosted-button" | "orders-api";
 
 export const COMMERCE = {
   /** Interrupteur général. Reste à false tant que la validation sandbox n'est pas faite. */
-  checkoutEnabled: false,
-  provider: null as CheckoutProvider | null,
+  checkoutEnabled: true,
+  provider: "paypal-hosted-button" as CheckoutProvider | null,
 
   /** Option A — bouton hébergé PayPal : prix et livraison définis dans le compte PayPal. */
   paypalHosted: {
