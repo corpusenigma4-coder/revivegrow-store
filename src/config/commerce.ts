@@ -21,12 +21,12 @@ export const COMMERCE = {
   /** SDK officiel des boutons PayPal (paiement PayPal + carte bancaire si PayPal la propose). */
   paypalButtons: {
     /**
-     * ID client PUBLIC d'une application REST PayPal (Live) — developer.paypal.com → Apps & Credentials.
-     * Obligatoire pour le tunnel complet (e-mail + adresse transmis à PayPal) : l'ID « BAA… » des boutons
-     * hébergés est refusé par PayPal pour créer une commande (403 NOT_AUTHORIZED, constaté le 04/11/2026).
-     * Tant qu'il est null, le tunnel utilise le bouton hébergé (PayPal collecte e-mail et adresse).
+     * ID client PUBLIC autorisé à créer des commandes (celui de l'ancienne boutique, vérifié le 04/11/2026 :
+     * commande créée à 32,40 EUR pour corpusenigma4@gmail.com avec l'adresse saisie sur le site).
+     * L'ID « BAAD… » du bouton hébergé est refusé pour cet usage (403 NOT_AUTHORIZED).
+     * Si null : repli sur le bouton hébergé.
      */
-    clientId: null as string | null,
+    clientId: "BAAQ-8n51AMovSQJMduZqWI5bu7ey6YdzkXHePhKeqSIIzkxH37XKZmzIWFFXQeoXaoOhGR0tXEvtFEE0w" as string | null,
     sdkParams: "components=buttons&enable-funding=card&disable-funding=venmo,paylater&currency=EUR&locale=fr_FR&intent=capture",
   },
 
