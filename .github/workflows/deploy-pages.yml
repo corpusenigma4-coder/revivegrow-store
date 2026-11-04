@@ -37,6 +37,23 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Rafraîchir la source Pages si l'API l'autorise
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          code=$(curl -sS -L -X PUT -o /tmp/pages-refresh -w '%{http_code}' \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Content-Type: application/json' \
+            -d '{"build_type":"workflow"}' \
+            "https://api.github.com/repos/corpusenigma4-coder/revivegrow-store/pages")
+          echo "Rafraîchissement Pages HTTP $code"
+          case "$code" in
+            200|204) echo 'Configuration GitHub Actions reconfirmée.' ;;
+            403) echo 'L’API exige les droits administrateur du propriétaire; réglage manuel nécessaire.' ;;
+            *) cat /tmp/pages-refresh; echo 'La configuration existante reste inchangée.' ;;
+          esac
       - name: Débloquer le déploiement Pages précédent
         env:
           GH_TOKEN: ${{ github.token }}
