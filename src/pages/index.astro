@@ -21,9 +21,7 @@ import Anatomy from "../components/Anatomy.astro";
 import HeightConfigurator from "../components/HeightConfigurator.astro";
 import Offer from "../components/Offer.astro";
 import HowToBuy from "../components/HowToBuy.astro";
-import SupplierProof from "../components/SupplierProof.astro";
 import Faq from "../components/Faq.astro";
-import Contact from "../components/Contact.astro";
 import StickyBuy from "../components/StickyBuy.astro";
 import PayMethods from "../components/PayMethods.astro";
 import { CAMPAIGN } from "../config/campaign";
@@ -112,14 +110,6 @@ import heroImg from "../assets/images/pack-trio.webp";
     </div>
   </section>
 
-  <!-- 7 · AVIS -->
-  <section class="section" aria-labelledby="proof-title">
-    <div class="container">
-      <SectionHead eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." lead="Nous distinguons toujours les données du fabricant des avis de nos propres clients." />
-      <SupplierProof />
-    </div>
-  </section>
-
   <!-- 8 · FAQ -->
   <section class="section section--lin" id="questions" aria-labelledby="faq-title">
     <div class="container faqwrap">
@@ -128,9 +118,19 @@ import heroImg from "../assets/images/pack-trio.webp";
     </div>
   </section>
 
-  <!-- 9 · CONTACT -->
-  <section class="section" id="contact" aria-label="Contact">
-    <div class="container"><Contact /></div>
+  <!-- CLÔTURE -->
+  <section class="close" aria-labelledby="close-title">
+    <div class="container close__inner">
+      <div class="close__txt">
+        <p class="t-eyebrow close__eyebrow">{CAMPAIGN.name}</p>
+        <h2 id="close-title" class="t-h2">Votre oreiller, et deux cadeaux.</h2>
+        <p class="close__meta">32,40&nbsp;€ TTC · 2 cadeaux offerts · Livraison gratuite · 90 jours pour changer d’avis</p>
+      </div>
+      <div class="close__cta">
+        <Button href="/commande/" variant="light" size="lg" block data-cta="offre">Obtenir l’offre</Button>
+        <p class="close__mail">Une question&nbsp;? <a href="mailto:corpusenigma4@gmail.com">corpusenigma4@gmail.com</a></p>
+      </div>
+    </div>
   </section>
 
   <StickyBuy slot="after" />
@@ -201,6 +201,17 @@ import heroImg from "../assets/images/pack-trio.webp";
 
   .offer-sec { background: linear-gradient(180deg, var(--c-ivoire) 0%, var(--c-lin) 100%); }
 
+  .close { background: var(--c-nuit); color: var(--c-ivoire); padding-block: clamp(3rem, 2rem + 4vw, 5.5rem); }
+  .close__inner { display: grid; gap: var(--s-6); align-items: center; }
+  @media (min-width: 960px) { .close__inner { grid-template-columns: 1.4fr 1fr; gap: var(--s-8); } }
+  .close__txt { display: grid; gap: var(--s-3); }
+  .close__eyebrow { color: var(--c-sauge-claire); }
+  .close__meta { color: rgb(247 243 236 / 0.75); font-size: var(--fs-sm); }
+  .close__cta { display: grid; gap: var(--s-3); }
+  .close__cta :global(.btn) { min-height: 58px; font-size: 1.0625rem; }
+  .close__mail { font-size: var(--fs-sm); color: rgb(247 243 236 / 0.75); text-align: center; }
+  .close__mail a { color: var(--c-ivoire); overflow-wrap: anywhere; }
+  :global(html[data-offer="closed"]) .close { display: none; }
   .faqwrap { display: grid; gap: var(--s-4); }
   @media (min-width: 960px) { .faqwrap { grid-template-columns: 1fr 1.6fr; gap: var(--s-8); align-items: start; } }
 </style>

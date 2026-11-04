@@ -43,7 +43,7 @@
   /* Espacements (échelle 4/8) */
   --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
   --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 7rem;
-  --section-y: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+  --section-y: clamp(3.25rem, 2.2rem + 5vw, 8rem);
 
   /* Mise en page */
   --container: 1240px;
