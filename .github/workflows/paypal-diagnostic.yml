@@ -1,0 +1,24 @@
+# Diagnostic du paiement PayPal (sans approbation ni paiement). Lancé sur les branches claude/** ou manuellement.
+name: Diagnostic PayPal
+on:
+  push:
+    branches: ['claude/**']
+    paths: ['tests/e2e/paypal-diagnostic.mjs', 'src/pages/commande/**', 'src/lib/order.ts', '.github/workflows/paypal-diagnostic.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Création de commande PayPal (site publié + build de la branche)
+        run: LOCAL_DIST=1 node tests/e2e/paypal-diagnostic.mjs

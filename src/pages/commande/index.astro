@@ -277,6 +277,13 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
   const setStatus = (t: string) => { status.textContent = t; };
   const setError = (html: string | null) => { errorBox.hidden = !html; errorBox.innerHTML = html ?? ""; };
   const contact = `<a href="mailto:${CONTACT.email}">${CONTACT.email}</a>`;
+  /** Extrait un code lisible de l'erreur PayPal (ex. UNPROCESSABLE_ENTITY / POSTAL_CODE_REQUIRED). */
+  function paypalErrorCode(err: unknown): string {
+    const msg = String((err as any)?.message ?? err ?? "");
+    const issue = msg.match(/"issue"\s*:\s*"([A-Z_]+)"/)?.[1];
+    const name = msg.match(/"name"\s*:\s*"([A-Z_]+)"/)?.[1] ?? msg.match(/\b([A-Z][A-Z_]{5,})\b/)?.[1];
+    return [name, issue].filter(Boolean).join(" / ") || msg.slice(0, 80).replace(/[<>]/g, "") || "inconnu";
+  }
   let mounted = false;
   let reference = "";
 
@@ -309,7 +316,12 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
           }
         },
         onCancel: () => { setStatus(""); setError("Paiement annulé : aucun montant n’a été prélevé. Vous pouvez reprendre quand vous le souhaitez."); },
-        onError: () => { setStatus(""); setError(`Le paiement n’a pas pu aboutir. Vérifiez vos informations puis réessayez, ou écrivez-nous à ${contact}.`); },
+        onError: (err: unknown) => {
+          const code = paypalErrorCode(err);
+          console.error("[REVIVE GROW] Erreur PayPal", code, err);
+          setStatus("");
+          setError(`Le paiement n’a pas pu aboutir. Vérifiez vos informations puis réessayez, ou écrivez-nous à ${contact}.<br><small class="pay__code">Code PayPal : ${code}</small>`);
+        },
       };
       const jobs: Promise<unknown>[] = [];
       const paypalBtn = pp.Buttons({ ...handlers, fundingSource: pp.FUNDING.PAYPAL, style: { layout: "vertical", color: "gold", shape: "pill", label: "paypal", height: 50 } });
@@ -434,6 +446,7 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
   .pay__unavail { font-size: var(--fs-sm); color: var(--c-encre-douce); }
   .pay__status { min-height: 1.2em; font-size: var(--fs-sm); color: var(--c-encre-douce); text-align: center; }
   .pay__error { padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: rgb(147 85 58 / 0.08); font-size: var(--fs-sm); line-height: 1.5; color: var(--c-terre); }
+  .pay__error :global(.pay__code) { display: block; margin-top: 6px; font-size: 0.75rem; opacity: 0.85; overflow-wrap: anywhere; }
   .pay__error :global(a), .pay__error :global(.pay__retry) { color: inherit; font-weight: 600; text-decoration: underline; overflow-wrap: anywhere; }
   .pay__trust { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: var(--fs-xs); color: var(--c-encre-douce); text-align: center; }
   .pay__trust :global(.icon) { color: var(--c-sauge); flex: none; }
