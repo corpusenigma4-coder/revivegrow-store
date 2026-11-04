@@ -8,7 +8,7 @@ const { target = "/oreiller-cervical-ajustable#commander" } = Astro.props;
 <div class="sticky" data-sticky aria-hidden="true" inert>
   <div class="sticky__txt">
     <span class="sticky__price t-tabular">{formatPrice(CAMPAIGN.price)}</span>
-    <span class="sticky__sub">2 cadeaux offerts · Livraison offerte</span>
+    <span class="sticky__sub">2 cadeaux offerts · Livraison gratuite</span>
   </div>
   <a class="sticky__btn" href={target}>Commander</a>
 </div>
@@ -41,6 +41,7 @@ const { target = "/oreiller-cervical-ajustable#commander" } = Astro.props;
   .sticky__txt { display: grid; line-height: 1.2; }
   .sticky__price { font-family: var(--f-serif); font-size: 1.5rem; font-weight: 600; }
   .sticky__sub { font-size: var(--fs-xs); color: var(--c-encre-douce); }
-  .sticky__btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.5em; border-radius: var(--r-pill); background: var(--c-encre); color: var(--c-ivoire); font-weight: 600; font-size: 0.9375rem; text-decoration: none; }
+  .sticky__btn { display: inline-flex; align-items: center; min-height: 50px; padding: 0 1.5em; border-radius: var(--r-pill); background: var(--c-encre); color: var(--c-ivoire); font-weight: 600; font-size: 0.9375rem; text-decoration: none; }
   @media (min-width: 960px) { .sticky { display: none; } }
+  @media (max-width: 959px) { :global(.ftr) { padding-bottom: calc(var(--s-6) + 76px + env(safe-area-inset-bottom)); } }
 </style>

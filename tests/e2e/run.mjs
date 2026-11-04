@@ -45,8 +45,9 @@ for (const path of PAGES) {
     const page = await ctx.newPage();
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-    page.on("requestfailed", (r) => errors.push("échec de chargement : " + r.url()));
+    page.on("console", (m) => { if (m.type() === "error" && !(m.location()?.url || "").includes("paypal.com")) errors.push(m.text()); });
+    page.on("requestfailed", (r) => { if (!r.url().startsWith("https://www.paypal.com/")) errors.push("échec de chargement : " + r.url()); });
+    await page.route("https://www.paypal.com/**", (r) => r.abort());
     const res = await page.goto(BASE + path, { waitUntil: "networkidle" });
     assert.equal(res.status(), 200);
     assert.equal(await page.getAttribute("html", "lang"), "fr-FR");
@@ -102,12 +103,41 @@ await t("politiques : pages en français, mentions manquantes signalées, aucune
     assert.match(r, /À compléter/);
   }
 });
-await t("pas de faux paiement : bouton désactivé, aucun SDK de paiement chargé", async () => {
+await t("paiement : bouton hébergé PayPal unique par page, SDK officiel (PR #15) conservé", async () => {
+  for (const path of ["/oreiller-cervical-ajustable", "/"]) {
+    const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
+    const sdk = [];
+    await page.route("https://www.paypal.com/**", (r) => { sdk.push(r.request().url()); r.abort(); });
+    await page.goto(BASE + path);
+    assert.equal(await page.locator("[data-checkout]").count(), 1, `${path} : un seul emplacement de paiement`);
+    await page.locator("[data-pp]").first().scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    assert.equal(sdk.length, 1, `${path} : SDK chargé une seule fois`);
+    assert.match(sdk[0], /client-id=BAADEUfdEuuHimsc_A7p393C8mMrLLqiuSAoQT_ffCMJ0mfNs_Vn5nXVEExDk-DrZJfJIEhv1BmPniL3Pw&components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR$/);
+    assert.match(await page.content(), /SZCKF3B62AX6A/);
+    await ctx.close();
+  }
+});
+await t("paiement indisponible : message d’erreur clair, aucune fausse confirmation", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
+  await page.route("https://www.paypal.com/**", (r) => r.abort());
   await page.goto(BASE + "/oreiller-cervical-ajustable");
-  assert.equal(await page.locator("#commander button[data-offer-action]").isDisabled(), true);
-  assert.equal(await page.locator("script[src*='paypal.com']").count(), 0);
-  assert.equal(await page.locator("#commander .pack__tag--gift").count(), 2);
+  const err = page.locator("#commander [data-pp-error]");
+  await err.waitFor({ state: "visible", timeout: 5000 });
+  assert.match(await err.textContent(), /n’a pas pu se charger/);
+  const body = await page.locator("body").innerText();
+  assert.ok(!/(paiement (confirmé|réussi|accepté)|merci pour votre commande)/i.test(body), "fausse confirmation");
+  await ctx.close();
+});
+await t("le bloc d’achat montre le contenu, le prix et la livraison gratuite avant le paiement", async () => {
+  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
+  await page.route("https://www.paypal.com/**", (r) => r.abort());
+  await page.goto(BASE + "/oreiller-cervical-ajustable");
+  const box = await page.locator("#commander").innerText();
+  for (const re of [/Pack Sommeil REVIVE GROW/, /32,40\u00A0€/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /OFFERT/i, /Livraison gratuite/i, /3 à 5 jours ouvrés/]) assert.match(box, re);
+  const payTop = await page.locator("#paiement").evaluate((el) => el.getBoundingClientRect().top);
+  const priceTop = await page.locator("#commander .price").evaluate((el) => el.getBoundingClientRect().top);
+  assert.ok(priceTop < payTop, "le prix précède le paiement");
   await ctx.close();
 });
 
@@ -169,7 +199,7 @@ await t("repères posés sur la photo, alignés à 360, 390 et 1440 px", async (
         return { n: p.dataset.pt, x: ((cx - f.x) / f.width) * 100, y: ((cy - f.y) / f.height) * 100, w: r.width };
       });
     });
-    const expect = { 2: [50, 50], 3: [15.5, 48], 4: [84.5, 48] };
+    const expect = { 1: [50, 52], 2: [84, 48], 3: [50, 22] };
     assert.equal(res.length, 3);
     for (const r of res) {
       assert.ok(Math.abs(r.x - expect[r.n][0]) < 0.6 && Math.abs(r.y - expect[r.n][1]) < 0.6, `repère ${r.n} décalé à ${vp.width}px`);
@@ -181,9 +211,10 @@ await t("repères posés sur la photo, alignés à 360, 390 et 1440 px", async (
 await t("toucher un repère met en évidence le point correspondant", async () => {
   const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
   await page.goto(BASE + "/#forme");
-  await page.locator(".ana__pin[data-pt='2']").first().tap();
+  await page.locator(".ana__pin[data-pt='1']").first().tap();
   await page.waitForTimeout(400);
-  assert.equal(await page.locator(".ana__item[data-pt='2']").first().evaluate((el) => el.classList.contains("is-on")), true);
+  assert.equal(await page.locator(".ana__item[data-pt='1']").first().evaluate((el) => el.classList.contains("is-on")), true);
+  assert.match(await page.locator("[data-ana-live]").first().textContent(), /Creux central/);
   await ctx.close();
 });
 
@@ -237,6 +268,7 @@ if (SHOTS) {
   for (const [name, opts] of [["mobile", iphone], ["desktop", { ...desktop, deviceScaleFactor: 1 }]]) {
     for (const [slug, path] of [["accueil", "/"], ["produit", "/oreiller-cervical-ajustable"], ["contact", "/contact"]]) {
       const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
+      await page.route("https://www.paypal.com/**", (r) => r.abort());
       await page.goto(BASE + path, { waitUntil: "networkidle" });
       await prep(page);
       await page.screenshot({ path: `screenshots/${slug}-${name}-ecran1.png` });
@@ -245,6 +277,7 @@ if (SHOTS) {
     }
     for (const id of ["difference", "forme", "offre"]) {
       const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
+      await page.route("https://www.paypal.com/**", (r) => r.abort());
       await page.goto(BASE + "/", { waitUntil: "networkidle" });
       await prep(page);
       await page.evaluate(() => { const h = document.querySelector("[data-header]"); if (h) h.style.position = "static"; });

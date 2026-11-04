@@ -30,6 +30,6 @@ export const FAQ = [
   },
   {
     q: "Comment puis-je payer ?",
-    a: "Par PayPal ou par carte bancaire, sans création de compte obligatoire. Le montant total, toutes taxes comprises, est affiché avant la validation de la commande.",
+    a: "Le paiement se fait sur la page officielle et sécurisée de PayPal, avec votre compte PayPal ou, lorsque PayPal le propose, directement par carte bancaire. Le montant total, 32,40&nbsp;€ TTC livraison comprise, est affiché avant la validation. Nous n’avons jamais accès à vos données bancaires.",
   },
 ];

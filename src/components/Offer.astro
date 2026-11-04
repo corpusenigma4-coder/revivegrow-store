@@ -6,10 +6,9 @@ import { Image } from "astro:assets";
 import { CAMPAIGN } from "../config/campaign";
 import { PILLOW, MASK, STRIPS, SERVICE } from "../config/product";
 import Price from "./Price.astro";
-import Button from "./Button.astro";
 import Icon from "./Icon.astro";
 import Pending from "./Pending.astro";
-import OfferDeadline from "./OfferDeadline.astro";
+import PayPalCheckout from "./PayPalCheckout.astro";
 import pillowImg from "../assets/images/detail-profil.webp";
 import maskImg from "../assets/images/masque-hero.webp";
 import stripsImg from "../assets/images/bandelettes-boite.webp";
@@ -36,7 +35,7 @@ import stripsImg from "../assets/images/bandelettes-boite.webp";
         <div class="item__body">
           <p class="item__tag item__tag--gift"><Icon name="gift" size={14} /> Offert</p>
           <h3 class="t-h4">{MASK.name}</h3>
-          <p class="t-muted t-small">Cavités pour les yeux, bande réglable. Pour faire l’obscurité.</p>
+          <p class="t-muted t-small">Cavités pour les yeux, bande réglable. Conçu pour bloquer la lumière.</p>
         </div>
       </li>
       <li class="item" data-reveal>
@@ -50,19 +49,17 @@ import stripsImg from "../assets/images/bandelettes-boite.webp";
     </ul>
 
     <aside class="card" aria-label="Prix et conditions du pack" data-reveal>
-      <p class="card__ribbon">Édition Pré-Black Friday</p>
+      <p class="card__ribbon">Offre exclusive</p>
       <p class="card__for">Le pack complet</p>
       <Price size="xl" />
       <p class="card__sub">pour les trois articles, toutes taxes comprises</p>
       <ul class="card__chips" role="list">
         <li><Icon name="gift" size={16} /> 2 cadeaux offerts</li>
         <li><Icon name="truck" size={16} /> {SERVICE.delivery.label}</li>
-        <li><Icon name="return" size={16} /> Retours 90 jours</li>
+        <li><Icon name="return" size={16} /> 90 jours pour changer d’avis</li>
       </ul>
-      <hr class="piping" />
-      <OfferDeadline />
-      <Button href="/oreiller-cervical-ajustable#commander" size="lg" block>Découvrir le pack</Button>
-      <p class="card__fine">Livraison {SERVICE.delivery.delay} en {SERVICE.delivery.zone}. Paiement PayPal ou carte bancaire.</p>
+      <p class="card__fine">{SERVICE.delivery.label} {SERVICE.delivery.delay} en {SERVICE.delivery.zone}.</p>
+      <PayPalCheckout slot="paypal-hosted-offre" />
     </aside>
   </div>
 </div>
@@ -94,6 +91,6 @@ import stripsImg from "../assets/images/bandelettes-boite.webp";
   .card__sub { margin-top: calc(-1 * var(--s-3)); font-size: var(--fs-sm); color: var(--c-encre-douce); }
   .card__chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
   .card__chips li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--r-pill); background: var(--c-sauge-pale); color: var(--c-sauge); font-size: 0.8125rem; font-weight: 600; }
-  .card__fine { font-size: var(--fs-xs); color: var(--c-encre-douce); text-align: center; }
+  .card__fine { font-size: var(--fs-sm); color: var(--c-encre-douce); }
   :global(html[data-offer="closed"]) .card { display: none; }
 </style>

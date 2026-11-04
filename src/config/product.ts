@@ -7,7 +7,7 @@ export type Spec = { label: string; value: string; verified: boolean; note?: str
 
 export const PILLOW = {
   sku: "RG-OREILLER-CERVICAL",
-  name: "Oreiller Cervical Ergonomique Ajustable",
+  name: "Oreiller cervical ergonomique ajustable",
   shortName: "L’oreiller cervical",
   heights: [
     { cm: 8, layers: 0, label: "Basse", detail: "Noyau seul" },
@@ -20,11 +20,11 @@ export const PILLOW = {
    * `x: null` → le point n'est pas visible de dessus : il est montré sur une photo de détail.
    */
   anatomy: [
-    { n: 1, title: "Soutien cervical avant", text: "Un bord relevé qui accompagne la nuque, visible de profil.", x: null, y: null, detail: "profil" },
-    { n: 2, title: "Zone centrale abaissée", text: "Le creux où la tête vient se poser.", x: 50, y: 50, detail: null },
-    { n: 3, title: "Côté gauche", text: "Un appui large pour dormir sur le côté.", x: 15.5, y: 48, detail: null },
-    { n: 4, title: "Côté droit", text: "La même largeur, pour changer de côté pendant la nuit.", x: 84.5, y: 48, detail: null },
-    { n: 5, title: "Housse zippée", text: "La fermeture donne accès aux inserts de réglage.", x: null, y: null, detail: "fermeture" },
+    { n: 1, title: "Creux central", text: "La zone abaissée où la tête vient se poser.", x: 50, y: 52, detail: null },
+    { n: 2, title: "Côtés larges", text: "Deux appuis amples, à gauche et à droite, pour dormir sur le côté.", x: 84, y: 48, detail: null },
+    { n: 3, title: "Contours anatomiques", text: "Des bords incurvés qui suivent la forme des épaules.", x: 50, y: 22, detail: null },
+    { n: 4, title: "Soutien cervical avant", text: "Un bord relevé qui accompagne la nuque, visible de profil.", x: null, y: null, detail: "profil" },
+    { n: 5, title: "Housse zippée", text: "La fermeture donne accès aux inserts de réglage de la hauteur.", x: null, y: null, detail: "fermeture" },
   ],
   specs: [
     { label: "Garnissage", value: "Mousse viscoélastique (mémoire de forme)", verified: false },
@@ -39,7 +39,7 @@ export const PILLOW = {
 
 export const MASK = {
   sku: "RG-MASQUE",
-  name: "Masque de Sommeil Ergonomique",
+  name: "Masque de sommeil premium",
   color: "Graphite",
   points: [
     "Cavités pour les yeux, sans pression sur les paupières",
@@ -55,7 +55,7 @@ export const MASK = {
 
 export const STRIPS = {
   sku: "RG-BANDELETTES",
-  name: "Bandelettes Nasales Premium",
+  name: "Bandelettes nasales premium",
   /** L'emballage photographié indique « Bandes Nasales » : nom à harmoniser. */
   points: [
     "Se posent à l’extérieur du nez",
