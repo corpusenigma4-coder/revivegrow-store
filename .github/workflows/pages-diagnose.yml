@@ -1,0 +1,34 @@
+name: Diagnose Pages 404
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+  pages: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS and HTTP for live site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set +e
+          echo '=== DNS A / CNAME ==='
+          dig +short revivegrow.store A
+          dig +short revivegrow.store AAAA
+          dig +short revivegrow.store CNAME
+          dig +short corpusenigma4-coder.github.io A
+          echo '=== GitHub Pages REST info ==='
+          curl -fsS --max-time 15 -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GH_TOKEN" "https://api.github.com/repos/corpusenigma4-coder/revivegrow-store/pages" | jq '{status, url, html_url, cname, custom_404, build_type, source, https_enforced, https_certificate, pending_domain_unverified_at}'
+          echo '=== HTTP responses ==='
+          for u in "https://revivegrow.store/" "https://revivegrow.store/oreiller-cervical-ajustable/" "https://corpusenigma4-coder.github.io/revivegrow-store/" "https://corpusenigma4-coder.github.io/"; do
+            echo "URL: $u"
+            curl -sSL --max-time 20 -o /tmp/response -D /tmp/headers -w 'HTTP %{http_code} IP %{remote_ip} FINAL %{url_effective}\n' "$u"
+            grep -Ei '^(server|x-github-request-id|x-served-by|location|content-type|date|cache-control):' /tmp/headers | tail -10
+            head -c 120 /tmp/response | tr '\n' ' '
+            echo
+          done
+          echo '=== Host via GitHub Pages IP override ==='
+          curl -sSL --max-time 20 --resolve revivegrow.store:443:185.199.108.153 -o /dev/null -w 'HTTP %{http_code} IP %{remote_ip}\n' https://revivegrow.store/
