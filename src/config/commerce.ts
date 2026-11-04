@@ -20,6 +20,13 @@ export const COMMERCE = {
 
   /** SDK officiel des boutons PayPal (paiement PayPal + carte bancaire si PayPal la propose). */
   paypalButtons: {
+    /**
+     * ID client PUBLIC d'une application REST PayPal (Live) — developer.paypal.com → Apps & Credentials.
+     * Obligatoire pour le tunnel complet (e-mail + adresse transmis à PayPal) : l'ID « BAA… » des boutons
+     * hébergés est refusé par PayPal pour créer une commande (403 NOT_AUTHORIZED, constaté le 04/11/2026).
+     * Tant qu'il est null, le tunnel utilise le bouton hébergé (PayPal collecte e-mail et adresse).
+     */
+    clientId: null as string | null,
     sdkParams: "components=buttons&enable-funding=card&disable-funding=venmo,paylater&currency=EUR&locale=fr_FR&intent=capture",
   },
 
