@@ -24,16 +24,26 @@ for (const [label, ctxOpts] of [["mobile (iPhone 13)", devices["iPhone 13"]], ["
   const s1 = await page.locator("[data-step='commande']").innerText().catch(() => "");
   log("Récapitulatif 32,40 € + livraison gratuite", /32,40\s?€/.test(s1) && /Gratuite/i.test(s1) ? "oui" : "NON");
   await page.click("[data-step='commande'] button");
-  // Données de test : aucune commande n'est créée tant qu'on ne clique pas sur un bouton PayPal.
-  await page.fill("#co-email", "verification@example.com"); await page.fill("#co-name", "Test Vérification");
-  await page.fill("#co-address1", "1 rue de Test"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
-  await page.click("[data-step='livraison'] button[type=submit]");
+  const mode = await page.getAttribute("[data-co]", "data-mode");
+  log("Mode du tunnel", mode === "full" ? "3 étapes (boutons PayPal)" : "2 étapes (bouton hébergé PayPal)");
+  if (mode === "full") {
+    // Données de test : aucune commande n'est créée tant qu'on ne clique pas sur un bouton PayPal.
+    await page.fill("#co-email", "verification@example.com"); await page.fill("#co-name", "Test Vérification");
+    await page.fill("#co-address1", "1 rue de Test"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
+    await page.click("[data-step='livraison'] button[type=submit]");
+  }
   const state = await page.waitForFunction(() => document.querySelector("[data-co]")?.dataset.pay || false, null, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => "délai dépassé");
   log("Boutons PayPal officiels", state === "ready" ? "chargés" : `NON (${state})`);
   if (state !== "ready") ok = false;
-  const cardVisible = await page.locator("#pp-card").isVisible().catch(() => false);
-  const cardUnavailable = await page.locator("[data-card-unavailable]").isVisible().catch(() => false);
-  log("Bouton carte bancaire (PayPal)", cardVisible && !cardUnavailable ? "proposé par PayPal (éligible)" : "non proposé par PayPal");
+  if (mode === "full") {
+    const cardVisible = await page.locator("#pp-card").isVisible().catch(() => false);
+    const cardUnavailable = await page.locator("[data-card-unavailable]").isVisible().catch(() => false);
+    log("Bouton carte bancaire (PayPal)", cardVisible && !cardUnavailable ? "proposé par PayPal (éligible)" : "non proposé par PayPal");
+  } else {
+    await page.waitForTimeout(2500);
+    let txt = ""; for (const f of page.frames().filter((f) => /paypal\.com/.test(f.url()))) txt += " " + (await f.locator("body").innerText({ timeout: 4000 }).catch(() => ""));
+    log("Options dans le bouton hébergé", txt.replace(/\s+/g, " ").trim().slice(0, 160) || "(non lisible)");
+  }
   log("Total à payer", (await page.locator(".recap__total").innerText().catch(() => "?")).replace(/\s+/g, " "));
   await page.waitForTimeout(2500);
   const tag = label.startsWith("mobile") ? "mobile" : "desktop";
