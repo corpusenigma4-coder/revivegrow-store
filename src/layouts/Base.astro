@@ -1,0 +1,74 @@
+---
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/500-italic.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource-variable/instrument-sans/wght.css";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import { SITE } from "../config/site";
+import { CAMPAIGN } from "../config/campaign";
+import { campaignPhase } from "../lib/campaign";
+import CampaignBar from "../components/CampaignBar.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+}
+const { title, description = SITE.description, image = "/og-revivegrow.jpg", noindex = false, jsonLd = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/"), SITE.url).href;
+const robots = SITE.indexable && !noindex ? "index, follow" : "noindex, nofollow";
+const fullTitle = title.includes("REVIVE GROW") ? title : `${title} · REVIVE GROW`;
+const initialPhase = campaignPhase(Date.now(), CAMPAIGN);
+const org = { "@context": "https://schema.org", "@type": "Organization", name: SITE.name, url: SITE.url };
+---
+<!doctype html>
+<html lang="fr-FR" data-phase={initialPhase}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#F7F3EC" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="REVIVE GROW" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, SITE.url).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline define:vars={{ s: Date.parse(CAMPAIGN.startsAt), e: Date.parse(CAMPAIGN.endsAt) }}>
+      (function (d) { d.classList.add("js"); var n = Date.now(); if (n > e) d.dataset.phase = "ended"; else if (n < s) d.dataset.phase = "upcoming"; })(document.documentElement);
+    </script>
+    {[org, ...jsonLd].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <CampaignBar />
+    <Header />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer />
+    <slot name="after" />
+    <script>
+      import "../scripts/campaign-client";
+      const els = document.querySelectorAll("[data-reveal]");
+      if ("IntersectionObserver" in window && els.length) {
+        const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
+        }), { rootMargin: "0px 0px -8% 0px" });
+        els.forEach((el) => io.observe(el));
+      } else els.forEach((el) => el.classList.add("is-visible"));
+    </script>
+  </body>
+</html>

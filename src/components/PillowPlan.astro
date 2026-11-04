@@ -1,0 +1,43 @@
+---
+/** Vue de dessus annotée de l'oreiller — « fiche d'atelier ». Schéma, non à l'échelle. */
+const marks = [
+  { n: 1, x: 300, y: 70, label: "Appui cervical avant" },
+  { n: 2, x: 300, y: 160, label: "Zone centrale abaissée" },
+  { n: 3, x: 92, y: 150, label: "Côté large" },
+  { n: 4, x: 508, y: 150, label: "Côté large" },
+  { n: 5, x: 300, y: 262, label: "Housse zippée" },
+];
+---
+<figure class="plan">
+  <svg viewBox="0 0 600 320" role="img" aria-labelledby="plan-t">
+    <title id="plan-t">Vue de dessus de l’oreiller : appui avant, zone centrale abaissée, côtés larges, housse zippée</title>
+    <path class="plan__outline" d="M 60 70 C 60 40, 90 30, 130 34 C 190 40, 230 64, 300 64 C 370 64, 410 40, 470 34 C 510 30, 540 40, 540 70 L 540 250 C 540 280, 510 290, 470 286 C 410 280, 370 256, 300 256 C 230 256, 190 280, 130 286 C 90 290, 60 280, 60 250 Z" />
+    <path class="plan__inner" d="M 180 112 C 230 100, 370 100, 420 112 C 440 150, 440 170, 420 208 C 370 220, 230 220, 180 208 C 160 170, 160 150, 180 112 Z" />
+    <path class="plan__zip" d="M 120 272 C 190 266, 230 248, 300 248 C 370 248, 410 266, 480 272" />
+    {marks.map((m) => (
+      <g class="plan__mark">
+        <circle cx={m.x} cy={m.y} r="13" />
+        <text x={m.x} y={m.y + 5}>{m.n}</text>
+      </g>
+    ))}
+  </svg>
+  <figcaption class="plan__cap">
+    <ol role="list">
+      {marks.filter((m, i, a) => a.findIndex((x) => x.label === m.label) === i).map((m) => (
+        <li><span class="t-num">{m.n === 3 ? "3·4" : m.n}</span>{m.label}</li>
+      ))}
+    </ol>
+  </figcaption>
+</figure>
+<style>
+  .plan { margin: 0; display: grid; gap: var(--s-5); }
+  .plan svg { width: 100%; height: auto; }
+  .plan__outline { fill: var(--c-blanc); stroke: var(--c-sable); stroke-width: 1.5; }
+  .plan__inner { fill: var(--c-lin); stroke: var(--c-sable-pale); stroke-width: 1; stroke-dasharray: 4 5; }
+  .plan__zip { fill: none; stroke: var(--c-encre-douce); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  .plan__mark circle { fill: var(--c-encre); }
+  .plan__mark text { font: italic 500 16px var(--f-serif); font-variant-numeric: lining-nums; fill: var(--c-ivoire); text-anchor: middle; }
+  .plan__cap ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--s-2) var(--s-5); font-size: var(--fs-sm); }
+  .plan__cap li { display: flex; gap: var(--s-3); align-items: baseline; padding-block: var(--s-2); border-bottom: var(--hairline); }
+  .plan__cap .t-num { color: var(--c-sauge); min-width: 1.8em; }
+</style>

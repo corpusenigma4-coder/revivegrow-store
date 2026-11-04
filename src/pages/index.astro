@@ -1,0 +1,278 @@
+---
+import { Image, Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Button from "../components/Button.astro";
+import Price from "../components/Price.astro";
+import Icon from "../components/Icon.astro";
+import Pending from "../components/Pending.astro";
+import HeightConfigurator from "../components/HeightConfigurator.astro";
+import PillowPlan from "../components/PillowPlan.astro";
+import SupplierProof from "../components/SupplierProof.astro";
+import Services from "../components/Services.astro";
+import Faq from "../components/Faq.astro";
+import StickyBuy from "../components/StickyBuy.astro";
+import Countdown from "../components/Countdown.astro";
+import { CAMPAIGN } from "../config/campaign";
+import { PILLOW, MASK, STRIPS, SERVICE } from "../config/product";
+import { formatParisDayMonth } from "../lib/format";
+import { FAQ } from "../data/faq";
+import heroImg from "../assets/images/pack-trio.webp";
+import layersImg from "../assets/images/oreiller-couches.webp";
+import maskImg from "../assets/images/masque-hero.webp";
+import maskCavImg from "../assets/images/masque-cavites.webp";
+import stripsImg from "../assets/images/bandelettes-boite.webp";
+import stripsPoseImg from "../assets/images/bandelettes-pose.webp";
+const until = formatParisDayMonth(CAMPAIGN.endsAt);
+---
+<Base title="REVIVE GROW · L’oreiller cervical ergonomique réglable en hauteur">
+  <!-- HERO -->
+  <section class="hero" data-hero aria-labelledby="hero-title">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <p class="t-eyebrow">Oreiller cervical ergonomique</p>
+        <h1 id="hero-title" class="t-display hero__title">L’oreiller qui <em>s’ajuste</em> à&nbsp;vous.</h1>
+      </div>
+      <p class="t-lead hero__lead">Un noyau en mousse à mémoire de forme et des inserts amovibles&nbsp;: vous choisissez la hauteur qui vous convient, en quelques secondes.</p>
+      <div class="hero__media">
+        <Picture src={heroImg} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[480, 760, 1100, 1672]} sizes="(min-width: 960px) 56vw, 100vw" alt="L’oreiller cervical REVIVE GROW, accompagné du masque de sommeil graphite et d’une boîte de bandelettes nasales" loading="eager" fetchpriority="high" class="hero__img" />
+        <p class="hero__badge"><Icon name="gift" size={18} /> 2 cadeaux offerts</p>
+      </div>
+      <div class="hero__buy">
+        <div class="hero__price">
+          <Price size="lg" />
+          <p class="hero__incl">Oreiller + masque de sommeil + bandelettes nasales</p>
+        </div>
+        <div class="hero__ctas">
+          <Button href="/oreiller-cervical-ajustable#commander" size="lg">Découvrir le pack</Button>
+          <Button href="#reglage" variant="ghost">Voir le réglage</Button>
+        </div>
+        <ul class="hero__facts" role="list">
+          <li><Icon name="truck" size={18} />{SERVICE.delivery.label}</li>
+          <li><Icon name="return" size={18} />{SERVICE.returns.days} jours pour changer d’avis</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 · LE PACK -->
+  <section class="section section--lin" id="pack" aria-labelledby="pack-title">
+    <div class="container">
+      <SectionHead num="01" eyebrow="Le pack Pré-Black Friday" id="pack-title" title="Un oreiller, deux attentions." lead="Les trois articles sont livrés ensemble, pour un seul prix. Les cadeaux sont déjà inclus : vous n’avez rien à ajouter." />
+      <div class="trio">
+        <article class="trio__card trio__card--main" data-reveal>
+          <Image src={layersImg} alt="L’oreiller ouvert : le noyau et ses couches de réglage" widths={[480, 736]} sizes="(min-width: 960px) 50vw, 100vw" class="trio__img" />
+          <div class="trio__body">
+            <p class="trio__tag">L’essentiel</p>
+            <h3 class="t-h3">{PILLOW.name}</h3>
+            <p class="t-muted">Trois hauteurs grâce aux inserts amovibles. Housse textile zippée.</p>
+          </div>
+        </article>
+        <article class="trio__card" data-reveal>
+          <Image src={maskImg} alt="Masque de sommeil ergonomique graphite REVIVE GROW" widths={[480, 900]} sizes="(min-width: 960px) 25vw, 100vw" class="trio__img" />
+          <div class="trio__body">
+            <p class="trio__tag trio__tag--gift">Offert</p>
+            <h3 class="t-h4">{MASK.name}</h3>
+            <p class="t-muted t-small">Cavités pour les yeux, bande réglable. Coloris graphite.</p>
+          </div>
+        </article>
+        <article class="trio__card" data-reveal>
+          <Image src={stripsImg} alt="Boîte de bandelettes nasales REVIVE GROW et quatre bandelettes beiges" widths={[480, 750]} sizes="(min-width: 960px) 25vw, 100vw" class="trio__img" />
+          <div class="trio__body">
+            <p class="trio__tag trio__tag--gift">Offert</p>
+            <h3 class="t-h4">{STRIPS.name}</h3>
+            <p class="t-muted t-small">Boîte de 30 bandelettes<Pending note="Quantité à confirmer auprès du fournisseur" />, à poser sur l’extérieur du nez.</p>
+          </div>
+        </article>
+      </div>
+      <div class="pack-total" data-reveal>
+        <div>
+          <p class="t-eyebrow">Les trois articles</p>
+          <Price size="lg" />
+        </div>
+        <p class="pack-total__until">
+          Offre valable jusqu’au {until} 2026 à 23&nbsp;h&nbsp;59, heure de Paris.
+          <span class="pack-total__cd"><Countdown /></span>
+        </p>
+        <Button href="/oreiller-cervical-ajustable#commander" size="lg">Découvrir le pack</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · RÉGLAGE -->
+  <section class="section section--nuit" id="reglage" aria-labelledby="reglage-title">
+    <div class="container">
+      <SectionHead num="02" eyebrow="Le réglage" id="reglage-title" tone="ivoire" title="Composez votre hauteur." lead="Choisissez une hauteur et regardez l’oreiller se recomposer. Puis suivez les cinq gestes du réglage." />
+      <HeightConfigurator />
+    </div>
+  </section>
+
+  <!-- 03 · DÉTAILS -->
+  <section class="section" aria-labelledby="details-title">
+    <div class="container details">
+      <div>
+        <SectionHead num="03" eyebrow="La forme" id="details-title" title="Pensé dans le détail." lead="Chaque courbe a une fonction. Voici comment l’oreiller est dessiné." />
+        <ul class="feat" role="list">
+          {PILLOW.features.map((f) => (
+            <li class="feat__item" data-reveal>
+              <h3 class="t-h4">{f.title}</h3>
+              <p class="t-muted t-small">{f.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="details__plan" data-reveal><PillowPlan /></div>
+    </div>
+  </section>
+
+  <!-- 04 · CADEAUX -->
+  <section class="section section--lin" aria-labelledby="gifts-title">
+    <div class="container">
+      <SectionHead num="04" eyebrow="2 cadeaux offerts" id="gifts-title" title="Pour compléter vos nuits." lead="Deux accessoires choisis pour accompagner l’oreiller, inclus dans le pack." />
+      <div class="gifts">
+        <article class="gift" data-reveal>
+          <div class="gift__media">
+            <Image src={maskImg} alt="Masque de sommeil graphite, vue de face" widths={[600, 1100]} sizes="(min-width: 960px) 34vw, 100vw" class="gift__img" />
+            <Image src={maskCavImg} alt="Intérieur du masque : cavités pour les yeux" widths={[300, 507]} sizes="(min-width: 960px) 14vw, 40vw" class="gift__img gift__img--detail" />
+          </div>
+          <div class="gift__body">
+            <p class="trio__tag trio__tag--gift">Offert</p>
+            <h3 class="t-h3">{MASK.name}</h3>
+            <ul class="ticks" role="list">{MASK.points.map((p) => <li><Icon name="check" size={18} />{p}</li>)}</ul>
+            <p class="t-small t-muted">Profondeur des cavités&nbsp;: 11&nbsp;mm<Pending /></p>
+          </div>
+        </article>
+        <article class="gift" data-reveal>
+          <div class="gift__media">
+            <Image src={stripsImg} alt="Boîte de bandelettes nasales premium" widths={[600, 750]} sizes="(min-width: 960px) 34vw, 100vw" class="gift__img" />
+            <Image src={stripsPoseImg} alt="Bandelette posée sur l’arête du nez" widths={[350]} sizes="(min-width: 960px) 14vw, 40vw" class="gift__img gift__img--detail" />
+          </div>
+          <div class="gift__body">
+            <p class="trio__tag trio__tag--gift">Offert</p>
+            <h3 class="t-h3">{STRIPS.name}</h3>
+            <ul class="ticks" role="list">{STRIPS.points.map((p) => <li><Icon name="check" size={18} />{p}</li>)}</ul>
+            <p class="t-small t-muted">Les bandelettes ne sont pas un traitement. En cas de gêne respiratoire persistante, demandez conseil à un professionnel de santé.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · AVIS -->
+  <section class="section" aria-labelledby="proof-title">
+    <div class="container">
+      <SectionHead num="05" eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." lead="Nous distinguons toujours les données du fabricant des avis de nos propres clients." />
+      <SupplierProof />
+    </div>
+  </section>
+
+  <!-- 06 · SERVICES -->
+  <section class="section section--lin" aria-labelledby="svc-title">
+    <div class="container">
+      <SectionHead num="06" eyebrow="Achat serein" id="svc-title" title="Commander en toute confiance." />
+      <Services />
+    </div>
+  </section>
+
+  <!-- 07 · FAQ -->
+  <section class="section" id="questions" aria-labelledby="faq-title">
+    <div class="container faqwrap">
+      <SectionHead num="07" eyebrow="Questions fréquentes" id="faq-title" title="Vos questions." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="final" aria-labelledby="final-title">
+    <div class="container final__inner">
+      <p class="t-eyebrow final__eyebrow">{CAMPAIGN.name} · jusqu’au {until}</p>
+      <h2 id="final-title" class="t-h2">Votre oreiller, et deux cadeaux.</h2>
+      <Price size="lg" tone="ivoire" />
+      <Button href="/oreiller-cervical-ajustable#commander" variant="light" size="lg">Découvrir le pack</Button>
+    </div>
+  </section>
+
+  <StickyBuy slot="after" />
+</Base>
+
+<style>
+  /* HERO */
+  .hero { padding-block: var(--s-4) var(--s-8); }
+  .hero__grid { display: grid; gap: var(--s-5); grid-template-areas: "copy" "media" "buy" "lead"; }
+  .hero__copy { grid-area: copy; display: grid; gap: var(--s-4); }
+  .hero__title em { font-style: italic; color: var(--c-sauge); }
+  .hero__lead { grid-area: lead; max-width: 34rem; }
+  .hero__media { grid-area: media; position: relative; margin-inline: calc(-1 * var(--gutter)); }
+  .hero__img { width: 100%; height: auto; aspect-ratio: 1672 / 736; object-fit: cover; background: var(--c-studio); }
+  .hero__badge {
+    position: absolute; left: var(--gutter); bottom: var(--s-4);
+    display: inline-flex; align-items: center; gap: 0.5em; padding: 0.5em 1.1em;
+    border: 1px solid var(--c-sauge); border-radius: var(--r-pill); background: rgb(255 253 249 / 0.92);
+    font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; color: var(--c-sauge);
+  }
+  @media (min-width: 960px) { .hero__badge { left: var(--s-5); bottom: var(--s-5); font-size: 1.2rem; } }
+  .hero__buy { grid-area: buy; display: grid; gap: var(--s-5); }
+  .hero__incl { margin-top: var(--s-2); font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); }
+  .hero__ctas :global(.btn--primary) { flex: 1 1 220px; }
+  .hero__facts { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .hero__facts li { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .hero__facts :global(.icon) { color: var(--c-sauge); }
+  @media (min-width: 960px) {
+    .hero { padding-block: var(--s-7) var(--s-9); }
+    .hero__grid { grid-template-columns: 0.85fr 1.15fr; grid-template-areas: "copy media" "lead media" "buy media"; column-gap: var(--s-8); row-gap: var(--s-5); align-items: end; }
+    .hero__lead { align-self: start; }
+    .hero__copy { align-self: end; }
+    .hero__buy { align-self: start; }
+    .hero__media { margin: 0; }
+    .hero__media { background: var(--c-studio); border-radius: var(--r-lg); overflow: hidden; }
+    .hero__img { aspect-ratio: 4 / 3.3; object-fit: contain; -webkit-mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); }
+    .hero__ctas :global(.btn--primary) { flex: 0 0 auto; }
+  }
+
+  /* TRIO */
+  .trio { display: grid; gap: var(--s-4); }
+  .trio__card { display: grid; align-content: start; background: var(--c-blanc); border-radius: var(--r-lg); overflow: hidden; }
+  .trio__img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
+  .trio__body { display: grid; gap: var(--s-2); padding: var(--s-5); }
+  .trio__tag { justify-self: start; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-encre-douce); }
+  .trio__tag--gift { padding: 3px 10px; border-radius: var(--r-pill); background: var(--c-sauge-pale); color: var(--c-sauge); }
+  @media (min-width: 960px) {
+    .trio { grid-template-columns: 2fr 1fr 1fr; }
+    .trio__card--main .trio__img { aspect-ratio: 16 / 9; }
+  }
+  .pack-total { display: grid; gap: var(--s-4); align-items: center; margin-top: var(--s-6); padding: var(--s-5); border: 1px solid var(--c-sable); border-radius: var(--r-lg); }
+  .pack-total__until { font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .pack-total__cd { display: block; margin-top: var(--s-1); color: var(--c-encre); }
+  @media (min-width: 860px) { .pack-total { grid-template-columns: auto 1fr auto; gap: var(--s-7); } }
+  :global(html[data-phase="ended"]) .pack-total { display: none; }
+
+  /* DÉTAILS */
+  .details { display: grid; gap: var(--s-7); align-items: center; }
+  @media (min-width: 960px) { .details { grid-template-columns: 1fr 1.1fr; gap: var(--s-8); } }
+  .feat { display: grid; gap: 0; }
+  @media (min-width: 560px) { .feat { grid-template-columns: 1fr 1fr; column-gap: var(--s-6); } }
+  .feat__item { display: grid; gap: var(--s-1); padding-block: var(--s-4); border-top: var(--hairline); }
+
+  /* CADEAUX */
+  .gifts { display: grid; gap: var(--s-6); }
+  @media (min-width: 960px) { .gifts { grid-template-columns: 1fr 1fr; } }
+  .gift { display: grid; gap: var(--s-5); align-content: start; }
+  .gift__media { position: relative; }
+  .gift__img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: var(--r-lg); }
+  .gift__img--detail { position: absolute; right: var(--s-4); bottom: calc(-1 * var(--s-5)); width: 38%; aspect-ratio: 1; border: 4px solid var(--c-lin); border-radius: var(--r-md); box-shadow: var(--shadow-soft); }
+  .gift__body { display: grid; gap: var(--s-3); padding-top: var(--s-4); }
+  .ticks { display: grid; gap: var(--s-2); }
+  .ticks li { display: flex; gap: var(--s-3); align-items: flex-start; }
+  .ticks :global(.icon) { color: var(--c-sauge); margin-top: 3px; }
+
+  /* FAQ */
+  .faqwrap { display: grid; gap: var(--s-4); }
+  @media (min-width: 960px) { .faqwrap { grid-template-columns: 1fr 1.6fr; gap: var(--s-8); align-items: start; } }
+
+  /* FINAL */
+  .final { background: var(--c-nuit); color: var(--c-ivoire); padding-block: var(--s-8); }
+  .final__inner { display: grid; justify-items: center; gap: var(--s-5); text-align: center; }
+  .final__eyebrow { color: var(--c-sauge-claire); }
+  :global(html[data-phase="ended"]) .final { display: none; }
+</style>

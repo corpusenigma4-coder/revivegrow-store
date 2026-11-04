@@ -1,0 +1,102 @@
+---
+import Base from "../layouts/Base.astro";
+import Gallery from "../components/Gallery.astro";
+import BuyBox from "../components/BuyBox.astro";
+import SectionHead from "../components/SectionHead.astro";
+import HeightConfigurator from "../components/HeightConfigurator.astro";
+import Faq from "../components/Faq.astro";
+import Pending from "../components/Pending.astro";
+import Services from "../components/Services.astro";
+import SupplierProof from "../components/SupplierProof.astro";
+import { PILLOW, MASK, STRIPS } from "../config/product";
+import { FAQ } from "../data/faq";
+import packImg from "../assets/images/pack-trio.webp";
+import layersImg from "../assets/images/oreiller-couches.webp";
+import maskImg from "../assets/images/masque-hero.webp";
+import maskProfImg from "../assets/images/masque-profils.webp";
+import maskCavImg from "../assets/images/masque-cavites.webp";
+import stripsImg from "../assets/images/bandelettes-boite.webp";
+import stripsPoseImg from "../assets/images/bandelettes-pose.webp";
+
+const images = [
+  { src: packImg, alt: "Le pack : oreiller cervical, masque de sommeil et bandelettes nasales" },
+  { src: layersImg, alt: "L’oreiller ouvert, avec ses couches de réglage" },
+  { src: maskImg, alt: "Masque de sommeil graphite" },
+  { src: maskProfImg, alt: "Masque de sommeil, vues de face et de profil" },
+  { src: maskCavImg, alt: "Cavités intérieures du masque" },
+  { src: stripsImg, alt: "Boîte de bandelettes nasales" },
+  { src: stripsPoseImg, alt: "Bandelette posée sur le nez" },
+];
+const groups = [
+  { title: PILLOW.name, specs: PILLOW.specs },
+  { title: `${MASK.name} · offert`, specs: MASK.specs },
+  { title: `${STRIPS.name} · offertes`, specs: STRIPS.specs },
+];
+---
+<Base title="Oreiller Cervical Ergonomique Ajustable" description="Oreiller cervical ergonomique réglable en hauteur (8, 11 ou 14 cm), livré avec un masque de sommeil et des bandelettes nasales offerts. Livraison sous 3 à 5 jours ouvrés en France métropolitaine.">
+  <div class="container crumbs"><a href="/">Accueil</a> <span aria-hidden="true">/</span> <span aria-current="page">L’oreiller cervical</span></div>
+  <section class="pdp container" data-hero aria-label="Le pack">
+    <div class="pdp__gallery"><Gallery images={images} /></div>
+    <div class="pdp__buy"><BuyBox headingLevel="h1" /></div>
+  </section>
+
+  <section class="section section--nuit" id="reglage" aria-labelledby="reglage-title">
+    <div class="container">
+      <SectionHead num="01" eyebrow="Le réglage" id="reglage-title" tone="ivoire" title="Composez votre hauteur." lead="Trois hauteurs, une seule housse. Choisissez, puis suivez les cinq gestes." />
+      <HeightConfigurator />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="specs-title">
+    <div class="container">
+      <SectionHead num="02" eyebrow="Caractéristiques" id="specs-title" title="Fiche technique." lead="Les valeurs marquées « à confirmer » seront validées sur la fiche du fournisseur avant publication." />
+      <div class="specs">
+        {groups.map((g) => (
+          <div class="specs__group">
+            <h3 class="t-h4">{g.title}</h3>
+            <dl>
+              {g.specs.map((s) => (
+                <div class="specs__row"><dt>{s.label}</dt><dd>{s.value}{!s.verified && <Pending note={s.note} />}</dd></div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--lin" aria-labelledby="proof-title">
+    <div class="container">
+      <SectionHead num="03" eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." />
+      <SupplierProof />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="svc-title">
+    <div class="container">
+      <SectionHead num="04" eyebrow="Achat serein" id="svc-title" title="Livraison, retours et garanties." />
+      <Services />
+    </div>
+  </section>
+
+  <section class="section section--lin" aria-labelledby="faq-title">
+    <div class="container--narrow">
+      <SectionHead num="05" eyebrow="Questions fréquentes" id="faq-title" title="Vos questions." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+</Base>
+<style>
+  .crumbs { padding-block: var(--s-4); font-size: var(--fs-xs); color: var(--c-encre-douce); }
+  .crumbs a { color: inherit; }
+  .pdp { display: grid; gap: var(--s-6); padding-bottom: var(--s-8); }
+  @media (min-width: 960px) {
+    .pdp { grid-template-columns: 1.25fr 1fr; gap: var(--s-8); align-items: start; }
+    .pdp__buy { position: sticky; top: calc(var(--header-h) + var(--s-5)); }
+  }
+  .specs { display: grid; gap: var(--s-6); }
+  @media (min-width: 960px) { .specs { grid-template-columns: repeat(3, 1fr); } }
+  .specs__group { display: grid; gap: var(--s-3); align-content: start; }
+  .specs__row { display: grid; grid-template-columns: minmax(8rem, 40%) 1fr; gap: var(--s-3); padding-block: var(--s-3); border-bottom: var(--hairline); font-size: var(--fs-sm); }
+  .specs__row dt { color: var(--c-encre-douce); }
+</style>

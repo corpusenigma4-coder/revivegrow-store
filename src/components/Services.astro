@@ -1,0 +1,32 @@
+---
+import Icon from "./Icon.astro";
+import { SERVICE } from "../config/product";
+const items = [
+  { icon: "truck", t: SERVICE.delivery.label, d: "Expédition en France métropolitaine. Les frais de livraison sont indiqués avant le paiement.", href: "/livraison-retours", l: "Livraison et retours" },
+  { icon: "return", t: `${SERVICE.returns.days} jours pour changer d’avis`, d: "Une garantie commerciale qui s’ajoute à vos droits légaux, sans les remplacer.", href: "/garantie-90-jours", l: "Conditions de la garantie" },
+  { icon: "shield", t: "Vos droits, en toute clarté", d: "Rétractation de 14 jours et garantie légale de conformité de 2 ans.", href: "/garanties-legales", l: "Garanties légales" },
+  { icon: "lock", t: "Paiement sécurisé", d: "PayPal ou carte bancaire, sans création de compte obligatoire.", href: "/cgv", l: "Conditions de vente" },
+] as const;
+---
+<ul class="svc" role="list">
+  {items.map((s) => (
+    <li class="svc__item" data-reveal>
+      <span class="svc__ic"><Icon name={s.icon} size={28} /></span>
+      <div class="svc__txt">
+        <h3 class="t-h4">{s.t}</h3>
+        <p class="t-muted t-small">{s.d}</p>
+        <a href={s.href} class="svc__link">{s.l}</a>
+      </div>
+    </li>
+  ))}
+</ul>
+<style>
+  .svc { display: grid; gap: var(--s-5) var(--s-6); }
+  @media (min-width: 640px) { .svc { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1100px) { .svc { grid-template-columns: repeat(4, 1fr); } }
+  .svc__item { display: grid; grid-template-columns: auto 1fr; gap: var(--s-4); align-items: start; padding-top: var(--s-5); border-top: 1px solid var(--c-sable); }
+  .svc__ic { color: var(--c-sauge); padding-top: 2px; }
+  .svc__txt { display: grid; gap: var(--s-1); }
+  .svc__link { justify-self: start; font-size: var(--fs-sm); font-weight: 600; margin-top: var(--s-2); text-decoration-color: var(--c-sable); }
+  @media (min-width: 1100px) { .svc__item { grid-template-columns: 1fr; } }
+</style>

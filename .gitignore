@@ -1,4 +1,8 @@
 node_modules/
-package.json
-package-lock.json
-.kiro/
+dist/
+.astro/
+screenshots/
+.DS_Store
+.env
+.env.*
+!.env.example

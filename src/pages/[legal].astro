@@ -1,0 +1,43 @@
+---
+import Base from "../layouts/Base.astro";
+import Pending from "../components/Pending.astro";
+import Icon from "../components/Icon.astro";
+import { LEGAL, type LegalPage } from "../data/legal";
+import { SITE } from "../config/site";
+export function getStaticPaths() {
+  return LEGAL.map((page) => ({ params: { legal: page.slug }, props: { page } }));
+}
+const { page } = Astro.props as { page: LegalPage };
+---
+<Base title={page.title} description={page.lead}>
+  <article class="legal container--narrow">
+    <p class="t-eyebrow">Informations</p>
+    <h1 class="t-h2">{page.title}</h1>
+    <p class="t-lead">{page.lead}</p>
+    {page.basis && <p class="legal__basis">Référence : {page.basis}</p>}
+    {SITE.preview && (
+      <p class="legal__draft" role="note"><Icon name="info" size={18} /> Structure de la page (phase 1). Le texte définitif sera rédigé avec vos informations, puis relu par un professionnel du droit avant publication.</p>
+    )}
+    <hr class="piping" />
+    {page.sections.map((s, i) => (
+      <section class="legal__sec">
+        <h2 class="t-h3"><span class="t-num legal__n">{i + 1}.</span> {s.h}</h2>
+        {s.p && <p>{s.p}</p>}
+        {s.missing && (
+          <ul class="legal__missing" role="list">
+            {s.missing.map((m) => <li>{m}<Pending /></li>)}
+          </ul>
+        )}
+      </section>
+    ))}
+  </article>
+</Base>
+<style>
+  .legal { display: grid; gap: var(--s-5); padding-block: var(--s-7) var(--s-9); }
+  .legal__basis { font-size: var(--fs-sm); color: var(--c-encre-douce); font-style: italic; }
+  .legal__draft { display: flex; gap: var(--s-3); padding: var(--s-4); border-radius: var(--r-md); background: var(--c-lin); font-size: var(--fs-sm); }
+  .legal__sec { display: grid; gap: var(--s-3); }
+  .legal__n { color: var(--c-sauge); }
+  .legal__missing { display: grid; gap: var(--s-2); font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .legal__missing li { padding-left: var(--s-4); border-left: 2px solid var(--c-sable-pale); }
+</style>

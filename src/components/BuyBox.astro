@@ -1,0 +1,81 @@
+---
+/**
+ * Bloc d'achat du pack. En phase 1, le paiement n'est PAS actif :
+ * le bouton est désactivé et le dit clairement (aucun faux bouton de paiement).
+ */
+import { CAMPAIGN } from "../config/campaign";
+import { PACK, SERVICE } from "../config/product";
+import { SITE } from "../config/site";
+import { formatParisDateTime } from "../lib/format";
+import Price from "./Price.astro";
+import PackList from "./PackList.astro";
+import Countdown from "./Countdown.astro";
+import Button from "./Button.astro";
+import Icon from "./Icon.astro";
+import Pending from "./Pending.astro";
+interface Props { headingLevel?: "h1" | "h2"; id?: string }
+const { headingLevel: H = "h2", id = "commander" } = Astro.props;
+const checkoutEnabled = false;
+---
+<div class="buy" id={id}>
+  <div class="buy__live">
+    <p class="t-eyebrow buy__eyebrow">{CAMPAIGN.name}</p>
+    <H class="t-h3 buy__title">{PACK.name}</H>
+    <p class="buy__promise">L’oreiller cervical et <strong>2 cadeaux offerts</strong>, pour un seul prix.</p>
+    <Price size="lg" />
+
+    <PackList />
+
+    <div class="buy__deadline">
+      <Icon name="clock" size={18} />
+      <p>
+        Offre valable jusqu’au <time datetime={CAMPAIGN.endsAt}>{formatParisDateTime(CAMPAIGN.endsAt)}</time> (heure de Paris).
+        <span class="buy__urgency" data-phase-message="urgency" hidden></span>
+      </p>
+      <Countdown />
+    </div>
+
+    <Button variant="primary" size="lg" block disabled={!checkoutEnabled} data-offer-action>
+      <Icon name="bag" size={18} /> Commander le pack
+    </Button>
+    {SITE.preview && !checkoutEnabled && (
+      <p class="buy__preview" role="note">Aperçu : le paiement (PayPal et carte bancaire) sera activé en phase 3, après validation complète en environnement de test.</p>
+    )}
+
+    <ul class="buy__reassure" role="list">
+      <li><Icon name="truck" size={20} /><span>{SERVICE.delivery.label} <span class="t-muted">· {SERVICE.delivery.zone}</span></span></li>
+      <li><Icon name="return" size={20} /><span><a href="/garantie-90-jours">Garantie satisfait ou remboursé 90 jours</a>, en plus de vos droits légaux</span></li>
+      <li><Icon name="lock" size={20} /><span>Paiement sécurisé PayPal ou carte bancaire<Pending note="Carte bancaire : selon l’éligibilité du compte PayPal" /></span></li>
+    </ul>
+  </div>
+
+  <div class="buy__ended" role="status">
+    <p class="t-eyebrow">Offre terminée</p>
+    <p class="t-h3">L’offre Pré-Black Friday s’est terminée le {formatParisDateTime(CAMPAIGN.endsAt)}.</p>
+    <p class="t-muted">Les conditions actuelles seront affichées ici.<Pending note="Offre post-campagne à définir par la marque" /></p>
+  </div>
+</div>
+<style>
+  .buy { display: grid; gap: var(--s-5); }
+  .buy__live { display: grid; gap: var(--s-5); }
+  .buy__eyebrow { color: var(--c-terre); }
+  .buy__title { margin-top: calc(-1 * var(--s-3)); }
+  .buy__promise { color: var(--c-encre-douce); margin-top: calc(-1 * var(--s-3)); }
+  .buy__promise strong { color: var(--c-encre); font-weight: 600; }
+  .buy__deadline {
+    display: grid; grid-template-columns: auto 1fr; gap: var(--s-2) var(--s-3); align-items: start;
+    padding: var(--s-4); border-radius: var(--r-md); background: var(--c-lin); font-size: var(--fs-sm); line-height: 1.5;
+  }
+  .buy__deadline :global(.icon) { margin-top: 2px; color: var(--c-sauge); }
+  .buy__deadline :global(.cd) { grid-column: 2; font-size: 0.9375rem; }
+  .buy__urgency { display: block; margin-top: 2px; font-weight: 600; color: var(--c-terre); }
+  .buy__urgency[hidden] { display: none; }
+  .buy__preview { margin-top: calc(-1 * var(--s-3)); font-size: var(--fs-xs); line-height: 1.5; color: var(--c-terre); }
+  .buy__reassure { display: grid; gap: var(--s-3); font-size: var(--fs-sm); line-height: 1.45; }
+  .buy__reassure li { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; }
+  .buy__reassure :global(.icon) { color: var(--c-sauge); }
+  .buy__reassure a { color: var(--c-encre); }
+  .buy__ended { display: none; gap: var(--s-3); padding: var(--s-5); border: var(--hairline); border-radius: var(--r-md); }
+  :global(html[data-phase="ended"]) .buy__live { display: none; }
+  :global(html[data-phase="ended"]) .buy__ended { display: grid; }
+</style>
