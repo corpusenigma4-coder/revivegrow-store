@@ -149,7 +149,7 @@ await t("tous les boutons d’achat (en-tête, hero, offre, fiche, barre mobile)
 });
 const MOCK_HOSTED = `window.__hosted = [];
   window.paypal = { HostedButtons(o) { window.__hosted.push(o); return { render(sel) { const b = document.createElement("div"); b.dataset.mock = "hosted"; b.textContent = "MOCK hosted"; document.querySelector(sel).appendChild(b); return Promise.resolve(); } }; } };`;
-const FULL_MODE = /clientId:\s*"A/.test(readFileSync("src/config/commerce.ts", "utf8").split("paypalButtons")[1] || "");
+const FULL_MODE = /clientId:\s*"[^"]+"/.test(readFileSync("src/config/commerce.ts", "utf8").split("paypalButtons")[1] || "");
 await t("parcours : « Obtenir l’offre » → Commande → Suivant → Livraison → Suivant → Paiement (bouton hébergé SZCKF3B62AX6A)", async () => {
   const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
   const sdk = [];
@@ -164,7 +164,39 @@ await t("parcours : « Obtenir l’offre » → Commande → Suivant → Livrais
   assert.equal((await s1.locator("button").textContent()).trim(), "Suivant");
   assert.equal(await page.locator("input[type=tel], [name*=phone], [name*=tel]").count(), 0, "téléphone demandé");
   await s1.locator("button").click();
-  if (FULL_MODE) return; // couvert par le test unitaire de la commande
+  if (FULL_MODE) {
+    let formsubmit = 0;
+    await page.route("https://formsubmit.co/**", (r) => { formsubmit++; r.abort(); });
+    const s2 = page.locator("[data-step='livraison']");
+    await s2.waitFor();
+    await s2.locator("button[type=submit]").click();
+    assert.equal(await page.locator("[data-err='email']").isVisible(), true, "validation e-mail");
+    await page.fill("#co-email", "marie@example.fr"); await page.fill("#co-name", "Marie Durand");
+    await page.fill("#co-address1", "12 rue des Lilas"); await page.fill("#co-postal", "69003"); await page.fill("#co-city", "Lyon");
+    await s2.locator("button[type=submit]").click();
+    const s3 = page.locator("[data-step='paiement']");
+    await s3.waitFor();
+    const t3 = await s3.innerText();
+    assert.match(t3, /Total à payer\u00A0:\s*32,40\u00A0€/);
+    assert.match(t3, /12 rue des Lilas, 69003 Lyon, France/);
+    await page.locator("[data-mock='paypal']").waitFor();
+    assert.equal(await page.locator("[data-mock='card']").count(), 1);
+    assert.match(sdk[0], /client-id=BAAQ-8n51AMovSQJMduZqWI5bu7ey6YdzkXHePhKeqSIIzkxH37XKZmzIWFFXQeoXaoOhGR0tXEvtFEE0w&components=buttons/);
+    await page.locator("[data-mock='card']").click();
+    await page.locator("[data-step='confirmation']").waitFor();
+    const order = await page.evaluate(() => window.__orders[0]);
+    const u = order.purchase_units[0];
+    assert.equal(order.payer.email_address, "marie@example.fr");
+    assert.equal(u.amount.value, "32.40"); assert.equal(u.amount.breakdown.shipping.value, "0.00");
+    assert.deepEqual(u.shipping.address, { address_line_1: "12 rue des Lilas", admin_area_2: "Lyon", postal_code: "69003", country_code: "FR" });
+    assert.equal(order.application_context.shipping_preference, "SET_PROVIDED_ADDRESS");
+    assert.match(await page.locator("[data-step='confirmation']").innerText(), /Merci, votre commande est confirmée[\s\S]*RG-[\s\S]*CAP-1/);
+    assert.equal(formsubmit, 0, "aucun service tiers : les données partent uniquement avec la commande PayPal");
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    assert.ok(overflow <= 0);
+    await ctx.close();
+    return;
+  }
   const sent = [];
   await page.route("https://formsubmit.co/**", (r) => { sent.push(JSON.parse(r.request().postData() || "{}")); r.fulfill({ contentType: "application/json", body: '{"success":"true"}' }); });
   // Étape 2 — livraison
