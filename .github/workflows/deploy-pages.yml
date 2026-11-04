@@ -53,6 +53,14 @@ jobs:
           echo "Ancien déploiement Pages, annulation HTTP $code"
           case "$code" in
             204) sleep 5 ;;
+            400)
+              if grep -q "as it's finished" /tmp/pages-cancel-response; then
+                echo 'Ancien déploiement déjà terminé.'
+              else
+                cat /tmp/pages-cancel-response
+                exit 1
+              fi
+              ;;
             404|409) echo 'Ancien déploiement déjà terminé ou absent.' ;;
             *) cat /tmp/pages-cancel-response; exit 1 ;;
           esac
