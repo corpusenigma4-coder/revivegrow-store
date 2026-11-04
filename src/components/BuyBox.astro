@@ -64,7 +64,7 @@ const hosted = COMMERCE.checkoutEnabled && COMMERCE.provider === "paypal-hosted-
   <script is:inline define:vars={{ clientId: hosted.clientId, buttonId: hosted.hostedButtonId }}>
     (function () {
       var s = document.createElement("script");
-      s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(clientId) + "&components=hosted-buttons&enable-funding=card&currency=EUR&locale=fr_FR";
+      s.src = "https://www.paypal.com/sdk/js?client-id=" + encodeURIComponent(clientId) + "&components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR";
       s.onload = function () { window.paypal && window.paypal.HostedButtons({ hostedButtonId: buttonId }).render("#paypal-hosted"); };
       s.onerror = function () { var h = document.getElementById("paypal-hosted"); if (h) h.textContent = "Le paiement sécurisé n’a pas pu se charger. Actualisez la page ou contactez-nous."; };
       document.head.appendChild(s);
