@@ -31,7 +31,8 @@ for (const [label, base] of targets) {
     await page.click("[data-step='commande'] button");
     const mode = await page.getAttribute("[data-co]", "data-mode");
     console.log("Mode du tunnel :", mode);
-    if (mode === "full") {
+    await page.route("https://formsubmit.co/**", (r) => r.fulfill({ contentType: "application/json", body: '{"success":"true"}' }));
+    if (await page.locator("#co-email").count()) {
       await page.fill("#co-email", "diagnostic@example.com"); await page.fill("#co-name", "Jean Dupont");
       await page.fill("#co-address1", "10 rue de Rivoli"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
       await page.click("[data-step='livraison'] button[type=submit]");

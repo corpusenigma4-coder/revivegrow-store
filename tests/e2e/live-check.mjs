@@ -25,13 +25,12 @@ for (const [label, ctxOpts] of [["mobile (iPhone 13)", devices["iPhone 13"]], ["
   log("Récapitulatif 32,40 € + livraison gratuite", /32,40\s?€/.test(s1) && /Gratuite/i.test(s1) ? "oui" : "NON");
   await page.click("[data-step='commande'] button");
   const mode = await page.getAttribute("[data-co]", "data-mode");
-  log("Mode du tunnel", mode === "full" ? "3 étapes (boutons PayPal)" : "2 étapes (bouton hébergé PayPal)");
-  if (mode === "full") {
-    // Données de test : aucune commande n'est créée tant qu'on ne clique pas sur un bouton PayPal.
-    await page.fill("#co-email", "verification@example.com"); await page.fill("#co-name", "Test Vérification");
-    await page.fill("#co-address1", "1 rue de Test"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
-    await page.click("[data-step='livraison'] button[type=submit]");
-  }
+  log("Mode du tunnel", mode === "full" ? "3 étapes, boutons PayPal" : "3 étapes, bouton hébergé PayPal");
+  // Données de test : aucun e-mail réel (envoi au vendeur intercepté), aucune commande PayPal créée.
+  await page.route("https://formsubmit.co/**", (r) => r.fulfill({ contentType: "application/json", body: '{"success":"true"}' }));
+  await page.fill("#co-email", "verification@example.com"); await page.fill("#co-name", "Test Vérification");
+  await page.fill("#co-address1", "1 rue de Test"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
+  await page.click("[data-step='livraison'] button[type=submit]");
   const state = await page.waitForFunction(() => document.querySelector("[data-co]")?.dataset.pay || false, null, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => "délai dépassé");
   log("Boutons PayPal officiels", state === "ready" ? "chargés" : `NON (${state})`);
   if (state !== "ready") ok = false;

@@ -150,7 +150,7 @@ await t("tous les boutons d’achat (en-tête, hero, offre, fiche, barre mobile)
 const MOCK_HOSTED = `window.__hosted = [];
   window.paypal = { HostedButtons(o) { window.__hosted.push(o); return { render(sel) { const b = document.createElement("div"); b.dataset.mock = "hosted"; b.textContent = "MOCK hosted"; document.querySelector(sel).appendChild(b); return Promise.resolve(); } }; } };`;
 const FULL_MODE = /clientId:\s*"A/.test(readFileSync("src/config/commerce.ts", "utf8").split("paypalButtons")[1] || "");
-await t("parcours actuel : « Obtenir l’offre » → récapitulatif → Suivant → paiement (bouton PayPal hébergé SZCKF3B62AX6A)", async () => {
+await t("parcours : « Obtenir l’offre » → Commande → Suivant → Livraison → Suivant → Paiement (bouton hébergé SZCKF3B62AX6A)", async () => {
   const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
   const sdk = [];
   await page.route("https://www.paypal.com/sdk/**", (r) => { sdk.push(r.request().url()); r.fulfill({ contentType: "text/javascript", body: FULL_MODE ? MOCK_SDK : MOCK_HOSTED }); });
@@ -164,18 +164,39 @@ await t("parcours actuel : « Obtenir l’offre » → récapitulatif → Suivan
   assert.equal((await s1.locator("button").textContent()).trim(), "Suivant");
   assert.equal(await page.locator("input[type=tel], [name*=phone], [name*=tel]").count(), 0, "téléphone demandé");
   await s1.locator("button").click();
-  if (FULL_MODE) return; // couvert par le test unitaire de la commande et le test « tunnel complet »
+  if (FULL_MODE) return; // couvert par le test unitaire de la commande
+  const sent = [];
+  await page.route("https://formsubmit.co/**", (r) => { sent.push(JSON.parse(r.request().postData() || "{}")); r.fulfill({ contentType: "application/json", body: '{"success":"true"}' }); });
+  // Étape 2 — livraison
+  const s2 = page.locator("[data-step='livraison']");
+  await s2.waitFor();
+  assert.equal(await page.locator("#co-email").getAttribute("inputmode"), "email");
+  await s2.locator("button[type=submit]").click();
+  assert.equal(await page.locator("[data-err='email']").isVisible(), true, "validation e-mail");
+  await page.fill("#co-email", "marie@example.fr"); await page.fill("#co-name", "Marie Durand");
+  await page.fill("#co-address1", "12 rue des Lilas"); await page.fill("#co-postal", "69003"); await page.fill("#co-city", "Lyon");
+  await s2.locator("button[type=submit]").click();
+  // Étape 3 — paiement
   const s3 = page.locator("[data-step='paiement']");
   await s3.waitFor();
-  assert.match(await s3.innerText(), /Total à payer :\s*32,40 €/);
-  assert.match(await s3.innerText(), /adresse de livraison sur la page sécurisée de PayPal/);
+  assert.equal(sent.length, 1, "coordonnées transmises au vendeur");
+  assert.equal(sent[0]["E-mail"], "marie@example.fr"); assert.equal(sent[0]["Adresse"], "12 rue des Lilas");
+  assert.equal(sent[0]["Code postal"], "69003"); assert.equal(sent[0]["Ville"], "Lyon"); assert.equal(sent[0]["Pays"], "France");
+  assert.match(sent[0]["Référence"], /^RG-/);
+  const t3 = await s3.innerText();
+  assert.match(t3, /Total à payer :\s*32,40 €/);
+  assert.match(t3, /12 rue des Lilas, 69003 Lyon, France/);
+  assert.match(t3, /Référence de commande : RG-/);
   await page.locator("[data-mock='hosted']").waitFor();
   assert.equal(await page.evaluate(() => window.__hosted[0].hostedButtonId), "SZCKF3B62AX6A");
   assert.match(sdk[0], /client-id=BAADEUfdEuuHimsc_A7p393C8mMrLLqiuSAoQT_ffCMJ0mfNs_Vn5nXVEExDk-DrZJfJIEhv1BmPniL3Pw&components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR$/);
-  assert.equal(await page.locator("[data-form]").count(), 0, "aucun formulaire non relié à PayPal");
-  // Retour sans perte
+  // Aller-retour : pas de second envoi si rien ne change, données conservées
   await s3.locator("button", { hasText: "Retour" }).click();
-  await page.locator("[data-step='commande']").waitFor();
+  await s2.waitFor();
+  assert.equal(await page.locator("#co-city").inputValue(), "Lyon");
+  await s2.locator("button[type=submit]").click();
+  await s3.waitFor();
+  assert.equal(sent.length, 1);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0);
   await ctx.close();
@@ -185,11 +206,11 @@ await t("paiement indisponible : message clair, aucune fausse confirmation ; pas
   await page.route("https://www.paypal.com/**", (r) => r.abort());
   await page.goto(BASE + "/commande/");
   assert.equal(await page.locator("[data-sticky], .cbar, .hdr__nav").count(), 0);
+  await page.route("https://formsubmit.co/**", (r) => r.abort());
   await page.locator("[data-step='commande'] button").click();
-  if (FULL_MODE) {
-    for (const [id, v] of [["#co-email", "a@b.fr"], ["#co-name", "A B"], ["#co-address1", "1 rue X"], ["#co-postal", "75001"], ["#co-city", "Paris"]]) await page.fill(id, v);
-    await page.locator("[data-step='livraison'] button[type=submit]").click();
-  }
+  for (const [id, v] of [["#co-email", "a@b.fr"], ["#co-name", "A B"], ["#co-address1", "1 rue X"], ["#co-postal", "75001"], ["#co-city", "Paris"]]) await page.fill(id, v);
+  await page.locator("[data-step='livraison'] button[type=submit]").click();
+  await page.locator("[data-step='paiement']").waitFor(); // l'échec d'envoi ne bloque jamais l'achat
   const err = page.locator("[data-pay-error]");
   await err.waitFor({ state: "visible", timeout: 8000 });
   assert.match(await err.textContent(), /n’a pas pu se charger/);
