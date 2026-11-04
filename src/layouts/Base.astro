@@ -7,7 +7,7 @@ import "../styles/tokens.css";
 import "../styles/base.css";
 import { SITE } from "../config/site";
 import { CAMPAIGN } from "../config/campaign";
-import { campaignPhase } from "../lib/campaign";
+import { campaignPhase, offerOpen } from "../lib/campaign";
 import CampaignBar from "../components/CampaignBar.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -27,7 +27,7 @@ const initialPhase = campaignPhase(Date.now(), CAMPAIGN);
 const org = { "@context": "https://schema.org", "@type": "Organization", name: SITE.name, url: SITE.url };
 ---
 <!doctype html>
-<html lang="fr-FR" data-phase={initialPhase}>
+<html lang="fr-FR" data-phase={initialPhase} data-offer={offerOpen(initialPhase) ? "open" : "closed"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -46,8 +46,12 @@ const org = { "@context": "https://schema.org", "@type": "Organization", name: S
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL(image, SITE.url).href} />
     <meta name="twitter:card" content="summary_large_image" />
-    <script is:inline define:vars={{ s: Date.parse(CAMPAIGN.startsAt), e: Date.parse(CAMPAIGN.endsAt) }}>
-      (function (d) { d.classList.add("js"); var n = Date.now(); if (n > e) d.dataset.phase = "ended"; else if (n < s) d.dataset.phase = "upcoming"; })(document.documentElement);
+    <script is:inline define:vars={{ on: CAMPAIGN.enabled, s: CAMPAIGN.startsAt ? Date.parse(CAMPAIGN.startsAt) : null, e: CAMPAIGN.endsAt ? Date.parse(CAMPAIGN.endsAt) : null }}>
+      (function (d) {
+        d.classList.add("js");
+        var n = Date.now(), closed = !on || (e !== null && n > e) || (s !== null && n < s);
+        if (closed) { d.dataset.offer = "closed"; d.dataset.phase = !on ? "off" : (e !== null && n > e) ? "ended" : "upcoming"; }
+      })(document.documentElement);
     </script>
     {[org, ...jsonLd].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
   </head>

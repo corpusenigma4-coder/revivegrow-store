@@ -9,8 +9,8 @@ export const FAQ = [
     a: "Oui. Le masque de sommeil et la boîte de bandelettes nasales sont livrés avec l’oreiller, dans la même commande et sans supplément. Vous n’avez rien à ajouter au panier&nbsp;: le prix affiché est celui des trois articles.",
   },
   {
-    q: "Quel est le délai de livraison ?",
-    a: "Votre commande est livrée sous 3 à 5 jours ouvrés en France métropolitaine. Les éventuels frais de livraison sont affichés avant le paiement. Le détail figure sur la page <a href=\"/livraison-retours\">Livraison et retours</a>.",
+    q: "Quels sont les délais et frais de livraison ?",
+    a: "La livraison est offerte en France métropolitaine. Votre commande arrive sous 3 à 5 jours ouvrés, les trois articles dans le même colis. Détails sur la page <a href=\"/livraison-retours\">Livraison et retours</a>.",
   },
   {
     q: "Que couvre la garantie de 90 jours ?",
@@ -19,6 +19,14 @@ export const FAQ = [
   {
     q: "Les bandelettes nasales empêchent-elles de ronfler ?",
     a: "Nous ne l’affirmons pas. Les bandelettes se posent à l’extérieur du nez et écartent mécaniquement les ailes du nez. Ce n’est pas un traitement. En cas de gêne respiratoire ou de ronflements persistants, demandez conseil à un professionnel de santé.",
+  },
+  {
+    q: "Pourquoi deux cadeaux sont-ils inclus ?",
+    a: "C’est notre offre spéciale Pré-Black Friday&nbsp;: pendant cette période, le masque de sommeil et les bandelettes nasales accompagnent l’oreiller, sans supplément. Ils sont ajoutés automatiquement à votre commande.",
+  },
+  {
+    q: "Comment vous contacter ?",
+    a: "Par e-mail à <a href=\"mailto:corpusenigma4@gmail.com\">corpusenigma4@gmail.com</a> ou depuis la page <a href=\"/contact\">Contact</a>. Nous vous répondons personnellement.",
   },
   {
     q: "Comment puis-je payer ?",

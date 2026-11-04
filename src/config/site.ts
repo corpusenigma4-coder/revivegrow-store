@@ -13,18 +13,18 @@ export const SITE = {
   tagline: "Le calme, pensé dans le détail.",
   description:
     "REVIVE GROW, spécialiste du repos : l’oreiller cervical ergonomique réglable en hauteur, livré en France métropolitaine.",
-  /** Coordonnées : à fournir (aucune donnée inventée). */
   contact: {
-    email: null as string | null,
+    email: "corpusenigma4@gmail.com",
     phone: null as string | null,
   },
 } as const;
 
 export const NAV = [
-  { href: "/oreiller-cervical-ajustable", label: "L’oreiller" },
-  { href: "/#reglage", label: "Réglage" },
-  { href: "/#pack", label: "Le pack" },
+  { href: "/#forme", label: "La forme" },
+  { href: "/#reglage", label: "Le réglage" },
+  { href: "/#offre", label: "L’offre" },
   { href: "/#questions", label: "Questions" },
+  { href: "/contact", label: "Contact" },
 ] as const;
 
 export const LEGAL_NAV = [

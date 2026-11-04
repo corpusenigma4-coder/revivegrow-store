@@ -15,13 +15,16 @@ export const PILLOW = {
     { cm: 14, layers: 2, label: "Haute", detail: "Noyau + 2 inserts" },
   ],
   heightsVerified: false,
-  features: [
-    { title: "Forme cervicale anatomique", text: "Un profil dessiné pour accompagner la courbe de la nuque." },
-    { title: "Zone centrale abaissée", text: "Un creux doux où la tête vient se poser." },
-    { title: "Appui cervical avant", text: "Un bord légèrement relevé sous la nuque." },
-    { title: "Côtés larges", text: "De l’espace pour l’épaule lorsque vous dormez sur le côté." },
-    { title: "Transitions douces", text: "Des courbes continues, sans arête marquée." },
-    { title: "Housse zippée", text: "Une housse textile qui s’ouvre pour accéder aux inserts." },
+  /**
+   * Anatomie (section « La forme »). `x`/`y` = position du repère en % de la photo vue de dessus.
+   * `x: null` → le point n'est pas visible de dessus : il est montré sur une photo de détail.
+   */
+  anatomy: [
+    { n: 1, title: "Soutien cervical avant", text: "Un bord relevé qui accompagne la nuque, visible de profil.", x: null, y: null, detail: "profil" },
+    { n: 2, title: "Zone centrale abaissée", text: "Le creux où la tête vient se poser.", x: 50, y: 50, detail: null },
+    { n: 3, title: "Côté gauche", text: "Un appui large pour dormir sur le côté.", x: 15.5, y: 48, detail: null },
+    { n: 4, title: "Côté droit", text: "La même largeur, pour changer de côté pendant la nuit.", x: 84.5, y: 48, detail: null },
+    { n: 5, title: "Housse zippée", text: "La fermeture donne accès aux inserts de réglage.", x: null, y: null, detail: "fermeture" },
   ],
   specs: [
     { label: "Garnissage", value: "Mousse viscoélastique (mémoire de forme)", verified: false },
@@ -76,7 +79,14 @@ export const PACK = {
 } as const;
 
 export const SERVICE = {
-  delivery: { label: "Livraison sous 3 à 5 jours ouvrés", zone: "France métropolitaine", carrier: null as string | null, cost: null as number | null },
+  delivery: {
+    free: true,
+    cost: 0,
+    label: "Livraison offerte",
+    delay: "sous 3 à 5 jours ouvrés",
+    zone: "France métropolitaine",
+    carrier: null as string | null,
+  },
   returns: { days: 90 },
 } as const;
 

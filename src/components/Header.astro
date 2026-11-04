@@ -74,7 +74,7 @@ const path = Astro.url.pathname.replace(/\.html$/, "");
     .hdr__burger { display: none; }
     .hdr__brand { justify-self: start; }
     .hdr__nav { display: block; justify-self: center; }
-    .hdr__nav ul { display: flex; gap: var(--s-6); }
+    .hdr__nav ul { display: flex; gap: clamp(1rem, 2vw, 2rem); }
     .hdr__nav a { position: relative; font-size: 0.9375rem; text-decoration: none; padding-block: var(--s-2); }
     .hdr__nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform var(--dur) var(--ease); }
     .hdr__nav a:hover::after, .hdr__nav a[aria-current="page"]::after { transform: scaleX(1); }
@@ -82,7 +82,7 @@ const path = Astro.url.pathname.replace(/\.html$/, "");
     .hdr__cta:hover { background: var(--c-sauge); }
     .hdr__bag { display: none; }
   }
-  :global(html[data-phase="ended"]) .hdr__cta { display: none; }
+  :global(html[data-offer="closed"]) .hdr__cta { display: none; }
 
   .menu { width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; padding: 0 var(--gutter) max(var(--s-6), env(safe-area-inset-bottom)); border: 0; background: var(--c-ivoire); color: var(--c-encre); }
   .menu[open] { display: flex; flex-direction: column; }

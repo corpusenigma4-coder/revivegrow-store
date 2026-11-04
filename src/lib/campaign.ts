@@ -2,28 +2,45 @@
  * Logique de campagne, pure et sans dépendance : utilisée au build (rendu initial)
  * et dans le navigateur (mise à jour en temps réel). Testée dans tests/unit.
  */
-export type CampaignPhase = "upcoming" | "active" | "last-days" | "last-day" | "ended";
+export type CampaignPhase = "off" | "upcoming" | "active" | "last-days" | "last-day" | "ended";
 
 export interface CampaignWindow {
-  startsAt: string;
-  endsAt: string;
+  enabled: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
   lastDaysThresholdHours: number;
 }
 
 const HOUR = 3_600_000;
 
+function parse(iso: string | null, fallback: number): number {
+  if (iso === null) return fallback;
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) throw new Error(`Date de campagne invalide : ${iso}`);
+  return t;
+}
+
 export function campaignPhase(now: number | Date, c: CampaignWindow): CampaignPhase {
+  if (!c.enabled) return "off";
   const t = typeof now === "number" ? now : now.getTime();
-  const start = Date.parse(c.startsAt);
-  const end = Date.parse(c.endsAt);
-  if (Number.isNaN(start) || Number.isNaN(end) || end <= start) throw new Error("Fenêtre de campagne invalide");
+  const start = parse(c.startsAt, -Infinity);
+  const end = parse(c.endsAt, Infinity);
+  if (end <= start) throw new Error("Fenêtre de campagne invalide");
   if (t < start) return "upcoming";
   if (t > end) return "ended";
+  if (end === Infinity) return "active";
   const left = end - t;
   if (left <= 24 * HOUR) return "last-day";
   if (left <= c.lastDaysThresholdHours * HOUR) return "last-days";
   return "active";
 }
+
+/** L'offre promotionnelle peut-elle être achetée ? */
+export function offerOpen(phase: CampaignPhase): boolean {
+  return phase === "active" || phase === "last-days" || phase === "last-day";
+}
+
+export const hasDeadline = (c: Pick<CampaignWindow, "endsAt">) => c.endsAt !== null;
 
 export interface Remaining { total: number; days: number; hours: number; minutes: number; seconds: number }
 
@@ -41,7 +58,7 @@ export function remainingUntil(now: number | Date, endsAt: string): Remaining {
   };
 }
 
-/** Message d'urgence sobre, uniquement fondé sur la date réelle. */
+/** Message d'urgence sobre, uniquement fondé sur une date réelle. */
 export function phaseMessage(phase: CampaignPhase): string | null {
   switch (phase) {
     case "last-day": return "Dernier jour pour profiter de l’offre";

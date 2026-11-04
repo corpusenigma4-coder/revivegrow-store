@@ -1,37 +1,41 @@
 ---
 import { CAMPAIGN } from "../config/campaign";
+import { SERVICE } from "../config/product";
 import { formatParisDayMonth } from "../lib/format";
 import Countdown from "./Countdown.astro";
-const until = formatParisDayMonth(CAMPAIGN.endsAt);
+const end = CAMPAIGN.endsAt;
 ---
-<div class="cbar" role="region" aria-label="Offre en cours">
-  <div class="container cbar__inner">
-    <p class="cbar__live">
-      <span class="cbar__name"><span class="cbar__hide-sm">Offre </span>Pré-Black Friday</span>
-      <span class="cbar__dot" aria-hidden="true"></span>
-      <span>2 cadeaux offerts</span>
-      <span class="cbar__dot cbar__hide-sm" aria-hidden="true"></span>
-      <span class="cbar__hide-sm">jusqu’au {until} à 23&nbsp;h&nbsp;59</span>
-    </p>
-    <p class="cbar__ended" data-phase-message="status"></p>
-    <span class="cbar__cd"><Countdown tone="ivoire" /></span>
-  </div>
-</div>
+{CAMPAIGN.enabled && (
+  <a class="cbar" href="/#offre" aria-label={`${CAMPAIGN.name} : 2 cadeaux offerts, ${SERVICE.delivery.label.toLowerCase()}. Voir l’offre.`}>
+    <span class="container cbar__inner">
+      <span class="cbar__live">
+        <span class="cbar__name"><span class="cbar__wide">Offre spéciale </span>Pré-Black Friday</span>
+        <span class="cbar__dot" aria-hidden="true"></span>
+        <span>2 cadeaux offerts</span>
+        <span class="cbar__dot" aria-hidden="true"></span>
+        <span>{SERVICE.delivery.label}</span>
+        {end && <span class="cbar__wide">· jusqu’au {formatParisDayMonth(end)}</span>}
+      </span>
+      <span class="cbar__ended" data-phase-message="status"></span>
+      <span class="cbar__cd"><Countdown tone="ivoire" /></span>
+    </span>
+  </a>
+)}
 <style>
-  .cbar { background: var(--c-nuit); color: var(--c-ivoire); font-size: 0.8125rem; letter-spacing: 0.02em; }
+  .cbar { display: block; background: var(--c-nuit); color: var(--c-ivoire); font-size: 0.8125rem; letter-spacing: 0.02em; text-decoration: none; }
   .cbar__inner { display: flex; align-items: center; justify-content: center; gap: var(--s-3) var(--s-4); min-height: 40px; padding-block: 6px; text-align: center; white-space: nowrap; }
   .cbar__live { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.55em; }
   .cbar__name { font-weight: 600; }
   .cbar__dot { width: 3px; height: 3px; border-radius: 50%; background: var(--c-sable); }
   .cbar__ended { display: none; }
   .cbar__cd { color: var(--c-sable); }
+  .cbar:hover .cbar__name { text-decoration: underline; text-underline-offset: 0.25em; }
   @media (max-width: 719px) {
     .cbar { font-size: 0.75rem; letter-spacing: 0.01em; }
+    .cbar__wide { display: none; }
     .cbar__cd :global(.cd__label) { display: none; }
   }
-  @media (max-width: 719px) { .cbar__hide-sm { display: none; } }
-  :global(html[data-phase="ended"]) .cbar__live,
-  :global(html[data-phase="upcoming"]) .cbar__live { display: none; }
-  :global(html[data-phase="ended"]) .cbar__ended,
-  :global(html[data-phase="upcoming"]) .cbar__ended { display: block; }
+  @media (max-width: 359px) { .cbar__live > :nth-child(4), .cbar__live > :nth-child(5) { display: none; } }
+  :global(html[data-offer="closed"]) .cbar__live, :global(html[data-offer="closed"]) .cbar__cd { display: none; }
+  :global(html[data-offer="closed"]) .cbar__ended { display: block; }
 </style>

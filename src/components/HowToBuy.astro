@@ -1,0 +1,34 @@
+---
+/** Le parcours d'achat, de la commande à la garantie — une vraie séquence, d'où la numérotation. */
+import Icon from "./Icon.astro";
+import { SERVICE } from "../config/product";
+const steps = [
+  { icon: "bag", t: "Commandez le pack", d: "32,40 € TTC, cadeaux compris. Sans création de compte.", href: "/oreiller-cervical-ajustable#commander", l: "Voir le pack" },
+  { icon: "lock", t: "Payez en toute sécurité", d: "PayPal ou carte bancaire. Vous recevez une confirmation par e-mail.", href: "/cgv", l: "Conditions de vente" },
+  { icon: "truck", t: `${SERVICE.delivery.label}, ${SERVICE.delivery.delay}`, d: `Expédition en ${SERVICE.delivery.zone}. Les trois articles arrivent dans le même colis.`, href: "/livraison-retours", l: "Livraison et retours" },
+  { icon: "return", t: "90 jours pour changer d’avis", d: "Une garantie commerciale en plus de vos droits légaux (rétractation 14 jours, conformité 2 ans).", href: "/garantie-90-jours", l: "Conditions de la garantie" },
+] as const;
+---
+<ol class="how" role="list">
+  {steps.map((s, i) => (
+    <li class="how__step" data-reveal>
+      <span class="how__n t-num" aria-hidden="true">{i + 1}</span>
+      <div class="how__body">
+        <p class="how__ic"><Icon name={s.icon} size={22} /></p>
+        <h3 class="t-h4">{s.t}</h3>
+        <p class="t-muted t-small">{s.d}</p>
+        <a class="how__link" href={s.href}>{s.l}</a>
+      </div>
+    </li>
+  ))}
+</ol>
+<style>
+  .how { display: grid; gap: 0; counter-reset: none; }
+  @media (min-width: 720px) { .how { grid-template-columns: repeat(2, 1fr); column-gap: var(--s-6); } }
+  @media (min-width: 1100px) { .how { grid-template-columns: repeat(4, 1fr); } }
+  .how__step { display: grid; grid-template-columns: 2.5rem 1fr; gap: var(--s-3); padding-block: var(--s-5); border-top: 1px solid var(--c-sable); }
+  .how__n { font-size: 2rem; line-height: 1; color: var(--c-sauge); }
+  .how__body { display: grid; gap: var(--s-1); }
+  .how__ic { color: var(--c-encre-douce); margin-bottom: var(--s-1); }
+  .how__link { justify-self: start; margin-top: var(--s-2); font-size: var(--fs-sm); font-weight: 600; text-decoration-color: var(--c-sable); }
+</style>

@@ -13,9 +13,9 @@ export const LEGAL: LegalPage[] = [
     lead: "Informations sur l’éditeur et l’hébergeur du site.",
     basis: "Loi n° 2004-575 du 21 juin 2004 (LCEN), article 6.",
     sections: [
-      { h: "Éditeur du site", missing: ["Dénomination sociale et forme juridique", "Capital social", "Adresse du siège", "Numéro d’immatriculation (RCS / SIREN ou registre étranger)", "Numéro de TVA intracommunautaire", "E-mail et téléphone"] },
+      { h: "Éditeur du site", p: "Contact : corpusenigma4@gmail.com", missing: ["Dénomination sociale et forme juridique", "Capital social", "Adresse du siège", "Numéro d’immatriculation (RCS / SIREN ou registre étranger)", "Numéro de TVA intracommunautaire"] },
       { h: "Directeur de la publication", missing: ["Nom du directeur de la publication"] },
-      { h: "Hébergement", p: "Hébergeur retenu en phase 3 (proposition : Cloudflare Pages).", missing: ["Raison sociale, adresse et téléphone de l’hébergeur définitif"] },
+      { h: "Hébergement", p: "GitHub Pages — GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis." },
       { h: "Propriété intellectuelle", p: "Textes, photographies et éléments graphiques du site." },
     ],
   },
@@ -27,9 +27,9 @@ export const LEGAL: LegalPage[] = [
     sections: [
       { h: "Vendeur et champ d’application", missing: ["Identité complète du vendeur"] },
       { h: "Produits et pack", p: "Le Pack Sommeil comprend l’oreiller cervical, le masque de sommeil et les bandelettes nasales ; les deux accessoires sont offerts et indissociables de l’offre." },
-      { h: "Prix", p: "Prix en euros, toutes taxes comprises.", missing: ["Frais de livraison éventuels"] },
+      { h: "Prix", p: "Prix en euros, toutes taxes comprises. Livraison offerte en France métropolitaine." },
       { h: "Commande et paiement", p: "Validation avec mention « commande avec obligation de paiement », paiement PayPal ou carte bancaire via PayPal." },
-      { h: "Livraison", p: "France métropolitaine, sous 3 à 5 jours ouvrés.", missing: ["Transporteur", "Zones exclues éventuelles"] },
+      { h: "Livraison", p: "Livraison offerte en France métropolitaine, sous 3 à 5 jours ouvrés.", missing: ["Transporteur", "Zones exclues éventuelles"] },
       { h: "Droit de rétractation", p: "14 jours, formulaire type et fonction de rétractation en ligne." },
       { h: "Garanties légales et garantie commerciale", p: "Garantie légale de conformité, garantie des vices cachés, et garantie commerciale de 90 jours." },
       { h: "Médiation de la consommation", missing: ["Médiateur de la consommation désigné et ses coordonnées"] },
@@ -41,8 +41,8 @@ export const LEGAL: LegalPage[] = [
     title: "Livraison et retours",
     lead: "Délais, zones desservies et modalités de retour.",
     sections: [
-      { h: "Délais", p: "Livraison sous 3 à 5 jours ouvrés en France métropolitaine, à compter de l’expédition.", missing: ["Délai de préparation avant expédition"] },
-      { h: "Frais de livraison", missing: ["Montant ou gratuité (à confirmer par la marque)"] },
+      { h: "Délais", p: "Livraison sous 3 à 5 jours ouvrés en France métropolitaine.", missing: ["Point de départ du délai (commande ou expédition) et délai de préparation"] },
+      { h: "Frais de livraison", p: "La livraison est offerte en France métropolitaine." },
       { h: "Suivi", missing: ["Transporteur et modalités de suivi"] },
       { h: "Retours", p: "Comment retourner un article dans le cadre de la rétractation ou de la garantie de 90 jours.", missing: ["Adresse de retour", "Prise en charge des frais de retour"] },
     ],
@@ -92,7 +92,7 @@ export const LEGAL: LegalPage[] = [
     sections: [
       { h: "Responsable du traitement", missing: ["Identité et coordonnées du responsable"] },
       { h: "Données et finalités", p: "Commande, livraison, paiement, service client, obligations comptables." },
-      { h: "Destinataires", p: "PayPal (paiement), hébergeur, prestataire d’e-mails transactionnels, transporteur." },
+      { h: "Destinataires", p: "PayPal (paiement), GitHub (hébergement), service de formulaire de contact, transporteur." , missing: ["Service de formulaire retenu et ses garanties (transferts hors UE)"] },
       { h: "Durées de conservation" },
       { h: "Vos droits", p: "Accès, rectification, effacement, opposition, limitation, portabilité ; réclamation auprès de la CNIL." },
     ],
@@ -104,15 +104,6 @@ export const LEGAL: LegalPage[] = [
     sections: [
       { h: "Traceurs utilisés", p: "Uniquement les éléments strictement nécessaires (panier, sécurité du paiement). Mesure d’audience en configuration exemptée de consentement (CNIL), si retenue." },
       { h: "Publicité", missing: ["Décision de la marque : campagnes Meta / TikTok (nécessiterait un bandeau de consentement)"] },
-    ],
-  },
-  {
-    slug: "contact",
-    title: "Contact",
-    lead: "Une question sur votre commande ou sur nos produits ? Écrivez-nous.",
-    sections: [
-      { h: "Service client", missing: ["Adresse e-mail de contact", "Téléphone (facultatif)", "Horaires et délai de réponse"] },
-      { h: "Formulaire de contact", p: "Formulaire protégé contre le spam, activé en phase 3." },
     ],
   },
 ];

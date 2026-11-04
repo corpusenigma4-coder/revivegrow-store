@@ -1,0 +1,117 @@
+---
+/**
+ * Comparateur avant / après — glisser au doigt, à la souris ou au clavier.
+ * Les deux photos ont exactement les mêmes dimensions et le même cadrage CSS :
+ * elles restent superposées au pixel près. Aucune allégation médicale.
+ */
+import { Image } from "astro:assets";
+import before from "../assets/images/comparatif-avant.webp";
+import after from "../assets/images/comparatif-apres.webp";
+const imgProps = { widths: [480, 770], sizes: "(min-width: 960px) 60vw, 100vw", quality: 86 } as const;
+---
+<figure class="ba" data-ba>
+  <div class="ba__frame" data-ba-frame style="--pos: 50%">
+    <Image src={before} alt="Avant : un oreiller classique, aplati et taché" {...imgProps} class="ba__img" draggable="false" />
+    <div class="ba__after" aria-hidden="false">
+      <Image src={after} alt="Après : l’oreiller cervical REVIVE GROW" {...imgProps} class="ba__img" draggable="false" />
+    </div>
+    <span class="ba__tag ba__tag--l" aria-hidden="true">Avant</span>
+    <span class="ba__tag ba__tag--r" aria-hidden="true">Après</span>
+    <div class="ba__handle" data-ba-handle role="slider" tabindex="0"
+      aria-label="Comparer avant et après" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"
+      aria-valuetext="Moitié avant, moitié après">
+      <span class="ba__knob" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg>
+      </span>
+    </div>
+  </div>
+  <figcaption class="ba__cap">Faites glisser pour comparer. Comparaison visuelle entre deux oreillers, sans valeur de résultat médical.</figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-ba]").forEach((root) => {
+    const frame = root.querySelector<HTMLElement>("[data-ba-frame]")!;
+    const handle = root.querySelector<HTMLElement>("[data-ba-handle]")!;
+    let pos = 50, raf = 0, dragging = false;
+
+    const render = () => {
+      raf = 0;
+      frame.style.setProperty("--pos", `${pos}%`);
+      const v = Math.round(pos);
+      handle.setAttribute("aria-valuenow", String(v));
+      handle.setAttribute("aria-valuetext", v <= 2 ? "Après uniquement" : v >= 98 ? "Avant uniquement" : `${v} % avant, ${100 - v} % après`);
+    };
+    const set = (p: number) => { pos = Math.min(100, Math.max(0, p)); if (!raf) raf = requestAnimationFrame(render); };
+    const fromX = (clientX: number) => {
+      const r = frame.getBoundingClientRect();
+      set(((clientX - r.left) / r.width) * 100);
+    };
+
+    frame.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      dragging = true; frame.classList.add("is-dragging");
+      frame.setPointerCapture(e.pointerId);
+      fromX(e.clientX);
+    });
+    frame.addEventListener("pointermove", (e) => { if (dragging) fromX(e.clientX); });
+    const end = () => { dragging = false; frame.classList.remove("is-dragging"); };
+    frame.addEventListener("pointerup", end);
+    frame.addEventListener("pointercancel", end);
+    frame.addEventListener("lostpointercapture", end);
+
+    handle.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 10 : 2;
+      const k = e.key;
+      if (k === "ArrowLeft" || k === "ArrowDown") set(pos - step);
+      else if (k === "ArrowRight" || k === "ArrowUp") set(pos + step);
+      else if (k === "Home") set(0);
+      else if (k === "End") set(100);
+      else if (k === "PageDown") set(pos - 25);
+      else if (k === "PageUp") set(pos + 25);
+      else return;
+      e.preventDefault();
+    });
+
+    // Indice discret à la première apparition (désactivé si mouvement réduit).
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver(([en]) => {
+        if (!en.isIntersecting) return;
+        io.disconnect();
+        if (dragging) return;
+        frame.classList.add("is-hinting");
+        const seq = [42, 58, 50]; let i = 0;
+        const next = () => { if (dragging) return frame.classList.remove("is-hinting"); set(seq[i++]); if (i < seq.length) setTimeout(next, 420); else setTimeout(() => frame.classList.remove("is-hinting"), 420); };
+        setTimeout(next, 300);
+      }, { threshold: 0.6 });
+      io.observe(frame);
+    }
+  });
+</script>
+
+<style>
+  .ba { margin: 0; display: grid; gap: var(--s-3); }
+  .ba__frame {
+    position: relative; overflow: hidden; width: 100%; max-width: 100%;
+    aspect-ratio: 770 / 328; border-radius: var(--r-lg); background: var(--c-lin);
+    touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (max-width: 639px) { .ba__frame { aspect-ratio: 3 / 2; margin-inline: calc(-1 * var(--gutter)); width: auto; max-width: none; border-radius: 0; } }
+  .ba__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; pointer-events: none; -webkit-user-drag: none; }
+  .ba__after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+  .ba__frame.is-hinting .ba__after, .ba__frame.is-hinting .ba__handle { transition: clip-path 420ms var(--ease), left 420ms var(--ease); }
+
+  .ba__tag {
+    position: absolute; top: var(--s-3); padding: 4px 12px; border-radius: var(--r-pill);
+    font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; line-height: 1.3; pointer-events: none;
+  }
+  .ba__tag--l { left: var(--s-3); background: rgb(34 32 28 / 0.72); color: var(--c-ivoire); }
+  .ba__tag--r { right: var(--s-3); background: rgb(255 253 249 / 0.9); color: var(--c-sauge); }
+
+  .ba__handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 44px; transform: translateX(-50%); display: grid; place-items: center; outline: none; }
+  .ba__handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: var(--c-blanc); box-shadow: 0 0 0 1px rgb(34 32 28 / 0.08); }
+  .ba__knob { position: relative; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--c-blanc); color: var(--c-encre); box-shadow: 0 6px 20px -6px rgb(34 32 28 / 0.45); transition: transform var(--dur-fast) var(--ease); }
+  .ba__frame.is-dragging .ba__knob { transform: scale(1.08); }
+  .ba__handle:focus-visible .ba__knob { outline: 2px solid var(--c-sauge); outline-offset: 3px; }
+  .ba__cap { font-size: var(--fs-xs); color: var(--c-encre-douce); }
+</style>

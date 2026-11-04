@@ -3,7 +3,7 @@ interface Props { num?: string; eyebrow: string; title: string; lead?: string; a
 const { num, eyebrow, title, lead, align = "start", tone = "encre", id } = Astro.props;
 ---
 <header class:list={["shead", `shead--${align}`, `shead--${tone}`]} data-reveal>
-  <p class="shead__eyebrow t-eyebrow">{num && <span class="t-num shead__num">{num}</span>}{eyebrow}</p>
+  <p class="shead__eyebrow t-eyebrow">{eyebrow}</p>
   <h2 class="t-h2" id={id}>{title}</h2>
   {lead && <p class="t-lead shead__lead">{lead}</p>}
 </header>

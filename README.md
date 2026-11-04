@@ -3,7 +3,7 @@
 Marca premium de descanso. Sitio en **francés de Francia**, precios en **EUR TTC**.
 Dirección creativa: **« Le calme, pensé dans le détail »**.
 
-> Estado: **Fase 1 (fundamentos)**, solo vista previa. `noindex` activo, **ningún pago activo** y la producción (`main` / GitHub Pages) intacta.
+> Estado: **Fase 2**, solo vista previa. `noindex` activo, **ningún pago activo** y la producción (`main` / GitHub Pages) intacta.
 
 ## Puesta en marcha
 
@@ -21,8 +21,9 @@ npm run check:launch # lista lo que bloquea el lanzamiento
 | Framework | Astro 7 (estático, islas JS mínimas), TypeScript estricto |
 | Tipografías | Cormorant Garamond (títulos) + Instrument Sans Variable (UI), autoalojadas vía Fontsource |
 | Imágenes | `astro:assets`: AVIF/WebP responsive, generadas en el build |
-| Hosting previsto | Cloudflare Pages + Functions (fase 3), sin tocar el DNS hasta el go-live |
-| Pagos (fase 3) | PayPal Orders v2 **en servidor** (creación/captura/webhook), tarjeta según elegibilidad de la cuenta |
+| Hosting | **GitHub Pages** (estático, dominio revivegrow.store), publicación manual: `.github/workflows/deploy-pages.yml` |
+| Pagos | Botón alojado de PayPal u API externa: ver `docs/PAIEMENTS-ET-COMMANDES.md` |
+| Contacto | Email directo + formulario Formspree (se activa con `CONTACT.formEndpoint`) |
 
 ```
 src/
@@ -43,7 +44,7 @@ docs/            PLAN-MAESTRO.md
 ## Reglas de honestidad comercial (aplicadas en código y en tests)
 
 - Sin precio tachado ni «−40 %» mientras `CAMPAIGN.referencePrice.evidence` sea `null` (art. L112-1-1 C. conso).
-- La cuenta atrás se basa en `endsAt` (11/11/2026 23:59, hora de París). Se para y no se reinicia nunca.
+- Campaña configurable en `src/config/campaign.ts`: `enabled` la activa o desactiva; sin `endsAt` se muestra «durée limitée» sin fecha ni cuenta atrás; con `endsAt` aparecen la fecha real y la cuenta atrás, que se para al final.
 - Sin stock inventado, sin compradores ficticios, sin opiniones inventadas.
 - Las cifras 4,9/5 y +3.000 clientes se atribuyen al fabricante, sin datos estructurados `AggregateRating`.
 - Toda especificación no confirmada lleva `verified: false` y se muestra como «À confirmer» en la vista previa.

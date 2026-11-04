@@ -1,0 +1,127 @@
+---
+/**
+ * Contact : adresse e-mail directe (toujours fonctionnelle) + formulaire relié à un service
+ * externe compatible site statique. Sans URL d'envoi configurée, le formulaire est désactivé
+ * et l'indique : il ne simule jamais un envoi.
+ */
+import { CONTACT } from "../config/commerce";
+import { SITE } from "../config/site";
+import Icon from "./Icon.astro";
+interface Props { headingLevel?: "h1" | "h2" }
+const { headingLevel: H = "h2" } = Astro.props;
+const live = Boolean(CONTACT.formEndpoint);
+---
+<div class="ct" data-contact>
+  <div class="ct__intro">
+    <p class="t-eyebrow">Contact</p>
+    <H class="t-h2">Une question&nbsp;? Écrivez-nous.</H>
+    <p class="t-lead">Avant comme après votre commande, nous vous répondons personnellement par e-mail.</p>
+    <div class="ct__mail">
+      <Icon name="mail" size={22} />
+      <div class="ct__mailtxt">
+        <span class="ct__label">Notre adresse</span>
+        <a class="ct__addr" href={`mailto:${CONTACT.email}`} data-email>{CONTACT.email}</a>
+      </div>
+      <div class="ct__actions">
+        <a class="ct__btn" href={`mailto:${CONTACT.email}?subject=${encodeURIComponent("Question — REVIVE GROW")}`}>Écrire un e-mail</a>
+        <button class="ct__btn ct__btn--ghost" type="button" data-copy>Copier l’adresse</button>
+      </div>
+      <p class="ct__copied" role="status" aria-live="polite" data-copied></p>
+    </div>
+  </div>
+
+  <form class="ct__form" data-form action={CONTACT.formEndpoint ?? undefined} method="post" novalidate>
+    <fieldset disabled={!live}>
+      <legend class="t-h4">Ou laissez-nous un message</legend>
+      {!live && SITE.preview && (
+        <p class="ct__off" role="note">Formulaire prêt, en attente d’activation ({CONTACT.formProvider}). En attendant, écrivez-nous à l’adresse ci-contre.</p>
+      )}
+      <div class="ct__row">
+        <label class="ct__field"><span>Nom</span><input id="ct-nom" name="nom" type="text" autocomplete="name" required maxlength="120" /></label>
+        <label class="ct__field"><span>E-mail</span><input id="ct-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="160" /></label>
+      </div>
+      <label class="ct__field"><span>Sujet</span>
+        <select id="ct-sujet" name="sujet">
+          <option>Question sur l’oreiller</option>
+          <option>Ma commande</option>
+          <option>Retour ou rétractation</option>
+          <option>Autre demande</option>
+        </select>
+      </label>
+      <label class="ct__field"><span>Message</span><textarea id="ct-message" name="message" rows="5" required maxlength="4000"></textarea></label>
+      <label class="ct__hp" aria-hidden="true">Ne pas remplir <input id="ct-hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+      <label class="ct__consent"><input id="ct-consent" type="checkbox" name="consentement" required /> <span>J’accepte que ces informations soient utilisées uniquement pour répondre à ma demande. <a href="/confidentialite">Politique de confidentialité</a></span></label>
+      <button class="ct__submit" type="submit">Envoyer le message</button>
+      <p class="ct__status" role="status" aria-live="polite" data-status></p>
+    </fieldset>
+  </form>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-contact]").forEach((root) => {
+    const addr = root.querySelector<HTMLAnchorElement>("[data-email]")!.textContent ?? "";
+    const copied = root.querySelector<HTMLElement>("[data-copied]")!;
+    root.querySelector("[data-copy]")?.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(addr); copied.textContent = "Adresse copiée."; }
+      catch { const r = document.createRange(); r.selectNodeContents(root.querySelector("[data-email]")!); const s = getSelection(); s?.removeAllRanges(); s?.addRange(r); copied.textContent = "Adresse sélectionnée : copiez-la avec votre clavier."; }
+    });
+
+    const form = root.querySelector<HTMLFormElement>("[data-form]")!;
+    const status = root.querySelector<HTMLElement>("[data-status]")!;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.action || form.querySelector("fieldset")?.disabled) return;
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const btn = form.querySelector<HTMLButtonElement>(".ct__submit")!;
+      btn.disabled = true; status.dataset.state = "sending"; status.textContent = "Envoi en cours…";
+      try {
+        const res = await fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset(); status.dataset.state = "ok";
+        status.textContent = "Message envoyé. Nous vous répondrons à l’adresse indiquée.";
+      } catch {
+        status.dataset.state = "error";
+        status.textContent = `Le message n’a pas pu être envoyé. Écrivez-nous directement à ${addr}.`;
+      } finally { btn.disabled = false; }
+    });
+  });
+</script>
+
+<style>
+  .ct { display: grid; gap: var(--s-7); }
+  @media (min-width: 960px) { .ct { grid-template-columns: 1fr 1.1fr; gap: var(--s-8); align-items: start; } }
+  .ct__intro { display: grid; gap: var(--s-4); }
+  .ct__mail { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3) var(--s-4); align-items: center; margin-top: var(--s-3); padding: var(--s-5); border: 1px solid var(--c-sable); border-radius: var(--r-lg); background: var(--c-blanc); }
+  .ct__mail :global(.icon) { color: var(--c-sauge); }
+  .ct__mailtxt { display: grid; min-width: 0; }
+  .ct__label { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-encre-douce); }
+  .ct__addr { font-family: var(--f-serif); font-size: clamp(1.2rem, 1rem + 1vw, 1.55rem); color: var(--c-encre); text-decoration: none; overflow-wrap: anywhere; }
+  .ct__addr:hover { text-decoration: underline; }
+  .ct__actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .ct__btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.2em; border-radius: var(--r-pill); background: var(--c-encre); color: var(--c-ivoire); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+  .ct__btn--ghost { background: transparent; color: var(--c-encre); border: 1px solid var(--c-sable); }
+  .ct__copied { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--c-sauge); min-height: 1em; }
+
+  .ct__form fieldset { display: grid; gap: var(--s-4); border: 0; padding: 0; margin: 0; min-width: 0; }
+  .ct__form fieldset:disabled .ct__field, .ct__form fieldset:disabled .ct__consent, .ct__form fieldset:disabled .ct__submit { opacity: 0.55; }
+  .ct__form legend { padding: 0; margin-bottom: var(--s-2); }
+  .ct__off { padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--c-lin); font-size: var(--fs-sm); color: var(--c-terre); }
+  .ct__row { display: grid; gap: var(--s-4); }
+  @media (min-width: 560px) { .ct__row { grid-template-columns: 1fr 1fr; } }
+  .ct__field { display: grid; gap: 6px; font-size: var(--fs-sm); font-weight: 600; min-width: 0; }
+  .ct__field input, .ct__field select, .ct__field textarea {
+    width: 100%; min-height: 48px; padding: 0.7rem 0.9rem; border: 1px solid var(--c-sable); border-radius: var(--r-md);
+    background: var(--c-blanc); font-size: 1rem; font-weight: 400; color: var(--c-encre);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .ct__field textarea { resize: vertical; min-height: 140px; }
+  .ct__field :is(input, select, textarea):focus { outline: none; border-color: var(--c-sauge); box-shadow: 0 0 0 3px rgb(79 91 73 / 0.18); }
+  .ct__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .ct__consent { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .ct__consent input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--c-sauge); }
+  .ct__submit { justify-self: start; min-height: 50px; padding: 0 1.8em; border-radius: var(--r-pill); background: var(--c-encre); color: var(--c-ivoire); font-weight: 600; }
+  .ct__submit:hover:not(:disabled) { background: var(--c-sauge); }
+  .ct__status { font-size: var(--fs-sm); min-height: 1.2em; }
+  .ct__status[data-state="ok"] { color: var(--c-sauge); }
+  .ct__status[data-state="error"] { color: var(--c-terre); }
+</style>

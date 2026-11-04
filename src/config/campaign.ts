@@ -1,29 +1,35 @@
 /**
- * Campagne Pré-Black Friday REVIVE GROW.
- * Dates réelles fournies par la marque, exprimées en heure de Paris
- * (novembre = heure d'hiver, UTC+01:00).
+ * Campagne « Offre spéciale Pré-Black Friday ».
+ *
+ * Pilotage (sans toucher au reste du code) :
+ *  - `enabled: false`          → l'offre disparaît du site (bandeau, prix promo, bloc d'achat fermé) ;
+ *  - `endsAt: null`            → offre affichée « à durée limitée », SANS date ni compte à rebours ;
+ *  - `endsAt: "2026-11-27T23:59:59+01:00"` → date de fin affichée + compte à rebours réel (heure de Paris),
+ *                                arrêt automatique et définitif à l'échéance.
  *
  * Règles :
- *  - le compte à rebours se base uniquement sur `endsAt` ; il ne se réinitialise jamais ;
- *  - à l'échéance, l'offre passe à l'état « terminée » et le pack n'est plus proposé à 32,40 € ;
+ *  - aucune date ni compte à rebours inventés ;
  *  - aucun pourcentage ni prix barré tant que `referencePrice.evidence` est vide
- *    (art. L112-1-1 du Code de la consommation : prix le plus bas des 30 jours précédents).
+ *    (art. L112-1-1 du Code de la consommation : prix le plus bas des 30 jours précédents) ;
+ *  - aucune mention de stock restant.
  */
 export const CAMPAIGN = {
+  enabled: true,
   id: "pre-black-friday-2026",
-  name: "Offre Pré-Black Friday",
-  startsAt: "2026-11-04T00:00:00+01:00",
-  endsAt: "2026-11-11T23:59:59+01:00",
+  name: "Offre spéciale Pré-Black Friday",
+  shortName: "Pré-Black Friday",
+  startsAt: null as string | null,
+  endsAt: null as string | null,
   timeZone: "Europe/Paris",
-  /** Seuil du message « Derniers jours » (en heures avant la fin). */
+  /** Seuil du message « Derniers jours » (en heures avant la fin), si une date de fin existe. */
   lastDaysThresholdHours: 48,
   price: 32.4,
   currency: "EUR",
   referencePrice: {
     amount: 54.0,
-    /** Justificatif du prix antérieur. Tant qu'il est null : ni « -40 % » ni prix barré. */
+    /** Justificatif du prix antérieur. Tant qu'il est null : ni « −40 % » ni prix barré. */
     evidence: null as string | null,
   },
   /** Offre appliquée après la campagne : à décider par la marque. */
   afterCampaign: null as null | { price: number; label: string },
-} as const;
+};

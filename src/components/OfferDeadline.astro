@@ -1,0 +1,28 @@
+---
+/** Mention de durée : date réelle si configurée, sinon « durée limitée » sans date. */
+import { CAMPAIGN } from "../config/campaign";
+import { formatParisDateTime } from "../lib/format";
+import Countdown from "./Countdown.astro";
+import Icon from "./Icon.astro";
+interface Props { tone?: "encre" | "ivoire" }
+const { tone = "encre" } = Astro.props;
+const end = CAMPAIGN.endsAt;
+---
+<div class:list={["dl", `dl--${tone}`]}>
+  <Icon name="clock" size={18} />
+  <p>
+    {end
+      ? <>Offre valable jusqu’au <time datetime={end}>{formatParisDateTime(end)}</time> (heure de Paris).</>
+      : <>Offre à durée limitée, valable pendant la période Pré-Black Friday.</>}
+    <span class="dl__urgency" data-phase-message="urgency" hidden></span>
+  </p>
+  <Countdown />
+</div>
+<style>
+  .dl { display: grid; grid-template-columns: auto 1fr; gap: var(--s-1) var(--s-3); align-items: start; font-size: var(--fs-sm); line-height: 1.5; }
+  .dl :global(.icon) { margin-top: 2px; color: var(--c-sauge); }
+  .dl :global(.cd) { grid-column: 2; font-size: 0.9375rem; }
+  .dl__urgency { display: block; margin-top: 2px; font-weight: 600; color: var(--c-terre); }
+  .dl__urgency[hidden] { display: none; }
+  .dl--ivoire :global(.icon) { color: var(--c-sauge-claire); }
+</style>

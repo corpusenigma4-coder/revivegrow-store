@@ -7,10 +7,12 @@ import HeightConfigurator from "../components/HeightConfigurator.astro";
 import Faq from "../components/Faq.astro";
 import Pending from "../components/Pending.astro";
 import Services from "../components/Services.astro";
+import Anatomy from "../components/Anatomy.astro";
 import SupplierProof from "../components/SupplierProof.astro";
 import { PILLOW, MASK, STRIPS } from "../config/product";
 import { FAQ } from "../data/faq";
 import packImg from "../assets/images/pack-trio.webp";
+import topImg from "../assets/images/oreiller-dessus.webp";
 import layersImg from "../assets/images/oreiller-couches.webp";
 import maskImg from "../assets/images/masque-hero.webp";
 import maskProfImg from "../assets/images/masque-profils.webp";
@@ -20,6 +22,7 @@ import stripsPoseImg from "../assets/images/bandelettes-pose.webp";
 
 const images = [
   { src: packImg, alt: "Le pack : oreiller cervical, masque de sommeil et bandelettes nasales" },
+  { src: topImg, alt: "L’oreiller vu de dessus : forme anatomique et zone centrale abaissée" },
   { src: layersImg, alt: "L’oreiller ouvert, avec ses couches de réglage" },
   { src: maskImg, alt: "Masque de sommeil graphite" },
   { src: maskProfImg, alt: "Masque de sommeil, vues de face et de profil" },
@@ -33,23 +36,30 @@ const groups = [
   { title: `${STRIPS.name} · offertes`, specs: STRIPS.specs },
 ];
 ---
-<Base title="Oreiller Cervical Ergonomique Ajustable" description="Oreiller cervical ergonomique réglable en hauteur (8, 11 ou 14 cm), livré avec un masque de sommeil et des bandelettes nasales offerts. Livraison sous 3 à 5 jours ouvrés en France métropolitaine.">
+<Base title="Oreiller Cervical Ergonomique Ajustable" description="Oreiller cervical ergonomique réglable en hauteur, livré avec un masque de sommeil et des bandelettes nasales offerts. Livraison offerte sous 3 à 5 jours ouvrés en France métropolitaine.">
   <div class="container crumbs"><a href="/">Accueil</a> <span aria-hidden="true">/</span> <span aria-current="page">L’oreiller cervical</span></div>
   <section class="pdp container" data-hero aria-label="Le pack">
     <div class="pdp__gallery"><Gallery images={images} /></div>
     <div class="pdp__buy"><BuyBox headingLevel="h1" /></div>
   </section>
 
+  <section class="section section--lin" id="forme" aria-labelledby="forme-title">
+    <div class="container">
+      <SectionHead eyebrow="La forme" id="forme-title" title="Pensé dans le détail." lead="Touchez un repère pour découvrir chaque zone." />
+      <Anatomy />
+    </div>
+  </section>
+
   <section class="section section--nuit" id="reglage" aria-labelledby="reglage-title">
     <div class="container">
-      <SectionHead num="01" eyebrow="Le réglage" id="reglage-title" tone="ivoire" title="Composez votre hauteur." lead="Trois hauteurs, une seule housse. Choisissez, puis suivez les cinq gestes." />
+      <SectionHead eyebrow="Le réglage" id="reglage-title" tone="ivoire" title="Composez votre hauteur." lead="Trois hauteurs, une seule housse. Choisissez, puis suivez les cinq gestes." />
       <HeightConfigurator />
     </div>
   </section>
 
   <section class="section" aria-labelledby="specs-title">
     <div class="container">
-      <SectionHead num="02" eyebrow="Caractéristiques" id="specs-title" title="Fiche technique." lead="Les valeurs marquées « à confirmer » seront validées sur la fiche du fournisseur avant publication." />
+      <SectionHead eyebrow="Caractéristiques" id="specs-title" title="Fiche technique." lead="Les caractéristiques de chacun des trois articles du pack." />
       <div class="specs">
         {groups.map((g) => (
           <div class="specs__group">
@@ -67,22 +77,23 @@ const groups = [
 
   <section class="section section--lin" aria-labelledby="proof-title">
     <div class="container">
-      <SectionHead num="03" eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." />
+      <SectionHead eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." />
       <SupplierProof />
     </div>
   </section>
 
   <section class="section" aria-labelledby="svc-title">
     <div class="container">
-      <SectionHead num="04" eyebrow="Achat serein" id="svc-title" title="Livraison, retours et garanties." />
+      <SectionHead eyebrow="Achat serein" id="svc-title" title="Livraison, retours et garanties." />
       <Services />
     </div>
   </section>
 
   <section class="section section--lin" aria-labelledby="faq-title">
     <div class="container--narrow">
-      <SectionHead num="05" eyebrow="Questions fréquentes" id="faq-title" title="Vos questions." />
+      <SectionHead eyebrow="Questions fréquentes" id="faq-title" title="Vos questions." />
       <Faq items={FAQ} />
+      <p class="pdp__ask">Une autre question&nbsp;? <a href="/contact">Écrivez-nous</a>.</p>
     </div>
   </section>
 </Base>
@@ -94,6 +105,7 @@ const groups = [
     .pdp { grid-template-columns: 1.25fr 1fr; gap: var(--s-8); align-items: start; }
     .pdp__buy { position: sticky; top: calc(var(--header-h) + var(--s-5)); }
   }
+  .pdp__ask { margin-top: var(--s-5); }
   .specs { display: grid; gap: var(--s-6); }
   @media (min-width: 960px) { .specs { grid-template-columns: repeat(3, 1fr); } }
   .specs__group { display: grid; gap: var(--s-3); align-content: start; }

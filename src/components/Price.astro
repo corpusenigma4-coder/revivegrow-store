@@ -5,7 +5,7 @@
  */
 import { CAMPAIGN } from "../config/campaign";
 import { formatPrice } from "../lib/format";
-interface Props { size?: "md" | "lg"; tone?: "encre" | "ivoire" }
+interface Props { size?: "md" | "lg" | "xl"; tone?: "encre" | "ivoire" }
 const { size = "md", tone = "encre" } = Astro.props;
 const ref = CAMPAIGN.referencePrice;
 const showRef = Boolean(ref.evidence);
@@ -26,6 +26,7 @@ const pct = Math.round((1 - CAMPAIGN.price / ref.amount) * 100);
   .price__amount { font-family: var(--f-serif); font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: lining-nums; }
   .price--md .price__amount { font-size: 2rem; }
   .price--lg .price__amount { font-size: clamp(2.4rem, 2rem + 1.6vw, 3.1rem); }
+  .price--xl .price__amount { font-size: clamp(3.4rem, 2.6rem + 3.4vw, 5rem); letter-spacing: -0.02em; }
   .price__ref { color: var(--c-encre-douce); font-size: 1rem; }
   .price__pct { font-size: 0.8125rem; font-weight: 600; color: var(--c-terre); }
   .price__tax { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.12em; color: var(--c-encre-douce); }

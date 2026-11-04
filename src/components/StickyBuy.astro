@@ -8,18 +8,18 @@ const { target = "/oreiller-cervical-ajustable#commander" } = Astro.props;
 <div class="sticky" data-sticky aria-hidden="true" inert>
   <div class="sticky__txt">
     <span class="sticky__price t-tabular">{formatPrice(CAMPAIGN.price)}</span>
-    <span class="sticky__sub">Oreiller + 2 cadeaux offerts</span>
+    <span class="sticky__sub">2 cadeaux offerts · Livraison offerte</span>
   </div>
-  <a class="sticky__btn" href={target}>Voir le pack</a>
+  <a class="sticky__btn" href={target}>Commander</a>
 </div>
 <script>
   const bar = document.querySelector<HTMLElement>("[data-sticky]");
   const hero = document.querySelector("[data-hero]");
-  const buy = document.querySelector("#commander");
+  const buy = document.querySelector("#commander, .card");
   if (bar && hero) {
     let pastHero = false, nearBuy = false;
     const update = () => {
-      const show = pastHero && !nearBuy && document.documentElement.dataset.phase !== "ended";
+      const show = pastHero && !nearBuy && document.documentElement.dataset.offer !== "closed";
       bar.classList.toggle("is-on", show);
       bar.toggleAttribute("inert", !show);
       bar.setAttribute("aria-hidden", String(!show));
