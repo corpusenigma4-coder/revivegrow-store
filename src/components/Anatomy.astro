@@ -26,12 +26,15 @@ const pts = PILLOW.anatomy;
         </button>
       ))}
     </div>
-    <figcaption class="ana__cap">Vue de dessus · photographie du produit</figcaption>
+    <figcaption class="ana__cap">
+      <span class="ana__live" data-ana-live aria-live="polite">Touchez un repère pour découvrir chaque zone.</span>
+      <span class="ana__src">Vue de dessus · photographie du produit</span>
+    </figcaption>
   </figure>
 
   <ol class="ana__list" role="list">
     {pts.map((p) => (
-      <li class="ana__item" id={`ana-pt-${p.n}`} data-pt={p.n} tabindex="-1">
+      <li class="ana__item" id={`ana-pt-${p.n}`} data-pt={p.n} data-title={p.title} data-text={p.text}>
         <span class="ana__n t-num" aria-hidden="true">{p.n}</span>
         <div class="ana__txt">
           <h3 class="t-h4">{p.title}</h3>
@@ -50,20 +53,23 @@ const pts = PILLOW.anatomy;
 
 <script>
   document.querySelectorAll<HTMLElement>("[data-ana]").forEach((root) => {
+    const live = root.querySelector<HTMLElement>("[data-ana-live]");
     const set = (n: string | null) => {
       root.querySelectorAll<HTMLElement>("[data-pt]").forEach((el) => el.classList.toggle("is-on", el.dataset.pt === n));
+      const it = n ? root.querySelector<HTMLElement>(`.ana__item[data-pt="${n}"]`) : null;
+      if (live && it) live.innerHTML = `<strong>${n}. ${it.dataset.title}</strong> — ${it.dataset.text}`;
     };
     root.querySelectorAll<HTMLElement>(".ana__pin").forEach((pin) => {
       pin.addEventListener("click", () => {
         const n = pin.dataset.pt ?? null; set(n);
-        const item = root.querySelector<HTMLElement>(`.ana__item[data-pt="${n}"]`);
-        if (item && window.matchMedia("(max-width: 959px)").matches) item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+
       });
       pin.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") set(pin.dataset.pt ?? null); });
       pin.addEventListener("focus", () => set(pin.dataset.pt ?? null));
     });
     root.querySelectorAll<HTMLElement>(".ana__item").forEach((it) => {
       it.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") set(it.dataset.pt ?? null); });
+      it.addEventListener("click", () => set(it.dataset.pt ?? null));
     });
     root.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") set(null); });
   });
@@ -76,7 +82,11 @@ const pts = PILLOW.anatomy;
   .ana__photo { margin: 0; display: grid; gap: var(--s-3); }
   .ana__frame { position: relative; width: 100%; max-width: 100%; background: var(--c-photo); border-radius: var(--r-lg); overflow: hidden; }
   .ana__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .ana__cap { font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-encre-douce); }
+  .ana__cap { display: grid; gap: var(--s-2); }
+  .ana__live { min-height: 3em; padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--c-blanc); border: var(--hairline); font-size: var(--fs-sm); line-height: 1.45; color: var(--c-encre-douce); }
+  .ana__live :global(strong) { color: var(--c-encre); font-weight: 600; }
+  .ana__src { font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-encre-douce); }
+  @media (min-width: 960px) { .ana__live { display: none; } }
 
   .ana__pin {
     position: absolute; transform: translate(-50%, -50%);
@@ -87,6 +97,10 @@ const pts = PILLOW.anatomy;
     transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease);
   }
   .ana__pin::after { content: ""; position: absolute; inset: -10px; } /* zone tactile ≥ 44 px */
+  @media (prefers-reduced-motion: no-preference) {
+    .ana__pin::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid var(--c-encre); opacity: 0; animation: pin-pulse 2.8s var(--ease) 1.2s 2; }
+    @keyframes pin-pulse { 0% { opacity: 0.5; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.5); } }
+  }
   .ana__pin.is-on, .ana__pin:hover { background: var(--c-sauge); transform: translate(-50%, -50%) scale(1.12); }
   @media (prefers-reduced-motion: no-preference) {
     .ana__pin { animation: pin-in var(--dur-slow) var(--ease) backwards; }
@@ -95,12 +109,13 @@ const pts = PILLOW.anatomy;
   }
 
   .ana__list { display: grid; }
-  .ana__item { display: grid; grid-template-columns: 2.25rem 1fr auto; gap: var(--s-3); align-items: center; padding-block: var(--s-4); border-top: var(--hairline); transition: background-color var(--dur) var(--ease); border-radius: 2px; outline: none; }
+  .ana__item { display: grid; grid-template-columns: 2.25rem 1fr auto; gap: var(--s-3); align-items: center; padding-block: var(--s-4); border-top: var(--hairline); transition: background-color var(--dur) var(--ease); border-radius: 2px; outline: none; cursor: pointer; }
+  .ana__item.is-on { background: linear-gradient(90deg, var(--c-sauge-pale), transparent 85%); }
   .ana__item:last-child { border-bottom: var(--hairline); }
   .ana__n { display: grid; place-items: center; width: 2rem; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--c-sable); font-size: 1.05rem; color: var(--c-encre); transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease); }
   .ana__item.is-on .ana__n { background: var(--c-sauge); border-color: var(--c-sauge); color: var(--c-ivoire); }
   .ana__txt { display: grid; gap: 2px; min-width: 0; }
   .ana__detail { margin: 0; display: grid; gap: 4px; justify-items: end; }
-  .ana__dimg { width: clamp(88px, 22vw, 120px); aspect-ratio: 4 / 3; height: auto; object-fit: cover; border-radius: var(--r-sm); }
+  .ana__dimg { width: clamp(104px, 28vw, 136px); aspect-ratio: 4 / 3; height: auto; object-fit: cover; border-radius: var(--r-sm); }
   .ana__detail figcaption { font-size: 0.6875rem; color: var(--c-encre-douce); }
 </style>

@@ -8,6 +8,7 @@ import Faq from "../components/Faq.astro";
 import Pending from "../components/Pending.astro";
 import Services from "../components/Services.astro";
 import Anatomy from "../components/Anatomy.astro";
+import StickyBuy from "../components/StickyBuy.astro";
 import SupplierProof from "../components/SupplierProof.astro";
 import { PILLOW, MASK, STRIPS } from "../config/product";
 import { FAQ } from "../data/faq";
@@ -96,6 +97,7 @@ const groups = [
       <p class="pdp__ask">Une autre question&nbsp;? <a href="/contact">Écrivez-nous</a>.</p>
     </div>
   </section>
+  <StickyBuy slot="after" target="#paiement" />
 </Base>
 <style>
   .crumbs { padding-block: var(--s-4); font-size: var(--fs-xs); color: var(--c-encre-douce); }
