@@ -11,6 +11,8 @@ import { campaignPhase, offerOpen } from "../lib/campaign";
 import CampaignBar from "../components/CampaignBar.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import CheckoutHeader from "../components/CheckoutHeader.astro";
+import CheckoutFooter from "../components/CheckoutFooter.astro";
 
 interface Props {
   title: string;
@@ -18,8 +20,10 @@ interface Props {
   image?: string;
   noindex?: boolean;
   jsonLd?: Record<string, unknown>[];
+  /** Tunnel de commande : en-tête réduit, sans bandeau ni menu, pied de page minimal. */
+  checkout?: boolean;
 }
-const { title, description = SITE.description, image = "/og-revivegrow.jpg", noindex = false, jsonLd = [] } = Astro.props;
+const { title, description = SITE.description, image = "/og-revivegrow.jpg", noindex = false, jsonLd = [], checkout = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/"), SITE.url).href;
 const robots = SITE.indexable && !noindex ? "index, follow" : "noindex, nofollow";
 const fullTitle = title.includes("REVIVE GROW") ? title : `${title} · REVIVE GROW`;
@@ -57,12 +61,11 @@ const org = { "@context": "https://schema.org", "@type": "Organization", name: S
   </head>
   <body>
     <a class="skip-link" href="#contenu">Aller au contenu</a>
-    <CampaignBar />
-    <Header />
+    {checkout ? <CheckoutHeader /> : <><CampaignBar /><Header /></>}
     <main id="contenu">
       <slot />
     </main>
-    <Footer />
+    {checkout ? <CheckoutFooter /> : <Footer />}
     <slot name="after" />
     <script>
       import "../scripts/campaign-client";

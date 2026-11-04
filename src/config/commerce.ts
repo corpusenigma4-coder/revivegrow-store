@@ -5,12 +5,23 @@
  * dans le navigateur. Tout ce qui est sensible vit chez un service externe.
  * Voir docs/PAIEMENTS-ET-COMMANDES.md pour les deux architectures possibles.
  */
-export type CheckoutProvider = "paypal-hosted-button" | "orders-api";
+export type CheckoutProvider = "paypal-buttons" | "paypal-hosted-button" | "orders-api";
 
 export const COMMERCE = {
   /** Interrupteur général. Reste à false tant que la validation sandbox n'est pas faite. */
   checkoutEnabled: true,
-  provider: "paypal-hosted-button" as CheckoutProvider | null,
+  /**
+   * "paypal-buttons" : boutons officiels PayPal (SDK JS, même client-id public) sur la page /commande/.
+   *   L'e-mail et l'adresse saisis dans le tunnel sont transmis à PayPal avec la commande.
+   * "paypal-hosted-button" : bouton hébergé de la PR #15 (conservé, réactivable) — il ne permet pas
+   *   de transmettre l'e-mail ni l'adresse saisis sur le site.
+   */
+  provider: "paypal-buttons" as CheckoutProvider | null,
+
+  /** SDK officiel des boutons PayPal (paiement PayPal + carte bancaire si PayPal la propose). */
+  paypalButtons: {
+    sdkParams: "components=buttons&enable-funding=card&disable-funding=venmo,paylater&currency=EUR&locale=fr_FR&intent=capture",
+  },
 
   /** Option A — bouton hébergé PayPal : prix et livraison définis dans le compte PayPal. */
   paypalHosted: {

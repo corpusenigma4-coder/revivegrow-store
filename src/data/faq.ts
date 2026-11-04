@@ -30,6 +30,6 @@ export const FAQ = [
   },
   {
     q: "Comment puis-je payer ?",
-    a: "Le paiement se fait sur la page officielle et sécurisée de PayPal, avec votre compte PayPal ou, lorsque PayPal le propose, directement par carte bancaire. Le montant total, 32,40&nbsp;€ TTC livraison comprise, est affiché avant la validation. Nous n’avons jamais accès à vos données bancaires.",
+    a: "Cliquez sur «&nbsp;Obtenir l’offre&nbsp;», vérifiez votre commande, indiquez votre e-mail et votre adresse, puis payez avec PayPal ou par carte bancaire (débit ou crédit) via le formulaire sécurisé de PayPal, lorsque PayPal le propose. Le total, 32,40&nbsp;€ TTC livraison comprise, est affiché avant le paiement. Aucun compte à créer, aucun numéro de téléphone obligatoire. Nous n’avons jamais accès à vos données bancaires.",
   },
 ];

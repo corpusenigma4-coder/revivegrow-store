@@ -6,7 +6,7 @@ import Countdown from "./Countdown.astro";
 const end = CAMPAIGN.endsAt;
 ---
 {CAMPAIGN.enabled && (
-  <a class="cbar" href="/#offre" aria-label={`${CAMPAIGN.name} : 2 cadeaux offerts, ${SERVICE.delivery.label.toLowerCase()}. Voir l’offre.`}>
+  <a class="cbar" href="/commande/" aria-label={`${CAMPAIGN.name} : 2 cadeaux offerts, ${SERVICE.delivery.label.toLowerCase()}. Obtenir l’offre.`}>
     <span class="container cbar__inner">
       <span class="cbar__live">
         <span class="cbar__name"><span class="cbar__wide">Offre spéciale </span>Pré-Black Friday</span>
