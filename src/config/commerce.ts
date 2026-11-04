@@ -26,7 +26,7 @@ export const COMMERCE = {
      * hébergés est refusé par PayPal pour créer une commande (403 NOT_AUTHORIZED, constaté le 04/11/2026).
      * Tant qu'il est null, le tunnel utilise le bouton hébergé (PayPal collecte e-mail et adresse).
      */
-    clientId: null as string | null,
+    clientId: "BAAQ-8n51AMovSQJMduZqWI5bu7ey6YdzkXHePhKeqSIIzkxH37XKZmzIWFFXQeoXaoOhGR0tXEvtFEE0w" as string | null,
     sdkParams: "components=buttons&enable-funding=card&disable-funding=venmo,paylater&currency=EUR&locale=fr_FR&intent=capture",
   },
 
