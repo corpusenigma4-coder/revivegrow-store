@@ -11,11 +11,14 @@ import Base from "../../layouts/Base.astro";
 import Icon from "../../components/Icon.astro";
 import { CAMPAIGN } from "../../config/campaign";
 import { PILLOW, MASK, STRIPS, SERVICE } from "../../config/product";
-import { CONTACT } from "../../config/commerce";
+import { CONTACT, COMMERCE } from "../../config/commerce";
 import { formatPrice } from "../../lib/format";
 import packImg from "../../assets/images/pack-trio.webp";
 
 const price = formatPrice(CAMPAIGN.price);
+// Tunnel complet (3 étapes) seulement avec un ID client d'application REST PayPal ; sinon bouton hébergé (2 étapes).
+const full = COMMERCE.checkoutEnabled && COMMERCE.provider === "paypal-buttons" && Boolean(COMMERCE.paypalButtons.clientId);
+const mode = full ? "full" : "hosted";
 const regions = new Intl.DisplayNames(["fr"], { type: "region", fallback: "none" });
 const EXCLUDE = new Set(["EU", "EZ", "UN", "QO", "XA", "XB", "ZZ", "AC", "CP", "CQ", "DG", "EA", "IC", "TA", "AQ", "BV", "HM"]);
 const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -27,14 +30,14 @@ for (const a of A) for (const b of A) {
 countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
 ---
 <Base title="Votre commande" description="Commande du Pack Sommeil REVIVE GROW : oreiller cervical et deux cadeaux offerts, 32,40 €, livraison gratuite." checkout noindex>
-  <section class="co" data-co>
+  <section class="co" data-co data-mode={mode}>
     <div class="co__wrap">
       <h1 class="sr-only">Votre commande REVIVE GROW</h1>
 
       <ol class="co__steps" role="list" aria-label="Étapes de la commande">
         <li data-ind="commande"><span class="co__n">1</span>Commande</li>
-        <li data-ind="livraison"><span class="co__n">2</span>Livraison</li>
-        <li data-ind="paiement"><span class="co__n">3</span>Paiement</li>
+        {full && <li data-ind="livraison"><span class="co__n">2</span>Livraison</li>}
+        <li data-ind="paiement"><span class="co__n">{full ? 3 : 2}</span>Paiement</li>
       </ol>
 
       <noscript><p class="co__alert">Le paiement sécurisé nécessite JavaScript. Activez-le ou écrivez-nous à {CONTACT.email}.</p></noscript>
@@ -60,11 +63,11 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
             <div class="sum__total"><dt>Total TTC</dt><dd class="t-tabular">{price}</dd></div>
           </dl>
         </article>
-        <button type="button" class="co__btn" data-go="livraison">Suivant</button>
+        <button type="button" class="co__btn" data-go={full ? "livraison" : "paiement"}>Suivant</button>
       </div>
 
       <!-- ÉTAPE 2 — COORDONNÉES ET ADRESSE -->
-      <form class="co__panel" data-step="livraison" hidden novalidate data-form>
+      {full && <form class="co__panel" data-step="livraison" hidden novalidate data-form>
         <h2 class="co__title" tabindex="-1">Livraison</h2>
         <p class="co__lead">Votre adresse e-mail et l’adresse où recevoir le pack.</p>
         <div class="f">
@@ -109,20 +112,20 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
           <button type="button" class="co__btn co__btn--ghost" data-go="commande">Retour</button>
           <button type="submit" class="co__btn">Suivant</button>
         </div>
-      </form>
+      </form>}
 
       <!-- ÉTAPE 3 — PAIEMENT -->
       <div class="co__panel" data-step="paiement" hidden>
         <h2 class="co__title" tabindex="-1">Paiement sécurisé</h2>
         <div class="recap">
-          <div class="recap__row">
+          {full ? <div class="recap__row">
             <div>
               <p class="recap__label">Livraison à</p>
               <p class="recap__val" data-recap-address></p>
               <p class="recap__val recap__mail" data-recap-email></p>
             </div>
             <button type="button" class="recap__edit" data-go="livraison">Modifier</button>
-          </div>
+          </div> : <p class="recap__val">Vous indiquerez votre adresse e-mail et votre adresse de livraison sur la page sécurisée de PayPal.</p>}
           <p class="recap__total"><span>Total à payer&nbsp;:</span> <strong class="t-tabular">{price}</strong></p>
           <p class="recap__sub">Pack Sommeil REVIVE GROW · 2 cadeaux offerts · livraison gratuite</p>
         </div>
@@ -130,6 +133,11 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
         <p class="pay__legal">En choisissant un moyen de paiement, vous passez une commande avec obligation de paiement et acceptez nos <a href="/cgv/">conditions générales de vente</a>.</p>
 
         <div class="pay" data-pay>
+          {!full && <section class="pay__opt" data-opt="hosted">
+            <header class="pay__head"><span class="pay__name">PayPal ou carte bancaire</span><span class="pay__desc">Paiement par compte PayPal ou par carte (débit ou crédit) lorsque PayPal la propose</span></header>
+            <div class="pay__slot" id="pp-hosted"><span class="pay__skel" aria-hidden="true"></span></div>
+          </section>}
+          {full && <>
           <section class="pay__opt" data-opt="paypal">
             <header class="pay__head"><span class="pay__name">PayPal</span><span class="pay__desc">Payez avec votre compte PayPal</span></header>
             <div class="pay__slot" id="pp-paypal"><span class="pay__skel" aria-hidden="true"></span></div>
@@ -139,12 +147,13 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
             <div class="pay__slot" id="pp-card"><span class="pay__skel" aria-hidden="true"></span></div>
             <p class="pay__unavail" data-card-unavailable hidden>Le paiement direct par carte n’est pas proposé par PayPal pour le moment. Vous pouvez utiliser le bouton PayPal ci-dessus, qui peut aussi accepter les cartes.</p>
           </section>
+          </>}
           <p class="pay__status" data-pay-status role="status" aria-live="polite"></p>
           <p class="pay__error" data-pay-error role="alert" hidden></p>
         </div>
 
         <p class="pay__trust"><Icon name="lock" size={16} /> Paiement traité par PayPal. Nous ne recevons jamais vos données bancaires.</p>
-        <button type="button" class="co__btn co__btn--ghost co__back3" data-go="livraison">Retour</button>
+        <button type="button" class="co__btn co__btn--ghost co__back3" data-go={full ? "livraison" : "commande"}>Retour</button>
       </div>
 
       <!-- CONFIRMATION (uniquement après paiement capturé par PayPal) -->
@@ -177,11 +186,11 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
     brandName: "REVIVE GROW",
   };
   const KEY = "rg.commande.v1";
-  const STEPS = ["commande", "livraison", "paiement"] as const;
-  type Step = (typeof STEPS)[number] | "confirmation";
-
   const root = document.querySelector<HTMLElement>("[data-co]")!;
-  const form = root.querySelector<HTMLFormElement>("[data-form]")!;
+  const FULL = root.dataset.mode === "full";
+  const STEPS = (FULL ? ["commande", "livraison", "paiement"] : ["commande", "paiement"]) as readonly string[];
+  type Step = "commande" | "livraison" | "paiement" | "confirmation";
+  const form = (root.querySelector<HTMLFormElement>("[data-form]") ?? document.createElement("form")) as HTMLFormElement;
   const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-step]"));
   const inds = Array.from(root.querySelectorAll<HTMLElement>("[data-ind]"));
   const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
@@ -227,13 +236,14 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
     window.scrollTo({ top: 0 });
     root.querySelector<HTMLElement>(`[data-step="${step}"] .co__title`)?.focus({ preventScroll: true });
     if (step === "livraison") loadSdk().catch(() => {}); // préchargement discret
-    if (step === "paiement") { fillRecap(); mountPayPal(); }
+    if (step === "paiement") { if (FULL) fillRecap(); mountPayPal(); }
+    if (step === "commande" && !FULL) loadSdk().catch(() => {});
   }
   function route() {
     if (finished) return show("confirmation");
     let s = (location.hash.slice(1) || "commande") as Step;
     if (!STEPS.includes(s as any)) s = "commande";
-    if (s === "paiement" && missingFields(read()).length) { s = "livraison"; history.replaceState(null, "", "#livraison"); }
+    if (FULL && s === "paiement" && missingFields(read()).length) { s = "livraison"; history.replaceState(null, "", "#livraison"); }
     show(s);
   }
   const go = (s: Step) => { if (location.hash.slice(1) === s) route(); else location.hash = s; };
@@ -258,14 +268,16 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
   // ---- Paiement : boutons officiels PayPal (même client-id public que la PR #15) ----
   let sdk: Promise<any> | null = null;
   function loadSdk(): Promise<any> {
-    const id = COMMERCE.paypalHosted.clientId;
-    if (!COMMERCE.checkoutEnabled || COMMERCE.provider !== "paypal-buttons" || !id) return Promise.reject(new Error("off"));
+    // Tunnel complet : ID d'application REST. Sinon : bouton hébergé de la PR #15 (même URL de SDK).
+    const id = FULL ? COMMERCE.paypalButtons.clientId : COMMERCE.paypalHosted.clientId;
+    const params = FULL ? COMMERCE.paypalButtons.sdkParams : "components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR";
+    if (!COMMERCE.checkoutEnabled || !id) return Promise.reject(new Error("off"));
     if (sdk) return sdk;
     sdk = new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(id)}&${COMMERCE.paypalButtons.sdkParams}`;
+      s.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(id)}&${params}`;
       s.async = true;
-      s.onload = () => ((window as any).paypal?.Buttons ? resolve((window as any).paypal) : reject(new Error("sdk")));
+      s.onload = () => { const pp = (window as any).paypal; (FULL ? pp?.Buttons : pp?.HostedButtons) ? resolve(pp) : reject(new Error("sdk")); };
       s.onerror = () => { sdk = null; reject(new Error("network")); };
       document.head.appendChild(s);
     });
@@ -294,6 +306,14 @@ countries.sort((x, y) => x.name.localeCompare(y.name, "fr"));
     const timer = window.setTimeout(() => { if (root.dataset.pay !== "ready") failLoad(); }, 20000);
     try {
       const pp = await loadSdk();
+      if (!FULL) {
+        await pp.HostedButtons({ hostedButtonId: COMMERCE.paypalHosted.hostedButtonId }).render("#pp-hosted");
+        window.clearTimeout(timer);
+        root.dataset.pay = "ready";
+        root.querySelectorAll(".pay__skel").forEach((s) => s.remove());
+        setStatus("");
+        return;
+      }
       const handlers = {
         createOrder: (_d: unknown, actions: any) => {
           setError(null);

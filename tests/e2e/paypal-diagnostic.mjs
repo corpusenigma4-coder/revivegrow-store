@@ -14,13 +14,13 @@ if (process.env.LOCAL_DIST === "1") { server = await startPagesServer("dist", 43
 
 const browser = await chromium.launch();
 for (const [label, base] of targets) {
-  for (const funding of ["paypal", "card"]) {
+  for (const funding of ["auto"]) {
     console.log(`\n===== ${label} — bouton ${funding} =====`);
     const ctx = await browser.newContext({ ...devices["Pixel 7"], locale: "fr-FR" });
     const page = await ctx.newPage();
     ctx.on("response", async (r) => {
       const u = r.url();
-      if (/paypal\.com\/(v2\/checkout\/orders|smart\/api|graphql)/.test(u) && r.request().method() !== "GET") {
+      if (/paypal\.com\/(v2\/checkout\/orders|smart\/api|graphql|ncp\/api)/.test(u) && r.request().method() !== "GET") {
         let body = ""; try { body = (await r.text()).slice(0, 1500); } catch {}
         console.log(`[réseau] ${r.status()} ${r.request().method()} ${u.split("?")[0]}\n         ${body.replace(/\s+/g, " ")}`);
       }
@@ -29,23 +29,26 @@ for (const [label, base] of targets) {
     page.on("pageerror", (e) => console.log(`[pageerror] ${e.message}`));
     await page.goto(base + "/commande/", { waitUntil: "domcontentloaded" });
     await page.click("[data-step='commande'] button");
-    await page.fill("#co-email", "diagnostic@example.com");
-    await page.fill("#co-name", "Jean Dupont");
-    await page.fill("#co-address1", "10 rue de Rivoli");
-    await page.fill("#co-postal", "75001");
-    await page.fill("#co-city", "Paris");
-    await page.click("[data-step='livraison'] button[type=submit]");
+    const mode = await page.getAttribute("[data-co]", "data-mode");
+    console.log("Mode du tunnel :", mode);
+    if (mode === "full") {
+      await page.fill("#co-email", "diagnostic@example.com"); await page.fill("#co-name", "Jean Dupont");
+      await page.fill("#co-address1", "10 rue de Rivoli"); await page.fill("#co-postal", "75001"); await page.fill("#co-city", "Paris");
+      await page.click("[data-step='livraison'] button[type=submit]");
+    }
     const st = await page.waitForFunction(() => document.querySelector("[data-co]")?.dataset.pay || false, null, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => "délai");
     console.log("Boutons :", st);
     if (st !== "ready") { await ctx.close(); continue; }
-    const frame = page.frameLocator(`#pp-${funding} iframe`).first();
+    const slot = mode === "full" ? "#pp-paypal" : "#pp-hosted";
+    await page.waitForTimeout(2500);
+    const frame = page.frameLocator(`${slot} iframe`).first();
     const popupP = ctx.waitForEvent("page", { timeout: 15000 }).catch(() => null);
     await frame.locator("[role=link], [role=button], div[data-funding-source]").first().click({ timeout: 15000 }).catch((e) => console.log("clic impossible :", e.message.split("\n")[0]));
     const popup = await popupP;
     if (popup) {
       await popup.waitForLoadState("domcontentloaded").catch(() => {});
       await page.waitForTimeout(6000);
-      console.log("Fenêtre PayPal :", popup.url().split("?")[0], "| token présent :", /token=/.test(popup.url()));
+      console.log("Fenêtre PayPal :", popup.url().split("?")[0], "| commande créée (token) :", /token=/.test(popup.url()));
       await popup.close().catch(() => {});
     } else {
       await page.waitForTimeout(6000);

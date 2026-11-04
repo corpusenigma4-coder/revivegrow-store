@@ -21,4 +21,4 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Création de commande PayPal (site publié + build de la branche)
-        run: LOCAL_DIST=1 node tests/e2e/paypal-diagnostic.mjs
+        run: LIVE_URL=0 LOCAL_DIST=1 node tests/e2e/paypal-diagnostic.mjs
