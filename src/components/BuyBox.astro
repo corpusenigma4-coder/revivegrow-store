@@ -38,11 +38,11 @@ const hosted = COMMERCE.checkoutEnabled && COMMERCE.provider === "paypal-hosted-
       <div class="buy__pay" id="paypal-hosted" data-checkout></div>
     ) : (
       <Button variant="primary" size="lg" block disabled data-offer-action>
-        <Icon name="bag" size={18} /> Commander le pack
+        <Icon name="bag" size={18} /> Commande bientôt disponible
       </Button>
     )}
-    {SITE.preview && !COMMERCE.checkoutEnabled && (
-      <p class="buy__preview" role="note">Aperçu : le paiement (PayPal et carte bancaire) sera activé après validation complète en environnement de test.</p>
+    {!COMMERCE.checkoutEnabled && (
+      <p class="buy__preview" role="note">Le paiement sécurisé (PayPal et carte bancaire) ouvre très prochainement. Aucune commande ne peut encore être passée. Une question&nbsp;? <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></p>
     )}
 
     <ul class="buy__reassure" role="list">
@@ -82,7 +82,8 @@ const hosted = COMMERCE.checkoutEnabled && COMMERCE.provider === "paypal-hosted-
   .buy__price { display: grid; gap: var(--s-2); }
   .buy__ship { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--fs-sm); font-weight: 600; color: var(--c-sauge); }
   .buy__deadline { padding: var(--s-4); border-radius: var(--r-md); background: var(--c-lin); }
-  .buy__preview { margin-top: calc(-1 * var(--s-3)); font-size: var(--fs-xs); line-height: 1.5; color: var(--c-terre); }
+  .buy__preview { margin-top: calc(-1 * var(--s-3)); font-size: var(--fs-sm); line-height: 1.5; color: var(--c-encre-douce); }
+  .buy__preview a { color: var(--c-encre); overflow-wrap: anywhere; }
   .buy__reassure { display: grid; gap: var(--s-3); font-size: var(--fs-sm); line-height: 1.45; }
   .buy__reassure li { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; }
   .buy__reassure :global(.icon) { color: var(--c-sauge); }

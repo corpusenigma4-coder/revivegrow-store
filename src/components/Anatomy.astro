@@ -59,13 +59,13 @@ const pts = PILLOW.anatomy;
         const item = root.querySelector<HTMLElement>(`.ana__item[data-pt="${n}"]`);
         if (item && window.matchMedia("(max-width: 959px)").matches) item.scrollIntoView({ block: "nearest", behavior: "smooth" });
       });
-      pin.addEventListener("mouseenter", () => set(pin.dataset.pt ?? null));
+      pin.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") set(pin.dataset.pt ?? null); });
       pin.addEventListener("focus", () => set(pin.dataset.pt ?? null));
     });
     root.querySelectorAll<HTMLElement>(".ana__item").forEach((it) => {
-      it.addEventListener("mouseenter", () => set(it.dataset.pt ?? null));
+      it.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") set(it.dataset.pt ?? null); });
     });
-    root.addEventListener("mouseleave", () => set(null));
+    root.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") set(null); });
   });
 </script>
 

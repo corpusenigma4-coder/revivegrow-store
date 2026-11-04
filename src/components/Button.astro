@@ -29,7 +29,7 @@ const classes = ["btn", `btn--${variant}`, `btn--${size}`, block && "btn--block"
   }
   .btn:active:not(:disabled) { transform: scale(0.985); }
   .btn--lg { --btn-h: 56px; font-size: 1rem; padding: 0 1.9em; }
-  .btn--block { display: flex; width: 100%; }
+  .btn--block { display: flex; width: 100%; white-space: normal; text-align: center; line-height: 1.25; padding-block: 0.6em; }
   .btn--primary { background: var(--c-encre); color: var(--c-ivoire); }
   .btn--primary:hover:not(:disabled) { background: var(--c-sauge); }
   .btn--secondary { background: transparent; color: var(--c-encre); border-color: var(--c-encre); }

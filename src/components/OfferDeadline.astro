@@ -13,7 +13,7 @@ const end = CAMPAIGN.endsAt;
   <p>
     {end
       ? <>Offre valable jusqu’au <time datetime={end}>{formatParisDateTime(end)}</time> (heure de Paris).</>
-      : <>Offre à durée limitée, valable pendant la période Pré-Black Friday.</>}
+      : <>Offre spéciale Pré-Black Friday en cours.</>}
     <span class="dl__urgency" data-phase-message="urgency" hidden></span>
   </p>
   <Countdown />

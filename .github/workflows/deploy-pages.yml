@@ -1,14 +1,11 @@
 # Publication sur GitHub Pages (revivegrow.store).
-# ⚠️ Déclenchement MANUEL uniquement : rien n'est publié automatiquement.
-# Prérequis au lancement (une seule fois) : Settings → Pages → Source : « GitHub Actions ».
-# Tant que ce réglage n'est pas changé, le site actuel (servi depuis la branche main) reste en ligne.
+# Publication automatique à chaque push sur main (et manuellement depuis l'onglet Actions).
+# Prérequis (une seule fois) : Settings → Pages → Build and deployment → Source : « GitHub Actions ».
 name: Publier sur GitHub Pages
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      confirmation:
-        description: "Tapez PUBLIER pour confirmer la mise en ligne"
-        required: true
 permissions:
   contents: read
   pages: write
@@ -18,7 +15,6 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: ${{ github.event.inputs.confirmation == 'PUBLIER' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

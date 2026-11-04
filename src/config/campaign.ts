@@ -3,7 +3,7 @@
  *
  * Pilotage (sans toucher au reste du code) :
  *  - `enabled: false`          → l'offre disparaît du site (bandeau, prix promo, bloc d'achat fermé) ;
- *  - `endsAt: null`            → offre affichée « à durée limitée », SANS date ni compte à rebours ;
+ *  - `endsAt: null`            → offre active en continu, SANS date ni compte à rebours (réglage actuel) ;
  *  - `endsAt: "2026-11-27T23:59:59+01:00"` → date de fin affichée + compte à rebours réel (heure de Paris),
  *                                arrêt automatique et définitif à l'échéance.
  *

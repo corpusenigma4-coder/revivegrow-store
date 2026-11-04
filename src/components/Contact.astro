@@ -5,7 +5,6 @@
  * et l'indique : il ne simule jamais un envoi.
  */
 import { CONTACT } from "../config/commerce";
-import { SITE } from "../config/site";
 import Icon from "./Icon.astro";
 interface Props { headingLevel?: "h1" | "h2" }
 const { headingLevel: H = "h2" } = Astro.props;
@@ -30,12 +29,10 @@ const live = Boolean(CONTACT.formEndpoint);
     </div>
   </div>
 
+  {live && (
   <form class="ct__form" data-form action={CONTACT.formEndpoint ?? undefined} method="post" novalidate>
-    <fieldset disabled={!live}>
+    <fieldset>
       <legend class="t-h4">Ou laissez-nous un message</legend>
-      {!live && SITE.preview && (
-        <p class="ct__off" role="note">Formulaire prêt, en attente d’activation ({CONTACT.formProvider}). En attendant, écrivez-nous à l’adresse ci-contre.</p>
-      )}
       <div class="ct__row">
         <label class="ct__field"><span>Nom</span><input id="ct-nom" name="nom" type="text" autocomplete="name" required maxlength="120" /></label>
         <label class="ct__field"><span>E-mail</span><input id="ct-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="160" /></label>
@@ -55,6 +52,7 @@ const live = Boolean(CONTACT.formEndpoint);
       <p class="ct__status" role="status" aria-live="polite" data-status></p>
     </fieldset>
   </form>
+  )}
 </div>
 
 <script>
@@ -66,8 +64,9 @@ const live = Boolean(CONTACT.formEndpoint);
       catch { const r = document.createRange(); r.selectNodeContents(root.querySelector("[data-email]")!); const s = getSelection(); s?.removeAllRanges(); s?.addRange(r); copied.textContent = "Adresse sélectionnée : copiez-la avec votre clavier."; }
     });
 
-    const form = root.querySelector<HTMLFormElement>("[data-form]")!;
-    const status = root.querySelector<HTMLElement>("[data-status]")!;
+    const form = root.querySelector<HTMLFormElement>("[data-form]");
+    const status = root.querySelector<HTMLElement>("[data-status]");
+    if (!form || !status) return;
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!form.action || form.querySelector("fieldset")?.disabled) return;
@@ -89,7 +88,7 @@ const live = Boolean(CONTACT.formEndpoint);
 
 <style>
   .ct { display: grid; gap: var(--s-7); }
-  @media (min-width: 960px) { .ct { grid-template-columns: 1fr 1.1fr; gap: var(--s-8); align-items: start; } }
+  @media (min-width: 960px) { .ct:has(.ct__form) { grid-template-columns: 1fr 1.1fr; gap: var(--s-8); align-items: start; } }
   .ct__intro { display: grid; gap: var(--s-4); }
   .ct__mail { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3) var(--s-4); align-items: center; margin-top: var(--s-3); padding: var(--s-5); border: 1px solid var(--c-sable); border-radius: var(--r-lg); background: var(--c-blanc); }
   .ct__mail :global(.icon) { color: var(--c-sauge); }

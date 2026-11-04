@@ -9,7 +9,7 @@ import { startPagesServer } from "./pages-server.mjs";
 
 const PORT = 4321;
 const BASE = `http://127.0.0.1:${PORT}`;
-const PAGES = ["/", "/oreiller-cervical-ajustable", "/contact", "/mentions-legales", "/cgv", "/livraison-retours", "/garantie-90-jours",
+const PAGES = ["/", "/oreiller-cervical-ajustable", "/contact", "/mentions-legales", "/cgv", "/livraison", "/retours", "/garantie-90-jours",
   "/garanties-legales", "/retractation", "/confidentialite", "/cookies", "/systeme"];
 const SHOTS = process.env.SHOTS !== "0";
 mkdirSync("screenshots", { recursive: true });
@@ -75,13 +75,12 @@ await t("liens et ressources internes : tous résolus (200)", async () => {
 });
 
 console.log("Offre et honnêteté");
-await t("offre affichée sans date ni compte à rebours inventés ; « durée limitée »", async () => {
+await t("offre active en continu, sans date ni compte à rebours", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
   await page.goto(BASE + "/");
   assert.equal(await page.locator("[data-countdown]").count(), 0);
   const body = await page.locator("body").innerText();
   assert.match(body, /Offre spéciale Pré-Black Friday/i);
-  assert.match(body, /durée limitée/);
   assert.ok(!/jusqu’au \d/.test(body), "date de fin affichée sans configuration");
   assert.equal(await page.getAttribute("html", "data-offer"), "open");
   await ctx.close();
@@ -94,8 +93,14 @@ await t("aucun prix barré, aucun pourcentage, aucun stock restant ; 32,40 € e
   assert.ok(!/(il reste|plus que|derniers? articles?|en stock)/i.test(body), "mention de stock");
   assert.equal(await page.locator(".price__ref").count(), 0);
   assert.match(body, /32,40 €/);
-  assert.match(body, /Livraison offerte/);
+  assert.match(body, /Livraison gratuite/i);
   await ctx.close();
+});
+await t("politiques : pages en français, mentions manquantes signalées, aucune donnée inventée", async () => {
+  for (const p of ["/cgv", "/mentions-legales", "/retours"]) {
+    const r = await (await fetch(BASE + p)).text();
+    assert.match(r, /À compléter/);
+  }
 });
 await t("pas de faux paiement : bouton désactivé, aucun SDK de paiement chargé", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
@@ -174,21 +179,20 @@ await t("repères posés sur la photo, alignés à 360, 390 et 1440 px", async (
   }
 });
 await t("toucher un repère met en évidence le point correspondant", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
+  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
   await page.goto(BASE + "/#forme");
   await page.locator(".ana__pin[data-pt='2']").first().tap();
+  await page.waitForTimeout(400);
   assert.equal(await page.locator(".ana__item[data-pt='2']").first().evaluate((el) => el.classList.contains("is-on")), true);
   await ctx.close();
 });
 
 console.log("Contact");
-await t("adresse e-mail cliquable + formulaire désactivé tant qu’aucun service n’est branché", async () => {
+await t("adresse e-mail cliquable ; aucun formulaire non branché affiché", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
   await page.goto(BASE + "/contact");
   assert.equal(await page.locator("a[href^='mailto:corpusenigma4@gmail.com']").count() >= 2, true);
-  assert.equal(await page.locator("[data-form] fieldset").evaluate((el) => el.disabled), true);
-  assert.equal(await page.locator("#ct-message").isDisabled(), true);
-  assert.equal(await page.locator("[data-form] input[name='_gotcha']").count(), 1);
+  assert.equal(await page.locator("[data-form]").count(), 0);
   await ctx.close();
 });
 

@@ -82,7 +82,7 @@ export const SERVICE = {
   delivery: {
     free: true,
     cost: 0,
-    label: "Livraison offerte",
+    label: "Livraison gratuite",
     delay: "sous 3 à 5 jours ouvrés",
     zone: "France métropolitaine",
     carrier: null as string | null,

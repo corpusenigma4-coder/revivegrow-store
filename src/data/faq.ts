@@ -10,7 +10,7 @@ export const FAQ = [
   },
   {
     q: "Quels sont les délais et frais de livraison ?",
-    a: "La livraison est offerte en France métropolitaine. Votre commande arrive sous 3 à 5 jours ouvrés, les trois articles dans le même colis. Détails sur la page <a href=\"/livraison-retours\">Livraison et retours</a>.",
+    a: "La livraison est offerte en France métropolitaine. Votre commande arrive sous 3 à 5 jours ouvrés, les trois articles dans le même colis. Détails sur la <a href=\"/livraison\">politique de livraison</a>.",
   },
   {
     q: "Que couvre la garantie de 90 jours ?",
