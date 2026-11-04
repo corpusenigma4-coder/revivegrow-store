@@ -1,0 +1,34 @@
+---
+/**
+ * Prix TTC. Le prix de référence barré et le pourcentage ne s'affichent
+ * QUE si un justificatif de prix antérieur est renseigné (art. L112-1-1 C. conso).
+ */
+import { CAMPAIGN } from "../config/campaign";
+import { formatPrice } from "../lib/format";
+interface Props { size?: "md" | "lg" | "xl"; tone?: "encre" | "ivoire" }
+const { size = "md", tone = "encre" } = Astro.props;
+const ref = CAMPAIGN.referencePrice;
+const showRef = Boolean(ref.evidence);
+const pct = Math.round((1 - CAMPAIGN.price / ref.amount) * 100);
+---
+<p class:list={["price", `price--${size}`, `price--${tone}`]}>
+  <span class="price__amount">{formatPrice(CAMPAIGN.price)}</span>
+  {showRef && (
+    <>
+      <s class="price__ref"><span class="sr-only">Prix de référence : </span>{formatPrice(ref.amount)}</s>
+      <span class="price__pct">−{pct}&nbsp;%</span>
+    </>
+  )}
+  <span class="price__tax">TTC</span>
+</p>
+<style>
+  .price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.2em 0.6em; line-height: 1; }
+  .price__amount { font-family: var(--f-serif); font-weight: 600; letter-spacing: -0.01em; font-variant-numeric: lining-nums; }
+  .price--md .price__amount { font-size: 2rem; }
+  .price--lg .price__amount { font-size: clamp(2.4rem, 2rem + 1.6vw, 3.1rem); }
+  .price--xl .price__amount { font-size: clamp(3.4rem, 2.6rem + 3.4vw, 5rem); letter-spacing: -0.02em; }
+  .price__ref { color: var(--c-encre-douce); font-size: 1rem; }
+  .price__pct { font-size: 0.8125rem; font-weight: 600; color: var(--c-terre); }
+  .price__tax { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.12em; color: var(--c-encre-douce); }
+  .price--ivoire .price__tax { color: rgb(247 243 236 / 0.7); }
+</style>

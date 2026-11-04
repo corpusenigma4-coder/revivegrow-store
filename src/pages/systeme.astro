@@ -1,0 +1,85 @@
+---
+/** Référence interne du système de design (non indexée, hors navigation). */
+import Base from "../layouts/Base.astro";
+import Button from "../components/Button.astro";
+import Price from "../components/Price.astro";
+import PackList from "../components/PackList.astro";
+import Pending from "../components/Pending.astro";
+import Icon from "../components/Icon.astro";
+import Logo from "../components/Logo.astro";
+import Countdown from "../components/Countdown.astro";
+const colors = [
+  ["ivoire", "#F7F3EC", "Fond principal"], ["blanc", "#FFFDF9", "Surfaces élevées"], ["lin", "#EEE7DB", "Surfaces secondaires"],
+  ["sable", "#C9B8A0", "Filets, passepoil"], ["sauge", "#4F5B49", "Accent, liens · 6,6:1"], ["sauge-claire", "#B5BEA9", "Accent sur fond nuit"],
+  ["encre", "#22201C", "Texte, CTA · 16:1"], ["encre-douce", "#5C574E", "Texte secondaire · 6,8:1"], ["nuit", "#23272F", "Sections nuit"],
+  ["terre", "#93553A", "Campagne uniquement"],
+];
+const icons = ["truck", "return", "lock", "shield", "gift", "moon", "clock", "zip", "layers", "ruler", "bag", "star", "card", "mail", "info", "check"] as const;
+---
+<Base title="Système de design" noindex>
+  <div class="container ds">
+    <header class="ds__head">
+      <p class="t-eyebrow">Référence interne · v0.1</p>
+      <h1 class="t-display">Système de design</h1>
+      <p class="t-lead">« Le calme, pensé dans le détail. » Palette issue des matières du produit, typographie éditoriale, mouvement sobre.</p>
+    </header>
+
+    <section class="ds__sec"><h2 class="t-h3">Marque</h2>
+      <div class="ds__row"><Logo size="lg" /><span class="ds__dark"><Logo size="lg" tone="ivoire" /></span></div>
+      <p class="t-small t-muted">Logotype provisoire, à remplacer par le fichier vectoriel définitif.</p>
+    </section>
+
+    <section class="ds__sec"><h2 class="t-h3">Couleurs</h2>
+      <ul class="ds__colors" role="list">
+        {colors.map(([n, hex, use]) => (
+          <li><span class="ds__swatch" style={`background:${hex}`}></span><strong>{n}</strong><code>{hex}</code><span class="t-small t-muted">{use}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="ds__sec"><h2 class="t-h3">Typographie</h2>
+      <p class="t-eyebrow">Cormorant Garamond · titres — Instrument Sans · interface et texte</p>
+      <p class="t-display">L’oreiller qui <em>s’ajuste</em></p>
+      <p class="t-h2">Composez votre hauteur.</p>
+      <p class="t-h3">Pack Sommeil REVIVE GROW</p>
+      <p class="t-h4">Zone centrale abaissée</p>
+      <p class="t-lead">Texte d’introduction : un noyau en mousse à mémoire de forme et des inserts amovibles.</p>
+      <p>Texte courant — « Livraison sous 3 à 5 jours ouvrés » ; prix : 32,40&nbsp;€ ; date : mercredi 11 novembre 2026 à 23&nbsp;h&nbsp;59.</p>
+      <p class="t-small t-muted">Petit texte, mentions et notes.</p>
+    </section>
+
+    <section class="ds__sec"><h2 class="t-h3">Boutons</h2>
+      <div class="ds__row">
+        <Button>Découvrir le pack</Button>
+        <Button variant="secondary">Secondaire</Button>
+        <Button variant="ghost">Lien d’action</Button>
+        <Button disabled>Désactivé</Button>
+      </div>
+      <div class="ds__row ds__dark"><Button variant="light">Sur fond nuit</Button></div>
+    </section>
+
+    <section class="ds__sec"><h2 class="t-h3">Prix, campagne et repères</h2>
+      <div class="ds__row"><Price size="lg" /><Countdown /><Pending note="Exemple" /></div>
+      <div class="ds__card"><PackList /></div>
+    </section>
+
+    <section class="ds__sec"><h2 class="t-h3">Icônes</h2>
+      <ul class="ds__icons" role="list">{icons.map((i) => <li><Icon name={i} size={26} /><span>{i}</span></li>)}</ul>
+    </section>
+  </div>
+</Base>
+<style>
+  .ds { display: grid; gap: var(--s-8); padding-block: var(--s-7) var(--s-9); }
+  .ds__head { display: grid; gap: var(--s-4); max-width: 46rem; }
+  .ds__sec { display: grid; gap: var(--s-4); padding-top: var(--s-5); border-top: var(--hairline); }
+  .ds__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
+  .ds__dark { padding: var(--s-5); border-radius: var(--r-md); background: var(--c-nuit); }
+  .ds__colors { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--s-4); }
+  .ds__colors li { display: grid; gap: 2px; }
+  .ds__swatch { height: 72px; border-radius: var(--r-md); border: var(--hairline); margin-bottom: var(--s-2); }
+  .ds__colors code { font-size: var(--fs-xs); color: var(--c-encre-douce); }
+  .ds__card { max-width: 480px; padding: var(--s-5); background: var(--c-blanc); border-radius: var(--r-lg); }
+  .ds__icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--s-4); }
+  .ds__icons li { display: grid; justify-items: center; gap: var(--s-2); font-size: var(--fs-xs); color: var(--c-encre-douce); }
+  .ds__icons :global(.icon) { color: var(--c-encre); }
+</style>

@@ -1,0 +1,195 @@
+---
+/**
+ * Accueil — parcours pensé pour un visiteur qui ne connaît pas REVIVE GROW :
+ *  1. Quoi ? (hero : produit, prix, garanties en un écran)
+ *  2. Pourquoi différent ? (avant / après)
+ *  3. Comment il est dessiné ? (anatomie sur photo)
+ *  4. Comment se règle la hauteur ? (configurateur)
+ *  5. Qu'est-ce que je reçois, pour combien ? (l'offre)
+ *  6. Comment ça se passe ? (commande, livraison, retours)
+ *  7. Qui en parle ? (preuve sociale attribuée)
+ *  8. Questions, puis contact.
+ */
+import { Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Button from "../components/Button.astro";
+import Price from "../components/Price.astro";
+import Icon from "../components/Icon.astro";
+import BeforeAfter from "../components/BeforeAfter.astro";
+import Anatomy from "../components/Anatomy.astro";
+import HeightConfigurator from "../components/HeightConfigurator.astro";
+import Offer from "../components/Offer.astro";
+import HowToBuy from "../components/HowToBuy.astro";
+import SupplierProof from "../components/SupplierProof.astro";
+import Faq from "../components/Faq.astro";
+import Contact from "../components/Contact.astro";
+import StickyBuy from "../components/StickyBuy.astro";
+import { CAMPAIGN } from "../config/campaign";
+import { SERVICE } from "../config/product";
+import { FAQ } from "../data/faq";
+import heroImg from "../assets/images/pack-trio.webp";
+---
+<Base title="REVIVE GROW · L’oreiller cervical ergonomique réglable en hauteur">
+  <!-- 1 · HERO -->
+  <section class="hero" data-hero aria-labelledby="hero-title">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <p class="t-eyebrow">Oreiller cervical ergonomique</p>
+        <h1 id="hero-title" class="t-display hero__title">L’oreiller qui <em>s’ajuste</em> à&nbsp;vous.</h1>
+      </div>
+      <div class="hero__media">
+        <Picture src={heroImg} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[480, 760, 1100, 1672]} sizes="(min-width: 960px) 56vw, 100vw" alt="L’oreiller cervical REVIVE GROW, avec le masque de sommeil graphite et une boîte de bandelettes nasales" loading="eager" fetchpriority="high" class="hero__img" />
+        {CAMPAIGN.enabled && <p class="hero__badge" data-offer-only><Icon name="gift" size={18} /> 2 cadeaux offerts</p>}
+      </div>
+      <p class="t-lead hero__lead">Un noyau en mousse à mémoire de forme et des inserts amovibles&nbsp;: vous choisissez la hauteur qui vous convient.</p>
+      <div class="hero__buy">
+        <div class="hero__price">
+          {CAMPAIGN.enabled && <p class="hero__offer" data-offer-only>{CAMPAIGN.name}</p>}
+          <Price size="lg" />
+          <p class="hero__incl">Oreiller + masque de sommeil + bandelettes nasales</p>
+        </div>
+        <div class="hero__ctas">
+          <Button href="#offre" size="lg">Voir l’offre</Button>
+          <Button href="#reglage" variant="ghost">Comment ça se règle</Button>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <ul class="trust" role="list" aria-label="Nos engagements">
+        <li><Icon name="truck" size={20} /><span><strong>{SERVICE.delivery.label}</strong>{SERVICE.delivery.delay}</span></li>
+        <li><Icon name="return" size={20} /><span><strong>90 jours</strong>pour changer d’avis</span></li>
+        <li><Icon name="lock" size={20} /><span><strong>Paiement sécurisé</strong>PayPal ou carte</span></li>
+        <li><Icon name="mail" size={20} /><span><strong>Une question ?</strong><a href="/contact">Écrivez-nous</a></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2 · AVANT / APRÈS -->
+  <section class="section section--lin" id="difference" aria-labelledby="diff-title">
+    <div class="container diff">
+      <div class="diff__text">
+        <SectionHead eyebrow="La différence" id="diff-title" title="Une seule hauteur, ou la vôtre." lead="Un oreiller classique n’a qu’une hauteur : celle de son garnissage. REVIVE GROW a une forme dessinée pour la nuque, et une hauteur que vous réglez." />
+        <dl class="vs" data-reveal>
+          <div class="vs__row vs__head" aria-hidden="true"><span></span><span>Classique</span><span>REVIVE GROW</span></div>
+          <div class="vs__row"><dt>Hauteur</dt><dd class="vs__a">Fixe</dd><dd class="vs__b">8, 11 ou 14&nbsp;cm</dd></div>
+          <div class="vs__row"><dt>Forme</dt><dd class="vs__a">Rectangulaire</dd><dd class="vs__b">Cervicale, centre abaissé</dd></div>
+          <div class="vs__row"><dt>Garnissage</dt><dd class="vs__a">Variable</dd><dd class="vs__b">Mousse à mémoire de forme</dd></div>
+          <div class="vs__row"><dt>Housse</dt><dd class="vs__a">—</dd><dd class="vs__b">Zippée, accès aux inserts</dd></div>
+        </dl>
+      </div>
+      <div class="diff__media" data-reveal><BeforeAfter /></div>
+    </div>
+  </section>
+
+  <!-- 3 · ANATOMIE -->
+  <section class="section" id="forme" aria-labelledby="forme-title">
+    <div class="container">
+      <SectionHead eyebrow="La forme" id="forme-title" title="Pensé dans le détail." lead="Chaque zone de l’oreiller a un rôle. Touchez un repère pour le découvrir." />
+      <Anatomy />
+    </div>
+  </section>
+
+  <!-- 4 · RÉGLAGE -->
+  <section class="section section--nuit" id="reglage" aria-labelledby="reglage-title">
+    <div class="container">
+      <SectionHead eyebrow="Le réglage" id="reglage-title" tone="ivoire" title="Composez votre hauteur." lead="Choisissez une hauteur et regardez l’oreiller se recomposer. Puis suivez les cinq gestes du réglage." />
+      <HeightConfigurator />
+    </div>
+  </section>
+
+  <!-- 5 · OFFRE -->
+  <section class="section offer-sec" id="offre" aria-labelledby="offre-title">
+    <div class="container"><Offer /></div>
+  </section>
+
+  <!-- 6 · COMMENT ÇA SE PASSE -->
+  <section class="section section--lin" aria-labelledby="how-title">
+    <div class="container">
+      <SectionHead eyebrow="Votre commande" id="how-title" title="Simple, de la commande à la livraison." />
+      <HowToBuy />
+    </div>
+  </section>
+
+  <!-- 7 · AVIS -->
+  <section class="section" aria-labelledby="proof-title">
+    <div class="container">
+      <SectionHead eyebrow="Ce qu’on en dit" id="proof-title" title="Des chiffres, avec leur source." lead="Nous distinguons toujours les données du fabricant des avis de nos propres clients." />
+      <SupplierProof />
+    </div>
+  </section>
+
+  <!-- 8 · FAQ -->
+  <section class="section section--lin" id="questions" aria-labelledby="faq-title">
+    <div class="container faqwrap">
+      <SectionHead eyebrow="Questions fréquentes" id="faq-title" title="Vos questions." />
+      <Faq items={FAQ} />
+    </div>
+  </section>
+
+  <!-- 9 · CONTACT -->
+  <section class="section" id="contact" aria-label="Contact">
+    <div class="container"><Contact /></div>
+  </section>
+
+  <StickyBuy slot="after" target="#offre" />
+</Base>
+
+<style>
+  /* HERO */
+  .hero { padding-block: var(--s-4) var(--s-7); }
+  .hero__grid { display: grid; gap: var(--s-5); grid-template-areas: "copy" "media" "buy" "lead"; }
+  .hero__copy { grid-area: copy; display: grid; gap: var(--s-4); }
+  .hero__title em { font-style: italic; color: var(--c-sauge); }
+  .hero__lead { grid-area: lead; max-width: 34rem; }
+  .hero__media { grid-area: media; position: relative; margin-inline: calc(-1 * var(--gutter)); background: var(--c-studio); }
+  .hero__img { width: 100%; height: auto; aspect-ratio: 1672 / 736; object-fit: cover; }
+  .hero__badge {
+    position: absolute; left: var(--gutter); bottom: var(--s-3);
+    display: inline-flex; align-items: center; gap: 0.5em; padding: 0.45em 1em;
+    border: 1px solid var(--c-sauge); border-radius: var(--r-pill); background: rgb(255 253 249 / 0.92);
+    font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; color: var(--c-sauge);
+  }
+  .hero__buy { grid-area: buy; display: grid; gap: var(--s-5); }
+  .hero__offer { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-terre); margin-bottom: var(--s-2); }
+  .hero__incl { margin-top: var(--s-2); font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); }
+  .hero__ctas :global(.btn--primary) { flex: 1 1 220px; }
+  :global(html[data-offer="closed"]) [data-offer-only] { display: none; }
+
+  .trust { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4) var(--s-4); margin-top: var(--s-7); padding-top: var(--s-5); border-top: var(--hairline); font-size: var(--fs-sm); line-height: 1.35; }
+  .trust li { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; }
+  .trust :global(.icon) { color: var(--c-sauge); }
+  .trust span { display: grid; color: var(--c-encre-douce); }
+  .trust strong { color: var(--c-encre); font-weight: 600; }
+  .trust a { color: inherit; }
+  @media (min-width: 960px) {
+    .hero { padding-block: var(--s-7) var(--s-8); }
+    .hero__grid { grid-template-columns: 0.85fr 1.15fr; grid-template-areas: "copy media" "lead media" "buy media"; column-gap: var(--s-8); row-gap: var(--s-5); align-items: end; }
+    .hero__lead { align-self: start; }
+    .hero__buy { align-self: start; }
+    .hero__media { margin: 0; border-radius: var(--r-lg); overflow: hidden; }
+    .hero__img { aspect-ratio: 4 / 3.3; object-fit: contain; -webkit-mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); }
+    .hero__badge { left: var(--s-5); bottom: var(--s-5); font-size: 1.2rem; }
+    .hero__ctas :global(.btn--primary) { flex: 0 0 auto; }
+    .trust { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* AVANT / APRÈS */
+  .diff { display: grid; gap: var(--s-6); align-items: center; }
+  @media (min-width: 1024px) { .diff { grid-template-columns: 1fr 1.35fr; gap: var(--s-8); } .diff__text { order: 0; } }
+  .vs { display: grid; font-size: var(--fs-sm); }
+  .vs__row { display: grid; grid-template-columns: 6.5rem 1fr 1.3fr; gap: var(--s-3); padding-block: var(--s-3); border-top: var(--hairline); align-items: baseline; }
+  .vs__row:last-child { border-bottom: var(--hairline); }
+  .vs dt { color: var(--c-encre-douce); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; }
+  .vs__head { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-encre-douce); border-top: 0; padding-top: 0; }
+  .vs__head span:last-child { color: var(--c-sauge); }
+  .vs__a { color: var(--c-encre-douce); }
+  .vs__b { font-weight: 600; color: var(--c-encre); }
+  @media (max-width: 400px) { .vs__row { grid-template-columns: 5.2rem 0.8fr 1.3fr; gap: var(--s-2); } }
+
+  .offer-sec { background: linear-gradient(180deg, var(--c-ivoire) 0%, var(--c-lin) 100%); }
+
+  .faqwrap { display: grid; gap: var(--s-4); }
+  @media (min-width: 960px) { .faqwrap { grid-template-columns: 1fr 1.6fr; gap: var(--s-8); align-items: start; } }
+</style>

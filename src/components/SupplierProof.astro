@@ -1,0 +1,50 @@
+---
+/**
+ * Preuve sociale ATTRIBUÉE. Les chiffres proviennent du fabricant et ne sont pas
+ * présentés comme des avis de clients REVIVE GROW. Aucune donnée structurée
+ * AggregateRating n'est émise pour ces chiffres.
+ */
+import { SUPPLIER_PROOF as P } from "../config/product";
+import Icon from "./Icon.astro";
+import Pending from "./Pending.astro";
+const ratingTxt = P.rating.toLocaleString("fr-FR", { minimumFractionDigits: 1 });
+---
+<div class="proof">
+  <figure class="proof__card proof__card--supplier" data-reveal>
+    <p class="t-eyebrow">Données du fabricant</p>
+    <p class="proof__score">
+      <span class="proof__num">{ratingTxt}</span><span class="proof__scale">/{P.scale}</span>
+    </p>
+    <span class="proof__stars" role="img" aria-label={`Note moyenne de ${ratingTxt} sur ${P.scale}`}>
+      {Array.from({ length: 5 }).map(() => <Icon name="star" size={18} />)}
+    </span>
+    <p class="proof__customers">Note moyenne communiquée par le fabricant, auprès de {P.customers} clients.</p>
+    <figcaption class="proof__source">
+      <Icon name="info" size={16} />
+      <span>
+        Source : {P.sourceLabel}{P.sourceUrl ? <> — <a href={P.sourceUrl} rel="nofollow noopener" target="_blank">consulter</a></> : <Pending note="Lien et capture datée de la source à fournir" />}.
+        Ces chiffres concernent le produit vendu par le fabricant et ne sont pas des avis de clients REVIVE GROW ; ils n’ont pas fait l’objet d’une vérification par REVIVE GROW.
+      </span>
+    </figcaption>
+  </figure>
+  <div class="proof__card proof__card--own" data-reveal>
+    <p class="t-eyebrow">Avis clients REVIVE GROW</p>
+    <p class="t-h3">Vos avis, bientôt ici.</p>
+    <p class="t-muted">Nous publierons les avis de nos clients après leurs premières nuits, sans filtre ni sélection. Chaque avis indiquera sa date et s’il est lié à une commande vérifiée.</p>
+  </div>
+</div>
+<style>
+  .proof { display: grid; gap: var(--s-4); }
+  @media (min-width: 860px) { .proof { grid-template-columns: 1.2fr 1fr; } }
+  .proof__card { display: grid; gap: var(--s-3); align-content: start; margin: 0; padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-radius: var(--r-lg); }
+  .proof__card--supplier { background: var(--c-blanc); border: var(--hairline); }
+  .proof__card--own { border: 1px dashed var(--c-sable); }
+  .proof__score { display: flex; align-items: baseline; gap: 4px; line-height: 1; }
+  .proof__num { font-family: var(--f-serif); font-size: clamp(3.5rem, 3rem + 2vw, 4.75rem); font-weight: 500; }
+  .proof__scale { font-family: var(--f-serif); font-size: 1.5rem; color: var(--c-encre-douce); }
+  .proof__stars { display: inline-flex; gap: 2px; color: var(--c-sauge); }
+  .proof__stars :global(path) { fill: currentColor; }
+  .proof__customers { font-size: 1.0625rem; }
+  .proof__source { display: grid; grid-template-columns: auto 1fr; gap: var(--s-2); margin-top: var(--s-3); padding-top: var(--s-4); border-top: var(--hairline); font-size: var(--fs-xs); line-height: 1.55; color: var(--c-encre-douce); }
+  .proof__source :global(.icon) { margin-top: 2px; }
+</style>

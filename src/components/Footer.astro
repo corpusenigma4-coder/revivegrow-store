@@ -1,0 +1,41 @@
+---
+import { LEGAL_NAV, SITE } from "../config/site";
+import Logo from "./Logo.astro";
+import { CONTACT } from "../config/commerce";
+const year = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="container">
+    <div class="ftr__top">
+      <div class="ftr__brand">
+        <Logo tone="ivoire" />
+        <p class="ftr__tag">{SITE.tagline}</p>
+        <a class="ftr__mail" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+      </div>
+      <nav aria-label="Informations et mentions">
+        <ul role="list" class="ftr__links">
+          {LEGAL_NAV.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+    <hr class="piping ftr__rule" />
+    <div class="ftr__bottom">
+      <p>Prix en euros, toutes taxes comprises. Livraison offerte en France métropolitaine.</p>
+      <p>Paiement sécurisé : PayPal · Carte bancaire</p>
+      <p>© {year} REVIVE GROW</p>
+    </div>
+  </div>
+</footer>
+<style>
+  .ftr { background: var(--c-nuit); color: rgb(247 243 236 / 0.78); padding: var(--s-8) 0 calc(var(--s-6) + env(safe-area-inset-bottom)); font-size: var(--fs-sm); }
+  .ftr__top { display: grid; gap: var(--s-7); }
+  .ftr__brand { display: grid; gap: var(--s-3); justify-items: start; }
+  .ftr__tag { font-family: var(--f-serif); font-style: italic; font-size: 1.15rem; color: rgb(247 243 236 / 0.7); }
+  .ftr__mail { color: var(--c-ivoire); text-decoration-color: rgb(247 243 236 / 0.4); overflow-wrap: anywhere; }
+  .ftr__links { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--s-1) var(--s-5); }
+  .ftr__links a { display: inline-block; padding-block: 0.55rem; text-decoration: none; color: inherit; }
+  .ftr__links a:hover { color: var(--c-ivoire); text-decoration: underline; }
+  .ftr__rule { margin-block: var(--s-6); opacity: 0.35; }
+  .ftr__bottom { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); font-size: var(--fs-xs); color: rgb(247 243 236 / 0.6); }
+  @media (min-width: 960px) { .ftr__top { grid-template-columns: 1fr 2fr; } }
+</style>

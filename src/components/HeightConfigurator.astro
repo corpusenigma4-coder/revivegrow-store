@@ -1,0 +1,197 @@
+---
+/**
+ * « Composez votre hauteur » — démonstration interactive du réglage.
+ * Vue en coupe : noyau à mémoire de forme + inserts de 3 cm glissés dessous.
+ * Hauteurs issues de la spécification de conception (à confirmer fournisseur).
+ * Accessible : groupe radio natif, annonce aria-live, mouvement réduit respecté.
+ */
+import { PILLOW } from "../config/product";
+import Pending from "./Pending.astro";
+import Icon from "./Icon.astro";
+
+const H = PILLOW.heights;
+const U = 14;               // 1 cm = 14 unités SVG
+const FLOOR = 318;
+const INSERT_H = 3 * U;     // 42
+const steps = [
+  { t: "Ouvrir la housse", d: "Faites glisser la fermeture sur toute la longueur.", state: "open" },
+  { t: "Accéder aux inserts", d: "Soulevez le noyau : les inserts se trouvent dessous.", state: "lift", pending: "Position des inserts à confirmer sur l’échantillon" },
+  { t: "Ajouter ou retirer", d: "Chaque insert ajoute ou retire 3 cm.", state: "layers" },
+  { t: "Vérifier la hauteur", d: "Testez quelques nuits avant d’ajuster à nouveau.", state: "measure" },
+  { t: "Refermer la housse", d: "Replacez le noyau bien à plat, puis refermez.", state: "close" },
+];
+---
+<div class="cfg" data-cfg data-layers="1" data-step="">
+  <figure class="cfg__stage">
+    <svg class="cfg__svg" viewBox="20 92 620 248" role="img" aria-labelledby="cfg-svg-title">
+      <title id="cfg-svg-title">Vue en coupe de l’oreiller : noyau et inserts de réglage</title>
+      <defs>
+        <pattern id="cfg-cells" width="14" height="14" patternUnits="userSpaceOnUse">
+          <circle cx="7" cy="7" r="3.2" fill="rgb(34 32 28 / 0.08)" />
+        </pattern>
+        <linearGradient id="cfg-core" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#FFFDF9" />
+          <stop offset="1" stop-color="#EEE7DB" />
+        </linearGradient>
+      </defs>
+
+      <line x1="40" y1={FLOOR + 0.5} x2="600" y2={FLOOR + 0.5} class="cfg__floor" />
+
+      <!-- Inserts : glissent depuis la droite -->
+      {[0, 1].map((i) => (
+        <g class="cfg__insert" data-insert={i + 1} style={`--y:${FLOOR - INSERT_H * (i + 1)}px`}>
+          <rect x="96" y="4" width="436" height={INSERT_H - 4} rx="8" class="cfg__insert-body" />
+          <rect x="96" y="4" width="436" height={INSERT_H - 4} rx="8" fill="url(#cfg-cells)" />
+          <text x="314" y={INSERT_H / 2 + 6} class="cfg__insert-label">Insert {i + 1} · 3 cm</text>
+        </g>
+      ))}
+
+      <!-- Noyau : profil cervical (appui avant, creux central, côté arrière) -->
+      <g class="cfg__core">
+        <path class="cfg__core-body"
+          d="M 96 0 L 96 -96 C 96 -112, 110 -114, 132 -112 C 176 -108, 196 -84, 250 -80 C 300 -76, 330 -78, 380 -86 C 440 -96, 482 -104, 512 -100 C 528 -98, 532 -92, 532 -84 L 532 0 Z" />
+        <path class="cfg__piping"
+          d="M 96 -36 C 160 -36, 200 -18, 314 -18 C 420 -18, 470 -34, 532 -34" />
+        <text x="314" y="-46" class="cfg__core-label">Noyau · 8 cm</text>
+        <!-- Fermeture -->
+        <line x1="96" y1="-4" x2="532" y2="-4" class="cfg__zip" />
+        <rect class="cfg__pull" x="0" y="-11" width="22" height="14" rx="4" />
+      </g>
+
+      <!-- Cote de hauteur -->
+      <g class="cfg__measure">
+        <line x1="572" y1={FLOOR} x2="572" y2="0" class="cfg__measure-line" />
+        <line x1="562" y1={FLOOR} x2="582" y2={FLOOR} class="cfg__measure-line" />
+        <line x1="562" y1="0" x2="582" y2="0" class="cfg__measure-cap" />
+        <text x="586" y="-14" class="cfg__measure-text" data-cfg-value>11 cm</text>
+      </g>
+    </svg>
+    <figcaption class="cfg__caption">Illustration schématique, non à l’échelle exacte.</figcaption>
+  </figure>
+
+  <div class="cfg__panel">
+    <fieldset class="cfg__heights">
+      <legend class="t-eyebrow">Choisissez une hauteur <Pending note="8 / 11 / 14 cm : spécification de conception à confirmer" /></legend>
+      <div class="cfg__seg">
+        {H.map((h) => (
+          <label class="cfg__opt">
+            <input type="radio" name="cfg-height" value={h.layers} checked={h.layers === 1} />
+            <span class="cfg__opt-cm t-tabular">{h.cm}&nbsp;cm</span>
+            <span class="cfg__opt-lbl">{h.label}</span>
+            <span class="cfg__opt-det">{h.detail}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+    <p class="sr-only" aria-live="polite" data-cfg-live></p>
+
+    <ol class="cfg__steps" role="list" aria-label="Le réglage en cinq gestes">
+      {steps.map((s, i) => (
+        <li>
+          <button type="button" class="cfg__step" data-cfg-step={s.state} aria-pressed="false">
+            <span class="cfg__step-n t-num">{i + 1}</span>
+            <span class="cfg__step-txt">
+              <span class="cfg__step-t">{s.t}{s.pending && <Pending note={s.pending} />}</span>
+              <span class="cfg__step-d">{s.d}</span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<script>
+  const HEIGHTS = [8, 11, 14];
+  const DETAILS = ["noyau seul", "noyau et 1 insert", "noyau et 2 inserts"];
+  document.querySelectorAll<HTMLElement>("[data-cfg]").forEach((root) => {
+    const value = root.querySelector<SVGTextElement>("[data-cfg-value]");
+    const live = root.querySelector<HTMLElement>("[data-cfg-live]");
+    const stepBtns = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-cfg-step]"));
+    const set = (n: number, announce = true) => {
+      root.dataset.layers = String(n);
+      if (value) value.textContent = `${HEIGHTS[n]} cm`;
+      if (live && announce) live.textContent = `Hauteur ${HEIGHTS[n]} centimètres : ${DETAILS[n]}.`;
+    };
+    root.querySelectorAll<HTMLInputElement>('input[name="cfg-height"]').forEach((input) => {
+      input.addEventListener("change", () => set(Number(input.value)));
+    });
+    stepBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const on = btn.getAttribute("aria-pressed") !== "true";
+        stepBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", String(on));
+        root.dataset.step = on ? (btn.dataset.cfgStep ?? "") : "";
+      });
+    });
+    set(1, false);
+  });
+</script>
+
+<style>
+  .cfg { display: grid; gap: var(--s-6); align-items: center; }
+  @media (min-width: 960px) { .cfg { grid-template-columns: 1.25fr 1fr; gap: var(--s-8); } }
+
+  .cfg__stage { overflow: hidden; margin: 0; padding: clamp(1rem, 0.5rem + 2vw, 2rem); border-radius: var(--r-lg); background: var(--c-nuit-2); }
+  .cfg__svg { width: 100%; height: auto; overflow: visible; }
+  .cfg__caption { margin-top: var(--s-3); font-size: var(--fs-xs); color: rgb(247 243 236 / 0.55); text-align: center; }
+
+  .cfg__floor { stroke: rgb(247 243 236 / 0.25); stroke-width: 1; }
+  .cfg__insert { transform: translate(0, var(--y)); transition: transform var(--dur-slow) var(--ease), opacity var(--dur) var(--ease); }
+  .cfg__insert-body { fill: #F3EDE2; stroke: var(--c-sable); stroke-width: 1; }
+  .cfg__insert-label { font: 600 17px var(--f-sans); fill: var(--c-encre-douce); text-anchor: middle; letter-spacing: 0.04em; }
+
+  .cfg__core { --core-y: 318px; transform: translate(0, var(--core-y)); transition: transform var(--dur-slow) var(--ease); }
+  .cfg__core-body { fill: url(#cfg-core); stroke: var(--c-sable); stroke-width: 1.2; }
+  .cfg__piping { fill: none; stroke: var(--c-sable); stroke-width: 2; opacity: 0.7; }
+  .cfg__core-label { font: 600 19px var(--f-sans); fill: var(--c-encre-douce); text-anchor: middle; letter-spacing: 0.04em; }
+  .cfg__zip { stroke: var(--c-encre-douce); stroke-width: 1.4; stroke-dasharray: 3 3; opacity: 0.6; }
+  .cfg__pull { fill: var(--c-encre); transform: translateX(84px); transition: transform 900ms var(--ease); }
+
+  .cfg__measure { --top: 192px; }
+  .cfg__measure-line { stroke: var(--c-sauge-claire); stroke-width: 1.2; }
+  .cfg__measure-cap { stroke: var(--c-sauge-claire); stroke-width: 1.2; transform: translateY(var(--top)); transition: transform var(--dur-slow) var(--ease); }
+  .cfg__measure-text { font: 500 30px var(--f-serif); font-variant-numeric: lining-nums; fill: var(--c-ivoire); text-anchor: middle; transform: translateY(var(--top)); transition: transform var(--dur-slow) var(--ease); }
+  .cfg__measure > line:first-child { stroke-dasharray: 2 4; }
+
+  /* Hauteurs : noyau posé sur 0, 1 ou 2 inserts (sommet de bosse = 8 cm = 112 u) */
+  .cfg[data-layers="0"] .cfg__insert { transform: translate(110%, var(--y)); opacity: 0; }
+  .cfg[data-layers="1"] .cfg__insert[data-insert="2"] { transform: translate(110%, var(--y)); opacity: 0; }
+  .cfg[data-layers="0"] .cfg__core { --core-y: 318px; }
+  .cfg[data-layers="1"] .cfg__core { --core-y: 276px; }
+  .cfg[data-layers="2"] .cfg__core { --core-y: 234px; }
+  .cfg[data-layers="0"] .cfg__measure { --top: 206px; }
+  .cfg[data-layers="1"] .cfg__measure { --top: 164px; }
+  .cfg[data-layers="2"] .cfg__measure { --top: 122px; }
+
+  /* Étapes guidées */
+  .cfg[data-step="open"] .cfg__pull, .cfg[data-step="lift"] .cfg__pull, .cfg[data-step="layers"] .cfg__pull { transform: translateX(512px); }
+  .cfg[data-step="lift"] .cfg__core-body { fill-opacity: 0.55; }
+  .cfg[data-step="lift"] .cfg__core { transform: translate(0, calc(var(--core-y) - 34px)); }
+  .cfg[data-step="layers"] .cfg__insert-body { stroke: var(--c-sauge-claire); stroke-width: 2.5; }
+  .cfg[data-step="measure"] .cfg__measure-line, .cfg[data-step="measure"] .cfg__measure-cap { stroke: var(--c-ivoire); stroke-width: 2; }
+  .cfg[data-step="close"] .cfg__pull { transform: translateX(84px); }
+
+  /* Panneau */
+  .cfg__panel { display: grid; gap: var(--s-6); }
+  .cfg__heights { border: 0; padding: 0; min-width: 0; }
+  .cfg__heights legend { color: var(--c-sauge-claire); margin-bottom: var(--s-3); padding: 0; }
+  .cfg__seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+  .cfg__opt { position: relative; display: grid; align-content: start; gap: 2px; padding: var(--s-3) var(--s-3) var(--s-4); border: 1px solid rgb(247 243 236 / 0.18); border-radius: var(--r-md); cursor: pointer; transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease); }
+  .cfg__opt:hover { border-color: rgb(247 243 236 / 0.45); }
+  .cfg__opt input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .cfg__opt:has(input:checked) { border-color: var(--c-ivoire); background: rgb(247 243 236 / 0.06); }
+  .cfg__opt:has(input:focus-visible) { outline: 2px solid var(--c-sauge-claire); outline-offset: 3px; }
+  .cfg__opt-cm { font-family: var(--f-serif); font-variant-numeric: lining-nums; font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); line-height: 1.1; }
+  .cfg__opt-lbl { font-size: var(--fs-sm); font-weight: 600; }
+  .cfg__opt-det { font-size: var(--fs-xs); color: rgb(247 243 236 / 0.6); }
+
+  .cfg__steps { display: grid; border-top: 1px solid rgb(247 243 236 / 0.14); }
+  .cfg__step { display: grid; grid-template-columns: 2rem 1fr; gap: var(--s-3); width: 100%; padding: var(--s-3) 0; text-align: left; border-bottom: 1px solid rgb(247 243 236 / 0.14); min-height: 44px; transition: color var(--dur) var(--ease); color: rgb(247 243 236 / 0.75); }
+  .cfg__step:hover, .cfg__step[aria-pressed="true"] { color: var(--c-ivoire); }
+  .cfg__step-n { font-variant-numeric: lining-nums; font-size: 1.35rem; line-height: 1.2; color: var(--c-sauge-claire); }
+  .cfg__step-txt { display: grid; gap: 2px; }
+  .cfg__step-t { font-weight: 600; font-size: 0.9375rem; }
+  .cfg__step-d { font-size: var(--fs-sm); line-height: 1.45; opacity: 0.8; }
+  .cfg__step[aria-pressed="true"] .cfg__step-n { color: var(--c-ivoire); }
+</style>

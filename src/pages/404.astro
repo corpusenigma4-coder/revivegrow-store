@@ -1,0 +1,16 @@
+---
+import Base from "../layouts/Base.astro";
+import Button from "../components/Button.astro";
+---
+<Base title="Page introuvable" noindex>
+  <section class="nf container--narrow">
+    <p class="t-num nf__code">404</p>
+    <h1 class="t-h2">Cette page s’est endormie.</h1>
+    <p class="t-lead">Elle n’existe pas ou a été déplacée.</p>
+    <Button href="/">Retour à l’accueil</Button>
+  </section>
+</Base>
+<style>
+  .nf { display: grid; justify-items: start; gap: var(--s-5); padding-block: var(--s-9); }
+  .nf__code { font-size: 4rem; line-height: 1; color: var(--c-sable); }
+</style>

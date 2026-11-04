@@ -1,0 +1,41 @@
+---
+import Base from "../layouts/Base.astro";
+import { LEGAL, type LegalPage } from "../data/legal";
+export function getStaticPaths() {
+  return LEGAL.map((page) => ({ params: { legal: page.slug }, props: { page } }));
+}
+const { page } = Astro.props as { page: LegalPage };
+const pending = page.sections.some((s) => s.html.includes('class="todo"'));
+---
+<Base title={page.title} description={page.lead}>
+  <article class="legal container--narrow">
+    <header class="legal__head">
+      <p class="t-eyebrow">Informations</p>
+      <h1 class="t-h2">{page.title}</h1>
+      <p class="t-lead">{page.lead}</p>
+      <p class="legal__meta">{page.updated}</p>
+      {pending && <p class="legal__note" role="note">Document en cours de finalisation&nbsp;: les mentions entre crochets seront complétées avant l’ouverture des ventes.</p>}
+    </header>
+    <hr class="piping" />
+    {page.sections.map((s) => (
+      <section class="legal__sec">
+        <h2 class="t-h4">{s.h}</h2>
+        <div class="legal__body" set:html={s.html} />
+      </section>
+    ))}
+  </article>
+</Base>
+<style>
+  .legal { display: grid; gap: var(--s-6); padding-block: var(--s-7) var(--s-9); }
+  .legal__head { display: grid; gap: var(--s-3); }
+  .legal__meta { font-size: var(--fs-xs); color: var(--c-encre-douce); letter-spacing: 0.06em; }
+  .legal__note { padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--c-lin); font-size: var(--fs-sm); }
+  .legal__sec { display: grid; gap: var(--s-3); }
+  .legal__body { display: grid; gap: var(--s-3); color: var(--c-encre-douce); font-size: 0.975rem; overflow-wrap: anywhere; }
+  .legal__body :global(a) { color: var(--c-encre); }
+  .legal__body :global(ul), .legal__body :global(ol) { display: grid; gap: var(--s-2); padding-left: 1.2em; }
+  .legal__body :global(strong) { color: var(--c-encre); font-weight: 600; }
+  .legal__body :global(mark.todo) { background: rgb(147 85 58 / 0.1); color: var(--c-terre); padding: 0 4px; border-radius: 3px; font-weight: 600; }
+  .legal__body :global(blockquote) { margin: 0; padding: var(--s-4); border-left: 2px solid var(--c-sable); background: var(--c-blanc); line-height: 1.8; }
+  .legal__body :global(.legal__cta) { display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.4em; border-radius: var(--r-pill); background: var(--c-encre); color: var(--c-ivoire); font-weight: 600; text-decoration: none; }
+</style>

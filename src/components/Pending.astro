@@ -1,0 +1,22 @@
+---
+/**
+ * Repère « À confirmer » : visible uniquement en aperçu (SITE.preview).
+ * Signale une donnée non encore validée par une fiche fournisseur ou par la marque.
+ */
+import { SITE } from "../config/site";
+interface Props { note?: string }
+const { note } = Astro.props;
+---
+{SITE.preview && (
+  <span class="pending" title={note ?? "Donnée à confirmer avant publication"} data-pending>
+    À confirmer
+  </span>
+)}
+<style>
+  .pending {
+    display: inline-flex; align-items: center; gap: 4px; vertical-align: middle;
+    margin-left: 6px; padding: 1px 7px; border: 1px dashed currentColor; border-radius: var(--r-pill);
+    font-family: var(--f-sans); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em;
+    font-style: normal; text-transform: none; color: var(--c-terre); background: rgb(147 85 58 / 0.06); white-space: nowrap;
+  }
+</style>

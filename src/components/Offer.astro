@@ -1,0 +1,99 @@
+---
+/**
+ * L'offre — section la plus visible de la page : contenu du pack, prix, conditions, appel à l'action.
+ */
+import { Image } from "astro:assets";
+import { CAMPAIGN } from "../config/campaign";
+import { PILLOW, MASK, STRIPS, SERVICE } from "../config/product";
+import Price from "./Price.astro";
+import Button from "./Button.astro";
+import Icon from "./Icon.astro";
+import Pending from "./Pending.astro";
+import OfferDeadline from "./OfferDeadline.astro";
+import pillowImg from "../assets/images/detail-profil.webp";
+import maskImg from "../assets/images/masque-hero.webp";
+import stripsImg from "../assets/images/bandelettes-boite.webp";
+---
+<div class="off">
+  <header class="off__head" data-reveal>
+    <p class="t-eyebrow off__eyebrow">{CAMPAIGN.name}</p>
+    <h2 class="t-h2" id="offre-title">Un oreiller, deux cadeaux, un seul prix.</h2>
+    <p class="t-lead">Pendant l’offre Pré-Black Friday, l’oreiller cervical est livré avec deux accessoires pour la nuit. Ils sont déjà inclus&nbsp;: rien à ajouter au panier.</p>
+  </header>
+
+  <div class="off__grid">
+    <ul class="off__items" role="list">
+      <li class="item item--main" data-reveal>
+        <Image src={pillowImg} alt="L’oreiller cervical REVIVE GROW" widths={[480, 900]} sizes="(min-width: 960px) 34vw, 100vw" class="item__img" />
+        <div class="item__body">
+          <p class="item__tag">L’oreiller</p>
+          <h3 class="t-h3">{PILLOW.name}</h3>
+          <p class="t-muted t-small">Mousse à mémoire de forme, trois hauteurs grâce aux inserts, housse zippée.</p>
+        </div>
+      </li>
+      <li class="item" data-reveal>
+        <Image src={maskImg} alt="Masque de sommeil graphite" widths={[400, 700]} sizes="(min-width: 960px) 17vw, 50vw" class="item__img" />
+        <div class="item__body">
+          <p class="item__tag item__tag--gift"><Icon name="gift" size={14} /> Offert</p>
+          <h3 class="t-h4">{MASK.name}</h3>
+          <p class="t-muted t-small">Cavités pour les yeux, bande réglable. Pour faire l’obscurité.</p>
+        </div>
+      </li>
+      <li class="item" data-reveal>
+        <Image src={stripsImg} alt="Boîte de bandelettes nasales" widths={[400, 750]} sizes="(min-width: 960px) 17vw, 50vw" class="item__img" />
+        <div class="item__body">
+          <p class="item__tag item__tag--gift"><Icon name="gift" size={14} /> Offert</p>
+          <h3 class="t-h4">{STRIPS.name}</h3>
+          <p class="t-muted t-small">À poser sur l’extérieur du nez. Boîte de 30<Pending note="Quantité à confirmer (fiche fournisseur)" />.</p>
+        </div>
+      </li>
+    </ul>
+
+    <aside class="card" aria-label="Prix et conditions du pack" data-reveal>
+      <p class="card__ribbon">Édition Pré-Black Friday</p>
+      <p class="card__for">Le pack complet</p>
+      <Price size="xl" />
+      <p class="card__sub">pour les trois articles, toutes taxes comprises</p>
+      <ul class="card__chips" role="list">
+        <li><Icon name="gift" size={16} /> 2 cadeaux offerts</li>
+        <li><Icon name="truck" size={16} /> {SERVICE.delivery.label}</li>
+        <li><Icon name="return" size={16} /> Retours 90 jours</li>
+      </ul>
+      <hr class="piping" />
+      <OfferDeadline />
+      <Button href="/oreiller-cervical-ajustable#commander" size="lg" block>Découvrir le pack</Button>
+      <p class="card__fine">Livraison {SERVICE.delivery.delay} en {SERVICE.delivery.zone}. Paiement PayPal ou carte bancaire.</p>
+    </aside>
+  </div>
+</div>
+<style>
+  .off { display: grid; gap: clamp(2rem, 1.4rem + 2.4vw, 3.5rem); }
+  .off__head { display: grid; gap: var(--s-4); max-width: 46rem; }
+  .off__eyebrow { color: var(--c-terre); }
+  .off__grid { display: grid; gap: var(--s-5); align-items: start; }
+  @media (min-width: 1024px) { .off__grid { grid-template-columns: 1.5fr 1fr; gap: var(--s-6); } }
+
+  .off__items { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+  .item { display: grid; align-content: start; background: var(--c-blanc); border-radius: var(--r-lg); overflow: hidden; }
+  .item--main { grid-column: 1 / -1; }
+  .item__img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  .item--main .item__img { aspect-ratio: 16 / 9; }
+  .item__body { display: grid; gap: var(--s-2); padding: var(--s-4); }
+  @media (min-width: 640px) { .item__body { padding: var(--s-5); } }
+  .item__tag { justify-self: start; display: inline-flex; align-items: center; gap: 5px; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-encre-douce); }
+  .item__tag--gift { padding: 3px 10px; border-radius: var(--r-pill); background: var(--c-sauge-pale); color: var(--c-sauge); }
+  @media (max-width: 420px) { .item:not(.item--main) .t-h4 { font-size: 1.05rem; } }
+
+  .card {
+    position: relative; display: grid; gap: var(--s-4); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--c-blanc); border: 1px solid var(--c-sable); border-radius: var(--r-lg); box-shadow: var(--shadow-soft);
+  }
+  @media (min-width: 1024px) { .card { position: sticky; top: calc(var(--header-h) + var(--s-5)); } }
+  .card__ribbon { justify-self: start; margin-top: calc(-1 * clamp(1.5rem, 1rem + 2vw, 2.5rem) - 13px); padding: 4px 14px; border-radius: var(--r-pill); background: var(--c-nuit); color: var(--c-ivoire); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; }
+  .card__for { font-family: var(--f-serif); font-style: italic; font-size: 1.3rem; color: var(--c-encre-douce); }
+  .card__sub { margin-top: calc(-1 * var(--s-3)); font-size: var(--fs-sm); color: var(--c-encre-douce); }
+  .card__chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .card__chips li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--r-pill); background: var(--c-sauge-pale); color: var(--c-sauge); font-size: 0.8125rem; font-weight: 600; }
+  .card__fine { font-size: var(--fs-xs); color: var(--c-encre-douce); text-align: center; }
+  :global(html[data-offer="closed"]) .card { display: none; }
+</style>

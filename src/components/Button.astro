@@ -1,0 +1,42 @@
+---
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary" | "ghost" | "light";
+  size?: "md" | "lg";
+  block?: boolean;
+  disabled?: boolean;
+  type?: "button" | "submit";
+  class?: string;
+  [key: string]: unknown;
+}
+const { href, variant = "primary", size = "md", block = false, disabled = false, type = "button", class: cls, ...rest } = Astro.props;
+const classes = ["btn", `btn--${variant}`, `btn--${size}`, block && "btn--block", cls];
+---
+{href && !disabled ? (
+  <a href={href} class:list={classes} {...rest}><slot /></a>
+) : (
+  <button type={type} class:list={classes} disabled={disabled} aria-disabled={disabled ? "true" : undefined} {...rest}><slot /></button>
+)}
+<style>
+  .btn {
+    --btn-h: 50px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6em;
+    min-height: var(--btn-h); padding: 0 1.6em; border-radius: var(--r-pill);
+    font-family: var(--f-sans); font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.01em;
+    text-decoration: none; white-space: nowrap; border: 1px solid transparent;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active:not(:disabled) { transform: scale(0.985); }
+  .btn--lg { --btn-h: 56px; font-size: 1rem; padding: 0 1.9em; }
+  .btn--block { display: flex; width: 100%; white-space: normal; text-align: center; line-height: 1.25; padding-block: 0.6em; }
+  .btn--primary { background: var(--c-encre); color: var(--c-ivoire); }
+  .btn--primary:hover:not(:disabled) { background: var(--c-sauge); }
+  .btn--secondary { background: transparent; color: var(--c-encre); border-color: var(--c-encre); }
+  .btn--secondary:hover:not(:disabled) { background: var(--c-encre); color: var(--c-ivoire); }
+  .btn--ghost { background: transparent; color: var(--c-encre); padding-inline: 0.2em; min-height: 44px; text-decoration: underline; text-underline-offset: 0.3em; text-decoration-color: var(--c-sable); }
+  .btn--ghost:hover { text-decoration-color: currentColor; }
+  .btn--light { background: var(--c-ivoire); color: var(--c-encre); }
+  .btn--light:hover:not(:disabled) { background: var(--c-blanc); }
+  .btn:disabled { cursor: not-allowed; background: var(--c-lin); color: var(--c-encre-douce); border-color: var(--c-sable-pale); }
+</style>

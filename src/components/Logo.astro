@@ -1,0 +1,27 @@
+---
+/**
+ * Logotype provisoire — reprend la ligne de crête de l'emballage
+ * (arc au-dessus du nom). À remplacer par le logo vectoriel définitif.
+ */
+interface Props { tone?: "encre" | "ivoire"; size?: "sm" | "md" | "lg" }
+const { tone = "encre", size = "md" } = Astro.props;
+---
+<span class:list={["logo", `logo--${tone}`, `logo--${size}`]}>
+  <svg class="logo__arc" viewBox="0 0 120 14" aria-hidden="true">
+    <path d="M2 12 C 28 12, 40 2, 60 2 C 74 2, 82 8, 92 8 C 102 8, 108 12, 118 12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+  </svg>
+  <span class="logo__word">Revive Grow</span>
+</span>
+<style>
+  .logo { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1; }
+  .logo--encre { color: var(--c-encre); }
+  .logo--ivoire { color: var(--c-ivoire); }
+  .logo__arc { width: 52%; height: auto; opacity: 0.85; }
+  .logo__word {
+    font-family: var(--f-serif); font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.2em; padding-left: 0.2em; white-space: nowrap;
+  }
+  .logo--sm .logo__word { font-size: 1rem; }
+  .logo--md .logo__word { font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem); }
+  .logo--lg .logo__word { font-size: 2rem; }
+</style>
