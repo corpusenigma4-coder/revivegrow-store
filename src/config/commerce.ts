@@ -9,14 +9,14 @@ export type CheckoutProvider = "paypal-hosted-button" | "orders-api";
 
 export const COMMERCE = {
   /** Interrupteur général. Reste à false tant que la validation sandbox n'est pas faite. */
-  checkoutEnabled: false,
-  provider: null as CheckoutProvider | null,
+  checkoutEnabled: true,
+  provider: "paypal-hosted-button" as CheckoutProvider | null,
 
   /** Option A — bouton hébergé PayPal : prix et livraison définis dans le compte PayPal. */
   paypalHosted: {
     /** Identifiant client PUBLIC du SDK (jamais le secret). */
-    clientId: null as string | null,
-    hostedButtonId: null as string | null,
+    clientId: "BAADEUfdEuuHimsc_A7p393C8mMrLLqiuSAoQT_ffCMJ0mfNs_Vn5nXVEExDk-DrZJfJIEhv1BmPniL3Pw" as string | null,
+    hostedButtonId: "SZCKF3B62AX6A" as string | null,
   },
 
   /** Option B — API de commandes externe (fonction serverless) : crée/capture la commande côté serveur. */
