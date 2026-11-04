@@ -20,8 +20,8 @@ const path = Astro.url.pathname.replace(/\.html$/, "");
       </ul>
     </nav>
     <div class="hdr__actions">
-      <a class="hdr__cta" href="/oreiller-cervical-ajustable#commander">Le pack · {formatPrice(CAMPAIGN.price)}</a>
-      <a class="hdr__bag" href="/oreiller-cervical-ajustable#commander" aria-label="Commander le pack"><Icon name="bag" size={24} /></a>
+      <a class="hdr__cta" href="/commande/" data-cta="offre">Obtenir l’offre · {formatPrice(CAMPAIGN.price)}</a>
+      <a class="hdr__bag" href="/commande/" aria-label="Obtenir l’offre"><Icon name="bag" size={24} /></a>
     </div>
   </div>
 </header>

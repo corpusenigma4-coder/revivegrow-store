@@ -1,0 +1,21 @@
+---
+/** Moyens de paiement — présentation discrète et fidèle : la carte dépend de PayPal. */
+import Icon from "./Icon.astro";
+interface Props { tone?: "encre" | "ivoire"; align?: "start" | "center" }
+const { tone = "encre", align = "start" } = Astro.props;
+---
+<p class:list={["pm", `pm--${tone}`, `pm--${align}`]}>
+  <Icon name="lock" size={15} />
+  <span>Paiement sécurisé</span>
+  <span class="pm__chip">PayPal</span>
+  <span class="pm__chip"><Icon name="card" size={14} /> Carte bancaire</span>
+  <span class="pm__note">carte proposée par PayPal selon disponibilité</span>
+</p>
+<style>
+  .pm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: var(--fs-xs); color: var(--c-encre-douce); }
+  .pm--center { justify-content: center; text-align: center; }
+  .pm :global(.icon) { color: var(--c-sauge); }
+  .pm__chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border: 1px solid var(--c-sable); border-radius: var(--r-pill); font-weight: 600; color: var(--c-encre); background: var(--c-blanc); }
+  .pm__note { flex-basis: 100%; }
+  .pm--center .pm__note { text-align: center; }
+</style>

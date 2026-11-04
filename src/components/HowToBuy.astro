@@ -3,8 +3,8 @@
 import Icon from "./Icon.astro";
 import { SERVICE } from "../config/product";
 const steps = [
-  { icon: "bag", t: "Commandez le pack", d: "32,40 € TTC, deux cadeaux compris, livraison gratuite.", href: "#offre", l: "Commander" },
-  { icon: "lock", t: "Payez en toute sécurité", d: "Sur la page officielle PayPal, où vous indiquez aussi votre adresse de livraison. Aucune donnée bancaire ne transite par notre site.", href: "/cgv", l: "Conditions de vente" },
+  { icon: "bag", t: "Obtenez l’offre", d: "32,40 € TTC, deux cadeaux compris, livraison gratuite.", href: "/commande/", l: "Obtenir l’offre" },
+  { icon: "lock", t: "Indiquez votre adresse et payez", d: "E-mail et adresse de livraison, puis PayPal ou carte bancaire si PayPal la propose. Aucune donnée bancaire ne transite par notre site.", href: "/cgv/", l: "Conditions de vente" },
   { icon: "truck", t: `${SERVICE.delivery.label}, ${SERVICE.delivery.delay}`, d: `Expédition en ${SERVICE.delivery.zone}. Les trois articles arrivent dans le même colis.`, href: "/livraison", l: "Politique de livraison" },
   { icon: "return", t: "90 jours pour changer d’avis", d: "Une garantie commerciale en plus de vos droits légaux (rétractation 14 jours, conformité 2 ans).", href: "/garantie-90-jours", l: "Conditions de la garantie" },
 ] as const;

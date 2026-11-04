@@ -1,14 +1,15 @@
 ---
 /**
  * Bloc d'achat du pack — ce que l'on achète, le prix final, la livraison, puis le paiement officiel PayPal.
- * Le paiement est délégué au composant PayPalCheckout (bouton hébergé de la PR #15).
+ * « Obtenir l’offre » mène directement au tunnel /commande/ (récapitulatif → livraison → paiement PayPal).
  */
 import { CAMPAIGN } from "../config/campaign";
 import { PACK, SERVICE } from "../config/product";
 import { CONTACT } from "../config/commerce";
 import Price from "./Price.astro";
 import PackList from "./PackList.astro";
-import PayPalCheckout from "./PayPalCheckout.astro";
+import Button from "./Button.astro";
+import PayMethods from "./PayMethods.astro";
 import Icon from "./Icon.astro";
 interface Props { headingLevel?: "h1" | "h2"; id?: string }
 const { headingLevel: H = "h2", id = "commander" } = Astro.props;
@@ -35,7 +36,7 @@ const showSaving = Boolean(CAMPAIGN.referencePrice.evidence);
 
     <p class="buy__ship"><Icon name="truck" size={20} /><span><strong>{SERVICE.delivery.label}</strong> · {SERVICE.delivery.delay.replace("sous ", "")}<br /><span class="t-muted">{SERVICE.delivery.zone}, les trois articles dans le même colis</span></span></p>
 
-    <div id="paiement" class="buy__pay"><PayPalCheckout eager /></div>
+    <div id="paiement" class="buy__pay"><Button href="/commande/" size="lg" block data-cta="offre">Obtenir l’offre</Button><PayMethods align="center" /></div>
 
     <ul class="buy__reassure" role="list">
       <li><Icon name="return" size={20} /><span><a href="/garantie-90-jours">90 jours pour changer d’avis</a>, en plus de vos droits légaux</span></li>
@@ -63,7 +64,8 @@ const showSaving = Boolean(CAMPAIGN.referencePrice.evidence);
   .buy__ship { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; padding: var(--s-4); border-radius: var(--r-md); background: var(--c-lin); font-size: var(--fs-sm); line-height: 1.5; }
   .buy__ship :global(.icon) { color: var(--c-sauge); margin-top: 1px; }
   .buy__ship strong { font-weight: 600; }
-  .buy__pay { scroll-margin-top: calc(var(--header-h) + var(--s-6)); }
+  .buy__pay { display: grid; gap: var(--s-3); scroll-margin-top: calc(var(--header-h) + var(--s-6)); }
+  .buy__pay :global(.btn) { min-height: 58px; font-size: 1.0625rem; }
   .buy__reassure { display: grid; gap: var(--s-3); font-size: var(--fs-sm); line-height: 1.45; }
   .buy__reassure li { display: grid; grid-template-columns: auto 1fr; gap: var(--s-3); align-items: start; }
   .buy__reassure :global(.icon) { color: var(--c-sauge); }

@@ -3,19 +3,19 @@
 import { CAMPAIGN } from "../config/campaign";
 import { formatPrice } from "../lib/format";
 interface Props { target?: string }
-const { target = "/oreiller-cervical-ajustable#commander" } = Astro.props;
+const { target = "/commande/" } = Astro.props;
 ---
 <div class="sticky" data-sticky aria-hidden="true" inert>
   <div class="sticky__txt">
     <span class="sticky__price t-tabular">{formatPrice(CAMPAIGN.price)}</span>
     <span class="sticky__sub">2 cadeaux offerts · Livraison gratuite</span>
   </div>
-  <a class="sticky__btn" href={target}>Commander</a>
+  <a class="sticky__btn" href={target} data-cta="offre">Obtenir l’offre</a>
 </div>
 <script>
   const bar = document.querySelector<HTMLElement>("[data-sticky]");
   const hero = document.querySelector("[data-hero]");
-  const buy = document.querySelector("#commander, .card");
+  const buy = document.querySelector("#commander, .card, [data-hero] .hero__ctas");
   if (bar && hero) {
     let pastHero = false, nearBuy = false;
     const update = () => {

@@ -9,7 +9,7 @@ import { startPagesServer } from "./pages-server.mjs";
 
 const PORT = 4321;
 const BASE = `http://127.0.0.1:${PORT}`;
-const PAGES = ["/", "/oreiller-cervical-ajustable", "/contact", "/mentions-legales", "/cgv", "/livraison", "/retours", "/garantie-90-jours",
+const PAGES = ["/", "/oreiller-cervical-ajustable", "/commande/", "/contact", "/mentions-legales", "/cgv", "/livraison", "/retours", "/garantie-90-jours",
   "/garanties-legales", "/retractation", "/confidentialite", "/cookies", "/systeme"];
 const SHOTS = process.env.SHOTS !== "0";
 mkdirSync("screenshots", { recursive: true });
@@ -103,30 +103,125 @@ await t("politiques : pages en français, mentions manquantes signalées, aucune
     assert.match(r, /À compléter/);
   }
 });
-await t("paiement : bouton hébergé PayPal unique par page, SDK officiel (PR #15) conservé", async () => {
-  for (const path of ["/oreiller-cervical-ajustable", "/"]) {
-    const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-    const sdk = [];
-    await page.route("https://www.paypal.com/**", (r) => { sdk.push(r.request().url()); r.abort(); });
-    await page.goto(BASE + path);
-    assert.equal(await page.locator("[data-checkout]").count(), 1, `${path} : un seul emplacement de paiement`);
-    await page.locator("[data-pp]").first().scrollIntoViewIfNeeded();
-    await page.waitForTimeout(500);
-    assert.equal(sdk.length, 1, `${path} : SDK chargé une seule fois`);
-    assert.match(sdk[0], /client-id=BAADEUfdEuuHimsc_A7p393C8mMrLLqiuSAoQT_ffCMJ0mfNs_Vn5nXVEExDk-DrZJfJIEhv1BmPniL3Pw&components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR$/);
-    assert.match(await page.content(), /SZCKF3B62AX6A/);
+const MOCK_SDK = `
+  window.__orders = [];
+  window.paypal = { FUNDING: { PAYPAL: "paypal", CARD: "card" }, Buttons(opts) {
+    return { isEligible() { return true; }, render(sel) {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = "MOCK " + opts.fundingSource; b.dataset.mock = opts.fundingSource;
+      b.onclick = async () => {
+        const actions = { restart() {}, order: {
+          create: (o) => { window.__orders.push(o); return Promise.resolve("ORDER-1"); },
+          capture: () => Promise.resolve({ id: "ORDER-1", status: "COMPLETED", purchase_units: [{ payments: { captures: [{ id: "CAP-1", status: "COMPLETED", amount: { currency_code: "EUR", value: "32.40" } }] } }] })
+        } };
+        const id = await opts.createOrder({}, actions); await opts.onApprove({ orderID: id }, actions);
+      };
+      document.querySelector(sel).appendChild(b); return Promise.resolve();
+    } };
+  } };`;
+
+console.log("Tunnel « Obtenir l’offre »");
+for (const [label, opts] of [["iPhone SE", { ...devices["iPhone SE"], locale: "fr-FR" }], ["iPhone 13", iphone], ["Android", android], ["ordinateur", desktop]]) {
+  await t(`${label} : « Obtenir l’offre » visible dès le premier écran, avec le prix et les cadeaux, et mène à /commande/`, async () => {
+    const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
+    await page.goto(BASE + "/");
+    const cta = page.locator("[data-hero] [data-cta='offre']");
+    assert.equal((await cta.textContent()).trim(), "Obtenir l’offre");
+    assert.equal(await cta.getAttribute("href"), "/commande/");
+    const box = await cta.boundingBox(); const vh = page.viewportSize().height;
+    assert.ok(box && box.y + box.height <= vh, `bouton hors du premier écran (${Math.round(box?.y ?? -1)} / ${vh})`);
+    const hero = await page.locator("[data-hero]").innerText();
+    assert.match(hero, /32,40 €/); assert.match(hero, /2 cadeaux offerts/i); assert.match(hero, /PayPal/); assert.match(hero, /Carte bancaire/i);
     await ctx.close();
+  });
+}
+await t("aucun libellé « Commander le pack », « Voir le pack », « Découvrir l’offre »", async () => {
+  for (const p of ["/", "/oreiller-cervical-ajustable", "/commande/"]) {
+    const html = await (await fetch(BASE + p)).text();
+    assert.ok(!/Commander le pack|Voir le pack|Découvrir l’offre|Découvrir le pack|Voir l’offre/.test(html), p);
   }
 });
-await t("paiement indisponible : message d’erreur clair, aucune fausse confirmation", async () => {
+await t("tous les boutons d’achat (en-tête, hero, offre, fiche, barre mobile) mènent directement à /commande/", async () => {
+  for (const p of ["/", "/oreiller-cervical-ajustable"]) {
+    const html = await (await fetch(BASE + p)).text();
+    const hrefs = [...html.matchAll(/<a[^>]*data-cta="offre"[^>]*>/g)].map((m) => (m[0].match(/href="([^"]+)"/) || [])[1]);
+    assert.ok(hrefs.length >= 2, p); assert.ok(hrefs.every((h) => h === "/commande/"), `${p} : ${hrefs}`);
+  }
+});
+await t("parcours complet : récapitulatif → Suivant → livraison → Suivant → paiement → confirmation (PayPal simulé)", async () => {
+  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
+  await page.route("https://www.paypal.com/sdk/**", (r) => r.fulfill({ contentType: "text/javascript", body: MOCK_SDK }));
+  await page.goto(BASE + "/");
+  await page.locator("[data-hero] [data-cta='offre']").click();
+  await page.waitForURL(/\/commande\/$/);
+  // Étape 1
+  const s1 = page.locator("[data-step='commande']");
+  const t1 = await s1.innerText();
+  for (const re of [/Votre commande/, /Pack Sommeil REVIVE GROW/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /Offertes/i, /1 pack/, /Gratuite/i, /32,40 €/]) assert.match(t1, re);
+  assert.equal(await s1.locator("button").count(), 1);
+  assert.equal((await s1.locator("button").textContent()).trim(), "Suivant");
+  assert.equal(await page.locator("input[type=tel], [name*=phone], [name*=tel]").count(), 0, "téléphone demandé");
+  await s1.locator("button", { hasText: "Suivant" }).click();
+  // Étape 2 : validation souple
+  const s2 = page.locator("[data-step='livraison']");
+  await s2.waitFor();
+  assert.equal(await page.locator("#co-email").getAttribute("type"), "email");
+  assert.equal(await page.locator("#co-email").getAttribute("inputmode"), "email");
+  await s2.locator("button[type=submit]").click();
+  assert.equal(await page.locator("[data-err='email']").isVisible(), true);
+  assert.equal(await page.locator("[data-step='paiement']").isVisible(), false);
+  await page.fill("#co-email", "marie@example.fr");
+  await page.fill("#co-name", "Marie Durand");
+  await page.fill("#co-address1", "12 rue des Lilas");
+  await page.fill("#co-postal", "69003");
+  await page.fill("#co-city", "Lyon");
+  assert.equal(await page.locator("#co-country").inputValue(), "FR");
+  // Retour : les données sont conservées
+  await s2.locator("button", { hasText: "Retour" }).click();
+  await page.locator("[data-step='commande']").waitFor();
+  await page.locator("[data-step='commande'] button", { hasText: "Suivant" }).click();
+  assert.equal(await page.locator("#co-email").inputValue(), "marie@example.fr");
+  await page.locator("[data-step='livraison'] button[type=submit]").click();
+  // Étape 3
+  const s3 = page.locator("[data-step='paiement']");
+  await s3.waitFor();
+  assert.match(await s3.innerText(), /Total à payer :\s*32,40 €/);
+  assert.match(await s3.innerText(), /12 rue des Lilas, 69003 Lyon, France/);
+  await page.locator("[data-mock='paypal']").waitFor();
+  assert.equal(await page.locator("[data-mock='card']").count(), 1);
+  await page.locator("[data-mock='card']").click();
+  await page.locator("[data-step='confirmation']").waitFor();
+  const order = await page.evaluate(() => window.__orders[0]);
+  const u = order.purchase_units[0];
+  assert.equal(order.payer.email_address, "marie@example.fr");
+  assert.equal(u.amount.value, "32.40"); assert.equal(u.amount.currency_code, "EUR");
+  assert.equal(u.amount.breakdown.shipping.value, "0.00");
+  assert.deepEqual(u.shipping.address, { address_line_1: "12 rue des Lilas", admin_area_2: "Lyon", postal_code: "69003", country_code: "FR" });
+  assert.equal(order.application_context.shipping_preference, "SET_PROVIDED_ADDRESS");
+  assert.match(await page.locator("[data-step='confirmation']").innerText(), /Merci, votre commande est confirmée[\s\S]*RG-[\s\S]*CAP-1/);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  assert.ok(overflow <= 0);
+  await ctx.close();
+});
+await t("paiement indisponible : message clair, aucune fausse confirmation ; pas de barre fixe dans le tunnel", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
   await page.route("https://www.paypal.com/**", (r) => r.abort());
-  await page.goto(BASE + "/oreiller-cervical-ajustable");
-  const err = page.locator("#commander [data-pp-error]");
-  await err.waitFor({ state: "visible", timeout: 5000 });
+  await page.goto(BASE + "/commande/");
+  assert.equal(await page.locator("[data-sticky], .cbar, .hdr__nav").count(), 0);
+  await page.locator("[data-step='commande'] button").click();
+  for (const [id, v] of [["#co-email", "a@b.fr"], ["#co-name", "A B"], ["#co-address1", "1 rue X"], ["#co-postal", "75001"], ["#co-city", "Paris"]]) await page.fill(id, v);
+  await page.locator("[data-step='livraison'] button[type=submit]").click();
+  const err = page.locator("[data-pay-error]");
+  await err.waitFor({ state: "visible", timeout: 8000 });
   assert.match(await err.textContent(), /n’a pas pu se charger/);
-  const body = await page.locator("body").innerText();
-  assert.ok(!/(paiement (confirmé|réussi|accepté)|merci pour votre commande)/i.test(body), "fausse confirmation");
+  assert.equal(await page.locator("[data-step='confirmation']").isVisible(), false);
+  await ctx.close();
+});
+await t("accès direct à l’étape paiement sans adresse : retour automatique à la livraison", async () => {
+  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
+  await page.route("https://www.paypal.com/**", (r) => r.abort());
+  await page.goto(BASE + "/commande/#paiement");
+  await page.locator("[data-step='livraison']").waitFor();
+  assert.equal(await page.locator("[data-step='paiement']").isVisible(), false);
   await ctx.close();
 });
 await t("le bloc d’achat montre le contenu, le prix et la livraison gratuite avant le paiement", async () => {
@@ -134,7 +229,7 @@ await t("le bloc d’achat montre le contenu, le prix et la livraison gratuite a
   await page.route("https://www.paypal.com/**", (r) => r.abort());
   await page.goto(BASE + "/oreiller-cervical-ajustable");
   const box = await page.locator("#commander").innerText();
-  for (const re of [/Pack Sommeil REVIVE GROW/, /32,40\u00A0€/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /OFFERT/i, /Livraison gratuite/i, /3 à 5 jours ouvrés/]) assert.match(box, re);
+  for (const re of [/Pack Sommeil REVIVE GROW/, /32,40\u00A0€/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /OFFERT/i, /Livraison gratuite/i, /3 à 5 jours ouvrés/, /Obtenir l’offre/]) assert.match(box, re);
   const payTop = await page.locator("#paiement").evaluate((el) => el.getBoundingClientRect().top);
   const priceTop = await page.locator("#commander .price").evaluate((el) => el.getBoundingClientRect().top);
   assert.ok(priceTop < payTop, "le prix précède le paiement");

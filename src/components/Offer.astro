@@ -8,7 +8,8 @@ import { PILLOW, MASK, STRIPS, SERVICE } from "../config/product";
 import Price from "./Price.astro";
 import Icon from "./Icon.astro";
 import Pending from "./Pending.astro";
-import PayPalCheckout from "./PayPalCheckout.astro";
+import Button from "./Button.astro";
+import PayMethods from "./PayMethods.astro";
 import pillowImg from "../assets/images/detail-profil.webp";
 import maskImg from "../assets/images/masque-hero.webp";
 import stripsImg from "../assets/images/bandelettes-boite.webp";
@@ -59,7 +60,8 @@ import stripsImg from "../assets/images/bandelettes-boite.webp";
         <li><Icon name="return" size={16} /> 90 jours pour changer d’avis</li>
       </ul>
       <p class="card__fine">{SERVICE.delivery.label} {SERVICE.delivery.delay} en {SERVICE.delivery.zone}.</p>
-      <PayPalCheckout slot="paypal-hosted-offre" />
+      <Button href="/commande/" size="lg" block data-cta="offre">Obtenir l’offre</Button>
+      <PayMethods align="center" />
     </aside>
   </div>
 </div>

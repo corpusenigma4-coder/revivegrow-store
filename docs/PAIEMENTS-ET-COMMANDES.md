@@ -1,19 +1,23 @@
-# Pagos, pedidos y notificaciones con GitHub Pages
+# Pagos y pedidos: estado actual
 
-GitHub Pages solo sirve archivos estáticos: **no hay servidor, ni secretos, ni captura de pagos en el navegador.**
-El sitio ya tiene los puntos de conexión preparados en `src/config/commerce.ts` (`checkoutEnabled: false`).
+## Recorrido de compra (en producción)
 
-## Opción A: botón alojado de PayPal (recomendada para empezar)
+«Obtenir l’offre» → `/commande/`: 1. Commande (resumen) → «Suivant» → 2. Livraison (email + dirección) → «Suivant» → 3. Paiement sécurisé.
 
-- El precio (32,40 €), el envío (0 €) y la descripción del pack **se definen en la cuenta de PayPal** y no pueden manipularse desde el navegador.
-- Admite PayPal y tarjeta bancaria (pago como invitado, según la elegibilidad de la cuenta).
-- **Registro de ventas fiable:** el historial de transacciones de PayPal, que es la fuente de verdad del pago.
-- **Notificación:** PayPal envía un email por cada pago al correo de la cuenta. Hay que configurarlo en `corpusenigma4@gmail.com`.
-- **Activación:**
-  1. Crear el botón en PayPal (primero en sandbox).
-  2. Indicar `provider: "paypal-hosted-button"`, `clientId` (público) y `hostedButtonId`.
-  3. Poner `checkoutEnabled: true`.
-- **Límite:** sin base de datos propia. Para conservar cada pedido fuera de PayPal hace falta añadir la opción B, al menos su webhook.
+- **Pago:** botones oficiales de PayPal (`paypal.Buttons`, SDK JS) con el mismo client-id público que el PR #15. Se muestra un botón PayPal y un botón «Carte bancaire — débit ou crédit», este último solo si PayPal lo declara disponible (`isEligible()`).
+- **Datos que llegan a PayPal con cada pedido** (`src/lib/order.ts`):
+  - email del cliente (`payer.email_address` y `custom_id`);
+  - dirección de envío impuesta (`SET_PROVIDED_ADDRESS`);
+  - referencia `RG-…` (`invoice_id`);
+  - artículo «Pack Sommeil REVIVE GROW», 32,40 €, envío 0,00 €.
+
+  Todo esto aparece en el detalle de la transacción en PayPal, que también avisa al vendedor por email.
+- **Confirmación:** solo se muestra si PayPal devuelve la captura `COMPLETED` por 32,40 € EUR.
+- **Por qué no el botón alojado:** el botón alojado (`SZCKF3B62AX6A`) no acepta email ni dirección prerrellenados, así que PayPal los pediría otra vez. Se conserva en el código (`provider: "paypal-hosted-button"` lo reactiva).
+
+## Límite de seguridad que debes conocer
+
+En un sitio estático (GitHub Pages) el importe se crea en el navegador, así que alguien con conocimientos técnicos podría manipularlo. **Antes de cada envío, comprueba en PayPal que el importe cobrado es 32,40 € y que la referencia empieza por RG-.** Para eliminar ese riesgo hace falta un pequeño servidor (opción B, más abajo).
 
 ## Opción B: pequeña API externa (función serverless)
 
