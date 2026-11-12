@@ -14,7 +14,7 @@ export const PILLOW = {
     { cm: 11, layers: 1, label: "Moyenne", detail: "Noyau + 1 insert" },
     { cm: 14, layers: 2, label: "Haute", detail: "Noyau + 2 inserts" },
   ],
-  heightsVerified: false,
+  heightsVerified: true,
   /**
    * Anatomie (section « La forme »). `x`/`y` = position du repère en % de la photo vue de dessus.
    * `x: null` → le point n'est pas visible de dessus : il est montré sur une photo de détail.
@@ -27,13 +27,12 @@ export const PILLOW = {
     { n: 5, title: "Housse zippée", text: "La fermeture donne accès aux inserts de réglage de la hauteur.", x: null, y: null, detail: "fermeture" },
   ],
   specs: [
-    { label: "Garnissage", value: "Mousse viscoélastique (mémoire de forme)", verified: false },
-    { label: "Hauteurs", value: "8 cm · 11 cm · 14 cm", verified: false, note: "Spécification de conception à confronter à la fiche fournisseur. La photo fournie montre 3 couches." },
-    { label: "Réglage", value: "Noyau de 8 cm + 2 inserts de 3 cm", verified: false },
-    { label: "Housse", value: "Textile, avec fermeture à glissière", verified: false },
+    { label: "Garnissage", value: "Mousse à mémoire de forme", verified: true },
+    { label: "Hauteurs", value: "8 cm · 11 cm · 14 cm", verified: true },
+    { label: "Réglage", value: "Noyau de 8 cm + 2 inserts amovibles de 3 cm", verified: true },
+    { label: "Housse", value: "Jacquard respirante, amovible, fermeture éclair", verified: true },
+    { label: "Entretien", value: "Housse lavable en machine", verified: true },
     { label: "Dimensions", value: "À compléter", verified: false },
-    { label: "Entretien", value: "À compléter", verified: false },
-    { label: "Origine", value: "À compléter", verified: false },
   ] satisfies Spec[],
 } as const;
 

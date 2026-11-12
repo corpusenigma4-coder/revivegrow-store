@@ -1,6 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
-import Gallery from "../components/Gallery.astro";
+import { SITE } from "../config/site";
+import MediaGallery from "../components/MediaGallery.astro";
+import imgAmbiance from "../assets/images/oreiller-ambiance.webp";
+import imgHauteurs from "../assets/images/info-hauteurs.webp";
+import imgReglage from "../assets/images/info-reglage.webp";
+import imgMateriaux from "../assets/images/info-materiaux.webp";
 import BuyBox from "../components/BuyBox.astro";
 import SectionHead from "../components/SectionHead.astro";
 import HeightConfigurator from "../components/HeightConfigurator.astro";
@@ -14,22 +19,22 @@ import { PILLOW, MASK, STRIPS } from "../config/product";
 import { FAQ } from "../data/faq";
 import packImg from "../assets/images/pack-trio.webp";
 import topImg from "../assets/images/oreiller-dessus.webp";
-import layersImg from "../assets/images/oreiller-couches.webp";
 import maskImg from "../assets/images/masque-hero.webp";
-import maskProfImg from "../assets/images/masque-profils.webp";
 import maskCavImg from "../assets/images/masque-cavites.webp";
 import stripsImg from "../assets/images/bandelettes-boite.webp";
 import stripsPoseImg from "../assets/images/bandelettes-pose.webp";
 
 const images = [
-  { src: packImg, alt: "Le pack : oreiller cervical, masque de sommeil et bandelettes nasales" },
-  { src: topImg, alt: "L’oreiller vu de dessus : forme anatomique et zone centrale abaissée" },
-  { src: layersImg, alt: "L’oreiller ouvert, avec ses couches de réglage" },
-  { src: maskImg, alt: "Masque de sommeil graphite" },
-  { src: maskProfImg, alt: "Masque de sommeil, vues de face et de profil" },
-  { src: maskCavImg, alt: "Cavités intérieures du masque" },
-  { src: stripsImg, alt: "Boîte de bandelettes nasales" },
-  { src: stripsPoseImg, alt: "Bandelette posée sur le nez" },
+  { src: imgAmbiance, alt: "L’oreiller cervical ergonomique REVIVE GROW sur un lit, housse ivoire" },
+  { src: packImg, alt: "Le pack : oreiller cervical, masque de sommeil et bandelettes nasales offerts", fit: "contain" as const },
+  { src: imgHauteurs, alt: "Hauteur ajustable : noyau de 8 cm et 2 inserts amovibles de 3 cm, soit 8, 11 ou 14 cm" },
+  { src: imgReglage, alt: "Ajuster la hauteur en 3 étapes : ouvrir la housse, retirer ou ajouter un insert, refermer" },
+  { src: imgMateriaux, alt: "Matériaux : housse jacquard respirante, amovible et lavable, mousse à mémoire de forme" },
+  { src: topImg, alt: "L’oreiller vu de dessus : forme anatomique et zone centrale abaissée", fit: "contain" as const },
+  { src: maskImg, alt: "Masque de sommeil premium graphite" },
+  { src: maskCavImg, alt: "Cavités intérieures du masque de sommeil" },
+  { src: stripsImg, alt: "Boîte de bandelettes nasales premium" },
+  { src: stripsPoseImg, alt: "Bandelette nasale posée sur le nez" },
 ];
 const groups = [
   { title: PILLOW.name, specs: PILLOW.specs },
@@ -40,7 +45,7 @@ const groups = [
 <Base title="Oreiller Cervical Ergonomique Ajustable" description="Oreiller cervical ergonomique réglable en hauteur, livré avec un masque de sommeil et des bandelettes nasales offerts. Livraison offerte sous 3 à 5 jours ouvrés en France métropolitaine.">
   <div class="container crumbs"><a href="/">Accueil</a> <span aria-hidden="true">/</span> <span aria-current="page">L’oreiller cervical</span></div>
   <section class="pdp container" data-hero aria-label="Le pack">
-    <div class="pdp__gallery"><Gallery images={images} /></div>
+    <div class="pdp__gallery"><MediaGallery id="galerie-produit" images={images} variant="pdp" eager /></div>
     <div class="pdp__buy"><BuyBox headingLevel="h1" /></div>
   </section>
 
@@ -66,7 +71,7 @@ const groups = [
           <div class="specs__group">
             <h3 class="t-h4">{g.title}</h3>
             <dl>
-              {g.specs.map((s) => (
+              {g.specs.filter((s) => SITE.preview || s.value !== "À compléter").map((s) => (
                 <div class="specs__row"><dt>{s.label}</dt><dd>{s.value}{!s.verified && <Pending note={s.note} />}</dd></div>
               ))}
             </dl>

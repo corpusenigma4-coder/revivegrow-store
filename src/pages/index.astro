@@ -10,7 +10,6 @@
  *  7. Qui en parle ? (preuve sociale attribuée)
  *  8. Questions, puis contact.
  */
-import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import SectionHead from "../components/SectionHead.astro";
 import Button from "../components/Button.astro";
@@ -27,7 +26,19 @@ import PayMethods from "../components/PayMethods.astro";
 import { CAMPAIGN } from "../config/campaign";
 import { SERVICE } from "../config/product";
 import { FAQ } from "../data/faq";
-import heroImg from "../assets/images/pack-trio.webp";
+import MediaGallery from "../components/MediaGallery.astro";
+import imgAmbiance from "../assets/images/oreiller-ambiance.webp";
+import imgPack from "../assets/images/pack-trio.webp";
+import imgHauteurs from "../assets/images/info-hauteurs.webp";
+import imgReglage from "../assets/images/info-reglage.webp";
+import imgMateriaux from "../assets/images/info-materiaux.webp";
+const heroImages = [
+  { src: imgAmbiance, alt: "L’oreiller cervical ergonomique REVIVE GROW sur un lit, housse ivoire" },
+  { src: imgPack, alt: "Le pack : l’oreiller, le masque de sommeil graphite et la boîte de bandelettes nasales offerts", fit: "contain" as const },
+  { src: imgHauteurs, alt: "Hauteur ajustable : noyau de 8 cm et 2 inserts amovibles de 3 cm, soit 8, 11 ou 14 cm" },
+  { src: imgReglage, alt: "Ajuster la hauteur en 3 étapes : ouvrir la housse, retirer ou ajouter un insert, refermer" },
+  { src: imgMateriaux, alt: "Matériaux : housse jacquard respirante, amovible et lavable, mousse à mémoire de forme" },
+];
 ---
 <Base title="REVIVE GROW · L’oreiller cervical ergonomique réglable en hauteur">
   <!-- 1 · HERO -->
@@ -38,8 +49,9 @@ import heroImg from "../assets/images/pack-trio.webp";
         <h1 id="hero-title" class="t-display hero__title">L’oreiller qui <em>s’ajuste</em> à&nbsp;vous.</h1>
       </div>
       <div class="hero__media">
-        <Picture src={heroImg} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[480, 760, 1100, 1672]} sizes="(min-width: 960px) 56vw, 100vw" alt="L’oreiller cervical REVIVE GROW, avec le masque de sommeil graphite et une boîte de bandelettes nasales" loading="eager" fetchpriority="high" class="hero__img" />
-        {CAMPAIGN.enabled && <p class="hero__badge" data-offer-only><Icon name="gift" size={18} /> 2 cadeaux offerts</p>}
+        <MediaGallery id="galerie-accueil" images={heroImages} variant="hero" eager>
+          {CAMPAIGN.enabled && <p class="hero__badge" data-offer-only><Icon name="gift" size={18} /> 2 cadeaux offerts</p>}
+        </MediaGallery>
       </div>
       <p class="t-lead hero__lead">Un noyau en mousse à mémoire de forme et des inserts amovibles&nbsp;: vous choisissez la hauteur qui vous convient.</p>
       <div class="hero__buy">
@@ -139,14 +151,13 @@ import heroImg from "../assets/images/pack-trio.webp";
 <style>
   /* HERO */
   .hero { padding-block: var(--s-3) var(--s-7); }
-  .hero__grid { display: grid; gap: var(--s-4); grid-template-areas: "copy" "media" "buy" "lead"; }
+  .hero__grid { display: grid; gap: var(--s-4); grid-template-areas: "copy" "buy" "media" "lead"; }
   .hero__copy { grid-area: copy; display: grid; gap: var(--s-4); }
   .hero__title em { font-style: italic; color: var(--c-sauge); }
   .hero__lead { grid-area: lead; max-width: 34rem; }
-  .hero__media { grid-area: media; position: relative; margin-inline: calc(-1 * var(--gutter)); background: var(--c-studio); }
-  .hero__img { width: 100%; height: auto; aspect-ratio: 1672 / 736; object-fit: cover; }
+  .hero__media { grid-area: media; position: relative; min-width: 0; }
   .hero__badge {
-    position: absolute; left: var(--gutter); bottom: var(--s-3);
+    position: absolute; left: var(--s-3); top: var(--s-3); z-index: 1; pointer-events: none;
     display: inline-flex; align-items: center; gap: 0.5em; padding: 0.45em 1em;
     border: 1px solid var(--c-sauge); border-radius: var(--r-pill); background: rgb(255 253 249 / 0.92);
     font-family: var(--f-serif); font-style: italic; font-size: 1.05rem; color: var(--c-sauge);
@@ -159,13 +170,14 @@ import heroImg from "../assets/images/pack-trio.webp";
   .hero__priceline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
   .hero__gifts { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--r-pill); background: var(--c-sauge-pale); color: var(--c-sauge); font-size: 0.875rem; font-weight: 600; }
   :global(html[data-offer="closed"]) [data-offer-only] { display: none; }
-  /* Petits écrans peu hauts (iPhone SE…) : prix et « Obtenir l’offre » avant la photo. */
-  @media (max-width: 959px) and (max-height: 700px) {
-    .hero__grid { grid-template-areas: "copy" "buy" "media" "lead"; gap: var(--s-3); }
+  @media (max-width: 959px) {
     .hero__copy { gap: var(--s-2); }
+    .hero__buy { gap: var(--s-4); }
+    .hero__badge { left: 0; }
+  }
+  @media (max-width: 959px) and (max-height: 700px) {
     .hero__title { font-size: clamp(2.1rem, 1.6rem + 3vw, 2.6rem); }
     .hero__incl { display: none; }
-    .hero__buy { gap: var(--s-3); }
   }
 
   .trust { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4) var(--s-4); margin-top: var(--s-7); padding-top: var(--s-5); border-top: var(--hairline); font-size: var(--fs-sm); line-height: 1.35; }
@@ -176,12 +188,11 @@ import heroImg from "../assets/images/pack-trio.webp";
   .trust a { color: inherit; }
   @media (min-width: 960px) {
     .hero { padding-block: var(--s-7) var(--s-8); }
-    .hero__grid { grid-template-columns: 0.85fr 1.15fr; grid-template-areas: "copy media" "lead media" "buy media"; column-gap: var(--s-8); row-gap: var(--s-5); align-items: end; }
+    .hero__grid { grid-template-columns: 0.9fr 1.1fr; grid-template-areas: "copy media" "lead media" "buy media"; column-gap: var(--s-8); row-gap: var(--s-5); align-items: end; }
     .hero__lead { align-self: start; }
     .hero__buy { align-self: start; }
-    .hero__media { margin: 0; border-radius: var(--r-lg); overflow: hidden; }
-    .hero__img { aspect-ratio: 4 / 3.3; object-fit: contain; -webkit-mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); mask-image: linear-gradient(to bottom, transparent 18%, #000 27%, #000 73%, transparent 82%); }
-    .hero__badge { left: var(--s-5); bottom: var(--s-5); font-size: 1.2rem; }
+    .hero__media { align-self: center; }
+    .hero__badge { left: var(--s-5); top: var(--s-5); font-size: 1.2rem; }
     .hero__ctas { max-width: 420px; }
     .trust { grid-template-columns: repeat(4, 1fr); }
   }
