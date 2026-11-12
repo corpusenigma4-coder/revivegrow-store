@@ -338,6 +338,39 @@ await t("toucher un repère met en évidence le point correspondant", async () =
   await ctx.close();
 });
 
+console.log("Galerie et visionneuse");
+await t("galerie du hero : 5 visuels, glisser, miniatures, plein écran avec flèches et Échap", async () => {
+  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
+  await page.route("https://www.paypal.com/**", (r) => r.abort());
+  await page.goto(BASE + "/");
+  await page.waitForTimeout(400);
+  assert.equal(await page.evaluate(() => window.scrollY), 0, "la galerie ne doit pas faire défiler la page au chargement");
+  const g = page.locator("#galerie-accueil");
+  assert.equal(await g.locator(".mg__slide").count(), 5);
+  await g.locator("[data-mg-go='2']").click(); await page.waitForTimeout(300);
+  assert.equal(await g.getAttribute("data-index"), "2");
+  await g.locator("[data-mg-open='2']").click();
+  const dlg = g.locator("[data-mg-dialog]");
+  assert.equal(await dlg.isVisible(), true);
+  await page.waitForTimeout(200);
+  assert.match(await g.locator("[data-mg-count]").textContent(), /^3 \/ 5$/);
+  await page.keyboard.press("ArrowRight"); await page.waitForTimeout(300);
+  assert.match(await g.locator("[data-mg-count]").textContent(), /^4 \/ 5$/);
+  await page.keyboard.press("Escape");
+  assert.equal(await dlg.isVisible(), false);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  assert.ok(overflow <= 0);
+  await ctx.close();
+});
+await t("logo officiel dans l’en-tête, le tunnel et le pied de page", async () => {
+  for (const p of ["/", "/commande/"]) {
+    const html = await (await fetch(BASE + p)).text();
+    assert.match(html, /src="\/logo-revivegrow\.webp"/, p);
+  }
+  assert.equal((await fetch(BASE + "/logo-revivegrow.webp")).status, 200);
+  assert.equal((await fetch(BASE + "/logo-revivegrow-clair.webp")).status, 200);
+});
+
 console.log("Contact");
 await t("adresse e-mail cliquable ; aucun formulaire non branché affiché", async () => {
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
@@ -370,7 +403,7 @@ await t("barre d’achat mobile : cachée sur le hero, visible ensuite", async (
   const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
   await page.goto(BASE + "/");
   assert.equal(await page.locator("[data-sticky]").evaluate((el) => el.classList.contains("is-on")), false);
-  await page.mouse.wheel(0, 1800); await page.waitForTimeout(500);
+  await page.evaluate(() => { const h = document.querySelector("[data-hero]"); window.scrollTo({ top: h.offsetTop + h.offsetHeight + 300, behavior: "instant" }); }); await page.waitForTimeout(500);
   assert.equal(await page.locator("[data-sticky]").evaluate((el) => el.classList.contains("is-on")), true);
   await ctx.close();
 });
