@@ -65,9 +65,9 @@ try {
     await page.goto(BASE + "/");
     await assert.doesNotReject(page.waitForSelector("h1:has-text('TESTO-GH')"));
     const texto = await page.textContent("body");
-    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "Pedir foto de la etiqueta"])
+    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "Pedir foto de la etiqueta", "aprox. 1 mes", "aprox. 2 meses", "indicada por el proveedor", "$18,70 por mes aprox."])
       assert.ok(texto.includes(t), `falta «${t}»`);
-    for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso", "maca"])
+    for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "hormona", "anabólic", "grasa", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso", "maca"])
       assert.ok(!texto.toLowerCase().includes(prohibido.toLowerCase()), `texto no permitido: «${prohibido}»`);
     assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true, "2 frascos preseleccionado");
     const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

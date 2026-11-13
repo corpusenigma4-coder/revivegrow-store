@@ -36,6 +36,23 @@ el modo de uso, la duración (días por frasco, costo por día) y las advertenci
    (incluso con raíces de maca en la mesa): no son resultados reales de TESTO-GH. No deben usarse en la web
    ni en anuncios de Meta (además, Meta restringe anuncios de suplementos con antes/después y promesas corporales).
 
+### Descripción del proveedor (NOVA SHOP) — qué se usó y qué no
+| Del proveedor | Decisión |
+|---|---|
+| «Multivitamínico… para el hombre activo» | **Usado** como posicionamiento («pensado para el hombre activo»). |
+| «Envase de 60 cápsulas (tratamiento para un mes completo)» | **Usado como aproximado** y marcado «según el proveedor»: «aprox. 1 mes» por frasco, «aprox. 2 meses» con 2 frascos, «$18,70 por mes aprox.». No es dato de etiqueta; bloquea el lanzamiento hasta confirmar la dosis impresa. |
+| «Optimizador hormonal», «precursor hormonal», «potencia la producción de testosterona y hormona de crecimiento (GH)», «entorno anabólico» | **No usado.** Atribuye efectos hormonales/farmacológicos a un suplemento; prohibido por tus propias reglas y no permitido para suplementos sin evidencia aprobada por ARCSA. |
+| «Aumento de masa muscular», «perder grasa», «fuerza y potencia explosiva» | **No usado.** Promesas corporales sin evidencia. |
+| «Soporte de la libido», «vigor y deseo sexual» | **No usado.** Afirmación de salud sexual. |
+| «Descanso más profundo», «energía diaria», «cubre deficiencias vitamínicas» | **No usado** hasta conocer la composición y que la etiqueta aprobada lo respalde. |
+| «De forma natural y segura» | **No usado.** «Seguro» es una garantía de salud que no podemos dar. |
+
+**Riesgo para los anuncios:** la política de Meta sobre suplementos no seguros menciona expresamente la hormona
+de crecimiento humana y la DHEA (un «precursor hormonal»). Un anuncio que describa TESTO-GH como precursor
+hormonal o potenciador de testosterona/GH tiene alto riesgo de rechazo y de restricción de la cuenta publicitaria.
+Si la composición incluye precursores hormonales (p. ej. DHEA u otras prohormonas), **no se debe vender** sin
+autorización sanitaria específica.
+
 ### Copia usada en la landing
 Descriptiva y verificable: «Multivitamínico para hombres», «60 cápsulas», «pensado para hombres con una rutina
 activa» (posicionamiento, sin efecto prometido), formato práctico, oferta x2, pago contra entrega.

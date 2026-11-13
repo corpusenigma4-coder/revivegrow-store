@@ -21,6 +21,11 @@ export interface FichaProducto {
   proveedor: string;
   /** Fabricante o titular según la etiqueta posterior / Notificación Sanitaria. */
   fabricante: string | null;
+  /**
+   * Duración indicada por el PROVEEDOR (no por la etiqueta). Se muestra como aproximada y
+   * marcada "según el proveedor" hasta que la etiqueta la confirme (`porcion`).
+   */
+  duracionProveedor: { diasPorFrasco: number; texto: string } | null;
   /** Ej.: { capsulas: 2, porcionesPorEnvase: 30 } → 30 días por frasco. */
   porcion: { capsulas: number; porcionesPorEnvase: number } | null;
   /** Texto literal de la etiqueta, ej.: "Tomar 2 cápsulas al día con alimentos." */
@@ -44,6 +49,8 @@ export const PRODUCTO: FichaProducto = {
   capsulasPorFrasco: 60,
   proveedor: "NOVA SHOP",
   fabricante: null,
+  // Especificación de NOVA SHOP: "Envase de 60 cápsulas (tratamiento para un mes completo)".
+  duracionProveedor: { diasPorFrasco: 30, texto: "aprox. 1 mes" },
   porcion: null,
   modoDeUso: null,
   publico: null,
@@ -57,6 +64,21 @@ export const PRODUCTO: FichaProducto = {
 export const DIAS_POR_FRASCO: number | null = PRODUCTO.porcion
   ? Math.floor(PRODUCTO.capsulasPorFrasco / PRODUCTO.porcion.capsulas)
   : null;
+
+/** Duración aproximada que se puede mostrar: la de la etiqueta si existe; si no, la del proveedor (marcada). */
+export const DURACION = DIAS_POR_FRASCO
+  ? { diasPorFrasco: DIAS_POR_FRASCO, fuente: "etiqueta" as const }
+  : PRODUCTO.duracionProveedor
+    ? { diasPorFrasco: PRODUCTO.duracionProveedor.diasPorFrasco, fuente: "proveedor" as const }
+    : null;
+
+/** "aprox. 1 mes" / "aprox. 2 meses" para N frascos (solo duraciones de 30 días por frasco). */
+export function textoDuracion(frascos: number): string | null {
+  if (!DURACION) return null;
+  const dias = DURACION.diasPorFrasco * frascos;
+  if (DURACION.fuente === "etiqueta") return `${dias} días`;
+  return dias % 30 === 0 ? `aprox. ${dias / 30} ${dias === 30 ? "mes" : "meses"}` : `aprox. ${dias} días`;
+}
 
 /**
  * Verificaciones del producto antes del lanzamiento (marcar true solo con evidencia).

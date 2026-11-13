@@ -6,7 +6,7 @@ import {
   formatoUSD, mensajePedido, normalizarCelular, numeroPedido, paqueteDisponible, paquetePorId, totalPedido, validarPedido,
 } from "../../src/lib/pedido.ts";
 import { PROVINCIAS } from "../../src/lib/provincias.ts";
-import { PRODUCTO } from "../../src/config/producto.ts";
+import { PRODUCTO, DURACION, textoDuracion } from "../../src/config/producto.ts";
 
 const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
@@ -41,6 +41,12 @@ test("producto TESTO-GH: 60 cápsulas, sin composición inventada", () => {
   assert.equal(dos.capsulas, 120);
   assert.equal(PRODUCTO.ingredientes, null);
   assert.equal(PRODUCTO.modoDeUso, null);
+});
+
+test("duración del proveedor: aproximada y marcada como dato del proveedor", () => {
+  assert.equal(DURACION?.fuente, "proveedor");
+  assert.equal(textoDuracion(1), "aprox. 1 mes");
+  assert.equal(textoDuracion(2), "aprox. 2 meses");
 });
 
 test("paquete doble preseleccionado y destacado", () => {

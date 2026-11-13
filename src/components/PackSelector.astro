@@ -4,7 +4,8 @@
  * Varios selectores en la página se sincronizan con src/scripts/pedido.ts.
  */
 import { PAQUETES, PAQUETE_INICIAL } from "../config/tienda";
-import { ahorroPaquete, costoPorDiaCentavos, diasDeConsumo, formatoPorcentaje, formatoUSD } from "../lib/pedido";
+import { ahorroPaquete, costoPorDiaCentavos, formatoPorcentaje, formatoUSD } from "../lib/pedido";
+import { DURACION, textoDuracion } from "../config/producto";
 import Icon from "./Icon.astro";
 interface Props { grupo: string; titulo?: string }
 const { grupo, titulo = "Elige tu paquete" } = Astro.props;
@@ -25,12 +26,12 @@ const { grupo, titulo = "Elige tu paquete" } = Astro.props;
             <strong>{formatoUSD(p.precioCentavos)}</strong>
             <small>{p.frascos > 1 ? `${formatoUSD(a.precioPorFrascoCentavos)} c/u` : "precio por frasco"}</small>
           </span>
-          <span class="pack__meta">{p.capsulas} cápsulas{diasDeConsumo(p) && ` · ${diasDeConsumo(p)} días de uso*`}</span>
+          <span class="pack__meta">{p.capsulas} cápsulas{textoDuracion(p.frascos) && ` · ${textoDuracion(p.frascos)}*`}</span>
           {a.ahorroCentavos > 0 && (
             <span class="pack__deal">
               <s>Por separado: {p.frascos} × {formatoUSD(a.porSeparadoCentavos / p.frascos)} = {formatoUSD(a.porSeparadoCentavos)}</s>
               <b>Ahorras {formatoUSD(a.ahorroCentavos)} ({formatoPorcentaje(a.porcentaje)})</b>
-              {costoPorDiaCentavos(p) && <span class="small">Sale a {formatoUSD(costoPorDiaCentavos(p)!)} por día</span>}
+              {costoPorDiaCentavos(p) ? <span class="small">Sale a {formatoUSD(costoPorDiaCentavos(p)!)} por día</span> : DURACION?.diasPorFrasco === 30 && <span class="small">{formatoUSD(a.precioPorFrascoCentavos)} por mes aprox.*</span>}
             </span>
           )}
         </span>

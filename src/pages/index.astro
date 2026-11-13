@@ -6,7 +6,7 @@ import PackSelector from "../components/PackSelector.astro";
 import OrderDialog from "../components/OrderDialog.astro";
 import frasco from "../assets/img/testo-gh-frasco.webp";
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
-import { PRODUCTO, DIAS_POR_FRASCO } from "../config/producto";
+import { PRODUCTO, DIAS_POR_FRASCO, DURACION, textoDuracion } from "../config/producto";
 import { ahorroPaquete, formatoUSD, paquetePorId } from "../lib/pedido";
 import { FAQ } from "../data/faq";
 
@@ -80,7 +80,13 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
           <Icon name="clock" size={20} />
           <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Unidades limitadas · Oferta sujeta a disponibilidad.</span>
         </p>
-        {DIAS_POR_FRASCO && <p class="small">* Días de uso calculados con la dosis de la etiqueta: {DIAS_POR_FRASCO} días por frasco.</p>}
+        {DURACION && (
+          <p class="small">
+            {DURACION.fuente === "etiqueta"
+              ? `* Duración calculada con la dosis de la etiqueta: ${DURACION.diasPorFrasco} días por frasco.`
+              : "* Duración aproximada indicada por el proveedor (60 cápsulas para un mes). Sigue siempre el modo de uso impreso en el frasco."}
+          </p>
+        )}
       </div>
     </div>
   </section>
@@ -91,7 +97,7 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
       <div class="head" data-reveal>
         <span class="eyebrow">Qué es</span>
         <h2 id="t-producto">Tu multivitamínico, en un frasco práctico</h2>
-        <p class="lead">TESTO-GH se presenta como <em>Multi Vitamin For Men</em>: un multivitamínico en cápsulas para hombres adultos.</p>
+        <p class="lead">TESTO-GH se presenta como <em>Multi Vitamin For Men</em>: un multivitamínico en cápsulas pensado para el hombre activo, que entrena, trabaja y quiere cuidar su alimentación con un solo producto.</p>
       </div>
       <div class="grid grid--3">
         <article class="card ingr" data-reveal>
@@ -108,7 +114,7 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
             <div class="ingr__qty"><strong>{PRODUCTO.capsulasPorFrasco}</strong><small>cápsulas por frasco</small></div>
           </div>
           <h3>Formato en cápsulas</h3>
-          <p>Fácil de llevar y de tomar. Con el paquete de 2 frascos recibes {dos.capsulas} cápsulas.</p>
+          <p>Fácil de llevar y de tomar. {textoDuracion(1) ? `Cada frasco rinde ${textoDuracion(1)}${DURACION?.fuente === "proveedor" ? " según el proveedor" : ""}; con 2 frascos recibes ${dos.capsulas} cápsulas.` : `Con el paquete de 2 frascos recibes ${dos.capsulas} cápsulas.`}</p>
         </article>
         <article class="card ingr" data-reveal>
           <div class="ingr__top">
@@ -255,7 +261,7 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
         <div class="offer__box">
           <span class="eyebrow">Oferta especial — lleva 2</span>
           <h2 id="t-oferta">2 frascos por solo {formatoUSD(dos.precioCentavos)}</h2>
-          <p class="lead">Ahorras {formatoUSD(ahorro.ahorroCentavos)} frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}). Recibes {dos.capsulas} cápsulas y cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
+          <p class="lead">Ahorras {formatoUSD(ahorro.ahorroCentavos)} frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}). Recibes {dos.capsulas} cápsulas{textoDuracion(2) && ` (${textoDuracion(2)}${DURACION?.fuente === "proveedor" ? " según el proveedor" : ""})`} y cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
           <PackSelector grupo="oferta" titulo="Tu paquete" />
           <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
             <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span></span></span>

@@ -23,6 +23,7 @@ if (!VERIFICACION_PRODUCTO.etiquetaCoincideConNotificacion) add("producto", "Con
 if (!VERIFICACION_PRODUCTO.composicionRevisada) add("producto", "Revisar la composición: sin hormonas ni sustancias prohibidas");
 if (!PRODUCTO.ingredientes && !PRODUCTO.activos.length) add("producto", "Composición e ingredientes de la etiqueta posterior (producto.ts)");
 if (!PRODUCTO.modoDeUso) add("producto", "Modo de uso / dosis de la etiqueta (producto.ts)");
+if (!PRODUCTO.porcion && PRODUCTO.duracionProveedor) add("producto", `Duración "${PRODUCTO.duracionProveedor.texto} por frasco" es dato del proveedor: confirmarla con la dosis de la etiqueta (producto.ts → porcion)`);
 if (!PRODUCTO.advertencias.length) add("producto", "Advertencias de la etiqueta (producto.ts)");
 if (!PRODUCTO.fabricante) add("producto", "Fabricante o titular del producto (producto.ts)");
 else if (new Date(`${s.caducidadLoteEnVenta}-01`) <= new Date()) add("producto", `El lote en venta caduca en ${s.caducidadLoteEnVenta}: no vender producto vencido`);

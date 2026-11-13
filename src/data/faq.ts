@@ -1,5 +1,5 @@
 import { TIENDA } from "../config/tienda.ts";
-import { PRODUCTO, DIAS_POR_FRASCO } from "../config/producto.ts";
+import { PRODUCTO, DIAS_POR_FRASCO, textoDuracion } from "../config/producto.ts";
 import { formatoUSD } from "../lib/pedido.ts";
 
 const envio = TIENDA.envio;
@@ -21,7 +21,12 @@ export const FAQ: { p: string; r: string }[] = [
         p: "¿Cuánto me dura un frasco?",
         r: `Con la dosis de la etiqueta, un frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas rinde <strong>${DIAS_POR_FRASCO} días</strong>. El paquete de 2 frascos rinde <strong>${DIAS_POR_FRASCO * 2} días</strong>.`,
       }]
-    : []),
+    : PRODUCTO.duracionProveedor
+      ? [{
+          p: "¿Cuánto me dura un frasco?",
+          r: `Según el proveedor, el frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas rinde <strong>${textoDuracion(1)}</strong>; el paquete de 2 frascos, <strong>${textoDuracion(2)}</strong>. La duración exacta depende del modo de uso impreso en la etiqueta, que siempre debes seguir.`,
+        }]
+      : []),
   {
     p: "¿Qué resultados puedo esperar?",
     r: "Es un suplemento alimenticio que complementa tu alimentación; no es un medicamento y no promete resultados específicos. La respuesta a cualquier suplemento varía de una persona a otra y depende también de tu alimentación, descanso y entrenamiento. Si buscas tratar una condición de salud, consulta a un médico.",
