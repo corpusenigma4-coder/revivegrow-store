@@ -33,18 +33,18 @@ const anio = new Date().getFullYear();
           <li>{e.razonSocial ?? <span>REVIVE GROW</span>}</li>
           {e.ruc && <li>RUC {e.ruc}</li>}
           {e.domicilio && <li>{e.domicilio}</li>}
-          <li>Fabricante del producto: {PRODUCTO.fabricante} (según etiqueta)</li>
+          <li>Marca del producto: {PRODUCTO.marca}{PRODUCTO.fabricante && ` · Fabricante: ${PRODUCTO.fabricante}`}</li>
           {TIENDA.sanitario.notificacionSanitaria && <li>Notificación Sanitaria: {TIENDA.sanitario.notificacionSanitaria}</li>}
         </ul>
       </div>
     </div>
     <div class="footer__legal">
       <p>
-        {PRODUCTO.nombre} es un suplemento alimenticio. No es un medicamento y no está destinado a diagnosticar, tratar, curar ni prevenir
+        {PRODUCTO.nombre} es un suplemento alimenticio para adultos. No es un medicamento y no está destinado a diagnosticar, tratar, curar ni prevenir
         enfermedades. No reemplaza una alimentación variada y equilibrada ni un estilo de vida saludable. Consulta a tu médico si tomas
         medicamentos o tienes alguna condición de salud.
       </p>
-      <p>REVIVE GROW comercializa este producto; no es su fabricante. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
+      <p>REVIVE GROW comercializa este producto; no es su fabricante ni el titular de la marca. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
       <p>© {anio} REVIVE GROW · Ecuador</p>
     </div>
   </div>

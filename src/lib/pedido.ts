@@ -45,13 +45,14 @@ export function ahorroPaquete(p: Paquete) {
   };
 }
 
-/** Días de consumo según la dosis de la etiqueta (3 cápsulas al día). */
-export function diasDeConsumo(p: Paquete): number {
-  return p.frascos * DIAS_POR_FRASCO;
+/** Días de consumo según la dosis de la etiqueta; null mientras la dosis no esté confirmada. */
+export function diasDeConsumo(p: Paquete, diasPorFrasco: number | null = DIAS_POR_FRASCO): number | null {
+  return diasPorFrasco ? p.frascos * diasPorFrasco : null;
 }
 
-export function costoPorDiaCentavos(p: Paquete): number {
-  return Math.round(p.precioCentavos / diasDeConsumo(p));
+export function costoPorDiaCentavos(p: Paquete, diasPorFrasco: number | null = DIAS_POR_FRASCO): number | null {
+  const d = diasDeConsumo(p, diasPorFrasco);
+  return d ? Math.round(p.precioCentavos / d) : null;
 }
 
 /* ---------------------------------------------------------------- envío */

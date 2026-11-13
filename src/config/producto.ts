@@ -1,51 +1,74 @@
 /**
- * Ficha del producto transcrita de las fotografías de la etiqueta
- * (assets-sources/maca-negra/02-… y 03-…). No añadir datos que no estén en la etiqueta.
+ * FICHA DEL PRODUCTO — TESTO-GH
+ * ------------------------------------------------------------
+ * Fuente: foto frontal del frasco (assets-sources/testo-gh/07-frasco-frontal.webp).
+ * Los materiales recibidos NO incluyen la etiqueta posterior: composición, cantidades,
+ * dosis, fabricante y advertencias están en `null` y NO se inventan.
+ * Cuando el proveedor envíe fotos reales de la etiqueta posterior, completa estos campos:
+ * las secciones correspondientes de la página aparecen solas.
  */
-export const PRODUCTO = {
-  nombre: "Maca Negra + L-Arginina",
-  nombreCompleto: "Maca Negra + L-Arginina 600 mg",
-  descripcionEtiqueta: "Suplemento alimenticio en cápsulas a base de extracto de maca negra, L-arginina y zinc.",
-  capsulasPorFrasco: 30,
-  mgPorCapsula: 600,
-  contenidoNeto: "18 g",
-  fabricante: "LABMAC S.A.",
+export interface Activo { nombre: string; cantidad: string; vdr?: string | null; detalle?: string }
+
+export interface FichaProducto {
+  nombre: string;
+  nombreCompleto: string;
+  /** Lo que el envase dice que es el producto. */
+  tipo: string;
+  /** Marca que figura en el envase. */
+  marca: string;
+  capsulasPorFrasco: number;
   /** Proveedor comercial de REVIVE GROW (uso interno, no se muestra al público). */
+  proveedor: string;
+  /** Fabricante o titular según la etiqueta posterior / Notificación Sanitaria. */
+  fabricante: string | null;
+  /** Ej.: { capsulas: 2, porcionesPorEnvase: 30 } → 30 días por frasco. */
+  porcion: { capsulas: number; porcionesPorEnvase: number } | null;
+  /** Texto literal de la etiqueta, ej.: "Tomar 2 cápsulas al día con alimentos." */
+  modoDeUso: string | null;
+  /** A quién va dirigido según la etiqueta, ej.: "Hombres adultos." */
+  publico: string | null;
+  almacenamiento: string | null;
+  /** Lista de ingredientes literal de la etiqueta. */
+  ingredientes: string | null;
+  /** Cantidades por porción de la información nutricional. */
+  activos: Activo[];
+  /** Advertencias literales de la etiqueta. */
+  advertencias: string[];
+}
+
+export const PRODUCTO: FichaProducto = {
+  nombre: "TESTO-GH",
+  nombreCompleto: "TESTO-GH Multi Vitamin For Men",
+  tipo: "Multivitamínico para hombres",
+  marca: "GENETICS Nutrition & Business",
+  capsulasPorFrasco: 60,
   proveedor: "NOVA SHOP",
+  fabricante: null,
+  porcion: null,
+  modoDeUso: null,
+  publico: null,
+  almacenamiento: null,
+  ingredientes: null,
+  activos: [],
+  advertencias: [],
+};
 
-  porcion: { capsulas: 3, mg: 1800, porcionesPorEnvase: 10 },
-  modoDeUso: "Tomar 1 cápsula tres veces al día, después de las principales comidas.",
-  publico: "Dirigido para hombres mayores de 19 años.",
-  almacenamiento: "Conservar en un ambiente fresco y seco, a temperatura no mayor a 30 °C.",
+/** Días que rinde un frasco según la dosis de la etiqueta; null mientras no se conozca la dosis. */
+export const DIAS_POR_FRASCO: number | null = PRODUCTO.porcion
+  ? Math.floor(PRODUCTO.capsulasPorFrasco / PRODUCTO.porcion.capsulas)
+  : null;
 
-  /** Cantidades por porción (3 cápsulas) según la información nutricional. */
-  activos: [
-    { nombre: "L-Arginina", cantidad: "1000 mg", vdr: null },
-    { nombre: "Maca negra", cantidad: "207 mg", vdr: null, detalle: "Extracto de raíz (Lepidium meyenii W.)" },
-    { nombre: "Zinc", cantidad: "40 mg", vdr: "266 %", detalle: "Como óxido de zinc" },
-  ],
-
-  ingredientes:
-    "L-Arginina, cápsula [gelatina, agua, humectante (glicerol)], extracto de raíz de maca negra (Lepidium meyenii W.), espesante (almidón blanqueado), antiaglutinante (estearato de magnesio), lactosa, óxido de zinc. CONTIENE LACTOSA.",
-
-  nutricional: [
-    ["Energía total", "0 kJ (0 kcal)"],
-    ["Grasa total", "0 g"],
-    ["Colesterol", "0 mg"],
-    ["Sodio", "0 mg"],
-    ["Carbohidratos totales", "0 g"],
-    ["Proteína", "0 g"],
-  ] as const,
-
-  advertencias: [
-    "Manténgase fuera del alcance de los niños.",
-    "No usar si el sello de seguridad está roto o no lo tiene.",
-    "El producto no es adecuado para ser consumido como única fuente de alimento.",
-    "Si usted está tomando algún medicamento, consulte con su médico antes de ingerir este producto.",
-    "No superar la dosis recomendada.",
-    "El producto no es apto para mujeres en período de lactancia, embarazo y niños.",
-  ],
-} as const;
-
-/** Días que rinde un frasco según la dosis de la etiqueta: 30 / 3 = 10. */
-export const DIAS_POR_FRASCO = PRODUCTO.capsulasPorFrasco / PRODUCTO.porcion.capsulas;
+/**
+ * Verificaciones del producto antes del lanzamiento (marcar true solo con evidencia).
+ * La foto recibida del frasco contiene textos sin sentido ("PITASETINE NERIM GRTON", "INCENDIALE",
+ * "Contimae", sello "GEENTICS"), típicos de una imagen generada por IA: pedir fotos reales del frasco físico.
+ */
+export const VERIFICACION_PRODUCTO = {
+  /** Fotos reales del frasco físico (frente, laterales y etiqueta posterior) recibidas del proveedor. */
+  fotosRealesRecibidas: false,
+  /** La etiqueta aprobada en la Notificación Sanitaria coincide con el frasco que se vende, incluidas las
+   *  leyendas impresas ("Increase Testosterone", "Increase Muscle Mass", "Support Libido"). */
+  etiquetaCoincideConNotificacion: false,
+  /** Composición revisada: sin hormonas ni sustancias prohibidas (el nombre "GH" puede sugerir hormona de crecimiento). */
+  composicionRevisada: false,
+};

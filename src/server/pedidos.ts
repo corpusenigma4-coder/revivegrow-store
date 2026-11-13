@@ -11,6 +11,7 @@
  */
 import { TIENDA } from "../config/tienda.ts";
 import { INVENTARIO } from "../config/inventario.ts";
+import { PRODUCTO } from "../config/producto.ts";
 import {
   celularInternacional,
   disponibilidad,
@@ -246,7 +247,7 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
       nombre: datos.nombre, celular: datos.celular,
       destino: `${datos.ciudad}, ${datos.provincia}`,
       direccion: datos.direccion, referencia: datos.referencia,
-      producto: `${paquete.nombre} Maca Negra + L-Arginina (${paquete.capsulas} cápsulas) · ${formatoUSD(paquete.precioCentavos)}`,
+      producto: `${paquete.nombre} ${PRODUCTO.nombre} (${paquete.capsulas} cápsulas) · ${formatoUSD(paquete.precioCentavos)}`,
       envio: t.envio.estado === "definido" ? formatoUSD(t.envio.centavos) : "por confirmar",
       total: textoTotal(t),
     });

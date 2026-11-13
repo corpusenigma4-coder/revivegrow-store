@@ -25,12 +25,12 @@ const { grupo, titulo = "Elige tu paquete" } = Astro.props;
             <strong>{formatoUSD(p.precioCentavos)}</strong>
             <small>{p.frascos > 1 ? `${formatoUSD(a.precioPorFrascoCentavos)} c/u` : "precio por frasco"}</small>
           </span>
-          <span class="pack__meta">{p.capsulas} cápsulas · {diasDeConsumo(p)} días de uso*</span>
+          <span class="pack__meta">{p.capsulas} cápsulas{diasDeConsumo(p) && ` · ${diasDeConsumo(p)} días de uso*`}</span>
           {a.ahorroCentavos > 0 && (
             <span class="pack__deal">
               <s>Por separado: {p.frascos} × {formatoUSD(a.porSeparadoCentavos / p.frascos)} = {formatoUSD(a.porSeparadoCentavos)}</s>
               <b>Ahorras {formatoUSD(a.ahorroCentavos)} ({formatoPorcentaje(a.porcentaje)})</b>
-              <span class="small">Sale a {formatoUSD(costoPorDiaCentavos(p))} por día</span>
+              {costoPorDiaCentavos(p) && <span class="small">Sale a {formatoUSD(costoPorDiaCentavos(p)!)} por día</span>}
             </span>
           )}
         </span>

@@ -6,6 +6,7 @@
  */
 import { TIENDA } from "../src/config/tienda.ts";
 import { INVENTARIO } from "../src/config/inventario.ts";
+import { PRODUCTO, VERIFICACION_PRODUCTO } from "../src/config/producto.ts";
 import { pendientesLegales } from "../src/data/legal.ts";
 
 const guardia = process.argv.includes("--guardia");
@@ -16,7 +17,14 @@ const s = TIENDA.sanitario;
 if (!s.notificacionSanitaria) add("ARCSA", "Número de Notificación Sanitaria del producto no verificado (tienda.ts → sanitario.notificacionSanitaria)");
 if (!s.verificadoEl) add("ARCSA", "Fecha de verificación de la Notificación Sanitaria en ARCSA");
 if (!s.publicidadRevisada) add("ARCSA", "Revisión de los textos publicitarios frente a la normativa ARCSA vigente (sanitario.publicidadRevisada)");
-if (!s.caducidadLoteEnVenta) add("producto", "Caducidad del lote en venta sin confirmar (la unidad fotografiada indica EXP: AGO 2026)");
+if (!s.caducidadLoteEnVenta) add("producto", "Caducidad del lote en venta sin confirmar (pedir foto del lote al proveedor)");
+if (!VERIFICACION_PRODUCTO.fotosRealesRecibidas) add("producto", "Fotos reales del frasco físico: la imagen recibida tiene textos sin sentido (posible imagen generada por IA)");
+if (!VERIFICACION_PRODUCTO.etiquetaCoincideConNotificacion) add("producto", "Confirmar que la etiqueta aprobada por ARCSA coincide con el frasco (leyendas 'Increase Testosterone', 'Increase Muscle Mass', 'Support Libido')");
+if (!VERIFICACION_PRODUCTO.composicionRevisada) add("producto", "Revisar la composición: sin hormonas ni sustancias prohibidas");
+if (!PRODUCTO.ingredientes && !PRODUCTO.activos.length) add("producto", "Composición e ingredientes de la etiqueta posterior (producto.ts)");
+if (!PRODUCTO.modoDeUso) add("producto", "Modo de uso / dosis de la etiqueta (producto.ts)");
+if (!PRODUCTO.advertencias.length) add("producto", "Advertencias de la etiqueta (producto.ts)");
+if (!PRODUCTO.fabricante) add("producto", "Fabricante o titular del producto (producto.ts)");
 else if (new Date(`${s.caducidadLoteEnVenta}-01`) <= new Date()) add("producto", `El lote en venta caduca en ${s.caducidadLoteEnVenta}: no vender producto vencido`);
 for (const [k, v] of Object.entries(TIENDA.empresa)) if (!v && k !== "correo") add("empresa", `Dato administrativo pendiente: empresa.${k}`);
 if (TIENDA.envio.costoCentavos === null && !Object.keys(TIENDA.envio.porProvincia).length) add("envío", "Costo de envío sin definir (se comunica por WhatsApp; aceptable, pero confírmalo)");

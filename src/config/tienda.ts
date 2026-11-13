@@ -17,7 +17,7 @@ export const PAQUETES = [
     id: "dos",
     frascos: 2,
     nombre: "2 frascos",
-    capsulas: 60,
+    capsulas: 120,
     precioCentavos: 3740,
     destacado: true,
     cinta: "OFERTA ESPECIAL — LLEVA 2",
@@ -26,7 +26,7 @@ export const PAQUETES = [
     id: "uno",
     frascos: 1,
     nombre: "1 frasco",
-    capsulas: 30,
+    capsulas: 60,
     precioCentavos: 2740,
     destacado: false,
     cinta: null,
@@ -70,7 +70,7 @@ export const TIENDA = {
     verificadoEl: null as string | null,
     /**
      * Caducidad del lote que se va a vender, comprobada en el frasco (AAAA-MM).
-     * OJO: la unidad fotografiada dice "EXP: AGO 2026" (ya vencida a la fecha de este desarrollo).
+     * Pedir al proveedor una foto del lote y la fecha de caducidad del frasco que se va a vender.
      */
     caducidadLoteEnVenta: null as string | null,
     /** ¿El texto publicitario fue revisado contra la normativa ARCSA vigente? */
@@ -126,4 +126,4 @@ export function enlaceWhatsApp(texto?: string): string {
   return texto ? `${base}?text=${encodeURIComponent(texto)}` : base;
 }
 
-export const MENSAJE_CONSULTA = "Hola REVIVE GROW, tengo una consulta sobre Maca Negra + L-Arginina.";
+export const MENSAJE_CONSULTA = "Hola REVIVE GROW, tengo una consulta sobre TESTO-GH.";

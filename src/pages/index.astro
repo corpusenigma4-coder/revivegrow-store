@@ -1,12 +1,10 @@
 ---
-import { Picture, getImage } from "astro:assets";
+import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
 import PackSelector from "../components/PackSelector.astro";
 import OrderDialog from "../components/OrderDialog.astro";
-import frasco from "../assets/img/frasco.png";
-import etiquetaUso from "../assets/img/etiqueta-uso.webp";
-import etiquetaNutricional from "../assets/img/etiqueta-nutricional.webp";
+import frasco from "../assets/img/testo-gh-frasco.webp";
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
 import { PRODUCTO, DIAS_POR_FRASCO } from "../config/producto";
 import { ahorroPaquete, formatoUSD, paquetePorId } from "../lib/pedido";
@@ -16,22 +14,22 @@ const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
 const ahorro = ahorroPaquete(dos);
 const inicial = paquetePorId(PAQUETE_INICIAL)!;
-const waPedido = enlaceWhatsApp("Hola REVIVE GROW, quiero hacer un pedido de Maca Negra + L-Arginina con pago contra entrega.");
+const waPedido = enlaceWhatsApp("Hola REVIVE GROW, quiero hacer un pedido de TESTO-GH con pago contra entrega.");
+const waEtiqueta = enlaceWhatsApp("Hola REVIVE GROW, ¿me pueden enviar la foto de la etiqueta posterior de TESTO-GH (ingredientes y modo de uso)?");
 const formas = TIENDA.pago.formasAlRecibir;
-const zoomNutricional = await getImage({ src: etiquetaNutricional, format: "webp", width: 602 });
-const zoomUso = await getImage({ src: etiquetaUso, format: "webp", width: 532 });
+const tieneComposicion = PRODUCTO.activos.length > 0 || Boolean(PRODUCTO.ingredientes);
 
-const titulo = "Maca Negra + L-Arginina | Pago contra entrega en Ecuador · REVIVE GROW";
-const descripcion = `Suplemento alimenticio con maca negra, L-arginina y zinc. 30 cápsulas de 600 mg. 2 frascos por ${formatoUSD(dos.precioCentavos)} (ahorras ${formatoUSD(ahorro.ahorroCentavos)}). Pagas al recibir.`;
+const titulo = "TESTO-GH Multi Vitamin For Men | Pago contra entrega en Ecuador · REVIVE GROW";
+const descripcion = `TESTO-GH, multivitamínico para hombres de ${PRODUCTO.marca}. ${PRODUCTO.capsulasPorFrasco} cápsulas por frasco. 2 frascos por ${formatoUSD(dos.precioCentavos)} (ahorras ${formatoUSD(ahorro.ahorroCentavos)}). Pagas al recibir.`;
 
 const jsonLd = [
   {
     "@context": "https://schema.org",
     "@type": "Product",
     name: PRODUCTO.nombreCompleto,
-    description: PRODUCTO.descripcionEtiqueta,
+    description: `${PRODUCTO.tipo}, ${PRODUCTO.capsulasPorFrasco} cápsulas.`,
     image: new URL("/og-revivegrow-ec.jpg", TIENDA.url).href,
-    manufacturer: { "@type": "Organization", name: PRODUCTO.fabricante },
+    brand: { "@type": "Brand", name: PRODUCTO.marca },
     offers: PAQUETES.map((p) => ({
       "@type": "Offer",
       name: p.nombre,
@@ -43,60 +41,26 @@ const jsonLd = [
     })),
   },
 ];
-
-const ingredientes = [
-  {
-    icono: "root" as const,
-    nombre: "Maca negra",
-    cientifico: "Lepidium meyenii",
-    cantidad: "207 mg",
-    vdr: null,
-    texto: "Extracto de raíz de maca, un tubérculo andino que se cultiva a gran altitud y forma parte de la alimentación tradicional de los Andes. La negra es una de sus variedades de color.",
-  },
-  {
-    icono: "atom" as const,
-    nombre: "L-Arginina",
-    cientifico: "aminoácido",
-    cantidad: "1000 mg",
-    vdr: null,
-    texto: "Aminoácido presente de forma natural en alimentos como carnes, pescados, lácteos, frutos secos y legumbres. Es el ingrediente principal de la fórmula.",
-  },
-  {
-    icono: "mineral" as const,
-    nombre: "Zinc",
-    cientifico: "óxido de zinc",
-    cantidad: "40 mg",
-    vdr: "266 % VDR",
-    texto: "Mineral esencial que el organismo necesita recibir con regularidad a través de la alimentación, porque no tiene una reserva específica para almacenarlo.",
-  },
-];
+const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFormat: "webp" as const, quality: 80, widths: [480, 760, 1024] };
 ---
 <Base title={titulo} description={descripcion} jsonLd={jsonLd}>
   <!-- ============================================================ HERO + OFERTA -->
   <section class="hero" aria-labelledby="titulo-producto">
     <div class="container hero__grid">
-      <figure class="hero__media">
-        <Picture
-          src={frasco}
-          formats={["avif", "webp"]} fallbackFormat="webp" quality={78}
-          widths={[420, 700]}
-          sizes="(min-width: 920px) 560px, 100vw"
-          alt="Frasco de Maca Negra + L-Arginina de 30 cápsulas, con cápsulas y raíz de maca seca"
-          loading="eager"
-          fetchpriority="high"
-        />
+      <figure class="hero__media hero__media--studio">
+        <Picture {...fotoProps} sizes="(min-width: 920px) 560px, 100vw" alt="Frasco de TESTO-GH Multi Vitamin For Men, 60 cápsulas" loading="eager" fetchpriority="high" />
         <span class="hero__price">2 frascos · {formatoUSD(dos.precioCentavos)} <small>Ahorras {formatoUSD(ahorro.ahorroCentavos)}</small></span>
         <div class="hero__tags">
-          <span class="tag"><Icon name="capsule" size={15} /> 30 cápsulas · 600 mg</span>
-          <span class="tag"><Icon name="leaf" size={15} /> Maca · L-arginina · Zinc</span>
+          <span class="tag"><Icon name="capsule" size={15} /> {PRODUCTO.capsulasPorFrasco} cápsulas</span>
+          <span class="tag"><Icon name="user" size={15} /> Para hombres</span>
         </div>
       </figure>
 
       <div class="buy" id="comprar">
-        <span class="eyebrow">Suplemento alimenticio</span>
-        <h1 id="titulo-producto">Maca Negra + L-Arginina <span>Con zinc · Para hombres adultos</span></h1>
+        <span class="eyebrow">{PRODUCTO.marca}</span>
+        <h1 id="titulo-producto">TESTO-GH <span>Multivitamínico para hombres · {PRODUCTO.capsulasPorFrasco} cápsulas</span></h1>
         <p class="buy__lead">
-          Tres ingredientes en una sola cápsula para complementar tu bienestar y tu vida activa. Pídelo hoy y <strong>pagas cuando lo recibes</strong>.
+          Un complemento en cápsulas pensado para hombres con una rutina activa. Pídelo hoy y <strong>pagas cuando lo recibes</strong>.
         </p>
 
         <PackSelector grupo="hero" />
@@ -116,36 +80,72 @@ const ingredientes = [
           <Icon name="clock" size={20} />
           <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Unidades limitadas · Oferta sujeta a disponibilidad.</span>
         </p>
-        <p class="small">* Días de uso calculados con la dosis de la etiqueta: 3 cápsulas al día, {DIAS_POR_FRASCO} días por frasco.</p>
+        {DIAS_POR_FRASCO && <p class="small">* Días de uso calculados con la dosis de la etiqueta: {DIAS_POR_FRASCO} días por frasco.</p>}
       </div>
     </div>
   </section>
 
-  <!-- ============================================================ FÓRMULA -->
-  <section class="section section--white" id="formula" aria-labelledby="t-formula">
+  <!-- ============================================================ PRODUCTO -->
+  <section class="section section--white" id="producto" aria-labelledby="t-producto">
     <div class="container">
       <div class="head" data-reveal>
-        <span class="eyebrow">Qué contiene</span>
-        <h2 id="t-formula">Una fórmula que puedes leer</h2>
-        <p class="lead">Cantidades por porción diaria de 3 cápsulas, tal como figuran en la información nutricional del frasco.</p>
+        <span class="eyebrow">Qué es</span>
+        <h2 id="t-producto">Tu multivitamínico, en un frasco práctico</h2>
+        <p class="lead">TESTO-GH se presenta como <em>Multi Vitamin For Men</em>: un multivitamínico en cápsulas para hombres adultos.</p>
       </div>
       <div class="grid grid--3">
-        {ingredientes.map((i) => (
-          <article class="card ingr" data-reveal>
-            <div class="ingr__top">
-              <span class="ingr__icon"><Icon name={i.icono} size={28} /></span>
-              <div class="ingr__qty"><strong>{i.cantidad}</strong><small>{i.vdr ?? "por porción"}</small></div>
-            </div>
-            <h3>{i.nombre}</h3>
-            <p class="ingr__sci">{i.cientifico}</p>
-            <p>{i.texto}</p>
-          </article>
-        ))}
+        <article class="card ingr" data-reveal>
+          <div class="ingr__top">
+            <span class="ingr__icon"><Icon name="user" size={28} /></span>
+            <div class="ingr__qty"><strong>Hombres</strong><small>adultos</small></div>
+          </div>
+          <h3>Multi Vitamin For Men</h3>
+          <p>Así lo identifica su envase: un multivitamínico pensado para el hombre adulto que cuida su alimentación y su rutina.</p>
+        </article>
+        <article class="card ingr" data-reveal>
+          <div class="ingr__top">
+            <span class="ingr__icon"><Icon name="capsule" size={28} /></span>
+            <div class="ingr__qty"><strong>{PRODUCTO.capsulasPorFrasco}</strong><small>cápsulas por frasco</small></div>
+          </div>
+          <h3>Formato en cápsulas</h3>
+          <p>Fácil de llevar y de tomar. Con el paquete de 2 frascos recibes {dos.capsulas} cápsulas.</p>
+        </article>
+        <article class="card ingr" data-reveal>
+          <div class="ingr__top">
+            <span class="ingr__icon"><Icon name="shield" size={28} /></span>
+            <div class="ingr__qty"><strong>Sellado</strong><small>de fábrica</small></div>
+          </div>
+          <h3>{PRODUCTO.marca}</h3>
+          <p>Frasco original con sello de seguridad en la tapa. Verifica que esté intacto al recibirlo.</p>
+        </article>
       </div>
-      <div class="grid grid--2" style="margin-top:1rem">
-        <p class="note"><Icon name="info" size={20} /> <span>Porción: 3 cápsulas (1800 mg). Porciones por envase: 10. Aporte energético: 0 kcal. <strong>Contiene lactosa.</strong></span></p>
-        <p class="note note--warn"><Icon name="alert" size={20} /> <span><strong>Nota de REVIVE GROW:</strong> la porción diaria aporta 40 mg de zinc. No la combines con otros suplementos que contengan zinc sin consultar a un profesional de la salud.</span></p>
-      </div>
+
+      {tieneComposicion ? (
+        <div class="split" style="margin-top:1.5rem">
+          {PRODUCTO.activos.length > 0 && (
+            <table class="facts">
+              <caption>Información nutricional{PRODUCTO.porcion && ` · porción ${PRODUCTO.porcion.capsulas} cápsulas`}</caption>
+              <thead><tr><th scope="col">Nutriente</th><th scope="col">Por porción</th><th scope="col">%VDR</th></tr></thead>
+              <tbody>{PRODUCTO.activos.map((a) => <tr><td>{a.nombre}</td><td>{a.cantidad}</td><td>{a.vdr ?? "*"}</td></tr>)}</tbody>
+            </table>
+          )}
+          {PRODUCTO.ingredientes && (
+            <details class="details" open>
+              <summary>Ingredientes <Icon name="chevron" size={20} /></summary>
+              <div class="details__body"><p>{PRODUCTO.ingredientes}</p></div>
+            </details>
+          )}
+        </div>
+      ) : (
+        <div class="note" style="margin-top:1.25rem" data-reveal>
+          <Icon name="info" size={20} />
+          <span>
+            <strong>Composición y modo de uso:</strong> los publicaremos tal como figuran en la etiqueta posterior del frasco.
+            Si quieres verlos antes de pedir, te enviamos la foto de la etiqueta por WhatsApp.
+            <a class="link" href={waEtiqueta} target="_blank" rel="noopener" data-evento="Contact">Pedir foto de la etiqueta</a>
+          </span>
+        </div>
+      )}
     </div>
   </section>
 
@@ -153,24 +153,24 @@ const ingredientes = [
   <section class="section" aria-labelledby="t-por-que">
     <div class="container">
       <div class="head" data-reveal>
-        <span class="eyebrow">Por qué elegirlo</span>
+        <span class="eyebrow">Por qué pedirlo aquí</span>
         <h2 id="t-por-que">Simple de tomar. Fácil de pedir.</h2>
       </div>
       <div class="grid grid--4">
         <article class="card why" data-reveal>
           <span class="why__icon"><Icon name="capsule" /></span>
-          <h3>3 en 1</h3>
-          <p>Maca negra, L-arginina y zinc juntos en cada cápsula. Sin mezclar productos.</p>
+          <h3>Formato práctico</h3>
+          <p>Cápsulas listas para integrar a tu día, en casa, en el trabajo o después de entrenar.</p>
         </article>
         <article class="card why" data-reveal>
-          <span class="why__icon"><Icon name="clock" /></span>
-          <h3>Rutina sencilla</h3>
-          <p>Una cápsula después de cada comida principal. Se integra a tu día sin esfuerzo.</p>
+          <span class="why__icon"><Icon name="tag" /></span>
+          <h3>Mejor precio x2</h3>
+          <p>{dos.capsulas} cápsulas por {formatoUSD(dos.precioCentavos)}: cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
         </article>
         <article class="card why" data-reveal>
-          <span class="why__icon"><Icon name="user" /></span>
-          <h3>Pensado para él</h3>
-          <p>Dirigido a hombres mayores de 19 años que quieren complementar su alimentación.</p>
+          <span class="why__icon"><Icon name="chat" /></span>
+          <h3>Atención real</h3>
+          <p>Te respondemos por WhatsApp antes y después de tu compra.</p>
         </article>
         <article class="card why" data-reveal>
           <span class="why__icon"><Icon name="cash" /></span>
@@ -181,77 +181,44 @@ const ingredientes = [
     </div>
   </section>
 
-  <!-- ============================================================ MODO DE USO -->
+  <!-- ============================================================ USO Y PRECAUCIONES -->
   <section class="section section--white" id="uso" aria-labelledby="t-uso">
     <div class="container split">
       <div class="stack" data-reveal>
         <span class="eyebrow">Cómo se toma</span>
-        <h2 id="t-uso" style="font-size:var(--fs-h2)">1 cápsula, 3 veces al día</h2>
-        <p class="lead">Según la etiqueta: tomar 1 cápsula tres veces al día, después de las principales comidas. {PRODUCTO.publico}</p>
-        <div class="routine" role="list">
-          <div class="routine__step" role="listitem"><Icon name="coffee" size={30} /><strong>Desayuno</strong><span class="caps"><Icon name="capsule" size={16} /> 1 cápsula</span></div>
-          <div class="routine__step" role="listitem"><Icon name="sun" size={30} /><strong>Almuerzo</strong><span class="caps"><Icon name="capsule" size={16} /> 1 cápsula</span></div>
-          <div class="routine__step" role="listitem"><Icon name="moon" size={30} /><strong>Cena</strong><span class="caps"><Icon name="capsule" size={16} /> 1 cápsula</span></div>
-        </div>
+        <h2 id="t-uso" style="font-size:var(--fs-h2)">Sigue la etiqueta, sin excederte</h2>
+        {PRODUCTO.modoDeUso ? (
+          <p class="lead">Según la etiqueta: {PRODUCTO.modoDeUso} {PRODUCTO.publico}</p>
+        ) : (
+          <p class="lead">Toma TESTO-GH siguiendo el modo de uso impreso en la etiqueta del frasco y no superes la dosis recomendada.</p>
+        )}
+        {DIAS_POR_FRASCO && (
+          <div class="duration">
+            <div><strong>{DIAS_POR_FRASCO} días</strong><span>con 1 frasco ({uno.capsulas} cápsulas)</span></div>
+            <div><strong>{DIAS_POR_FRASCO * 2} días</strong><span>con 2 frascos ({dos.capsulas} cápsulas)</span></div>
+          </div>
+        )}
+        {PRODUCTO.almacenamiento && <p class="note"><Icon name="box" size={20} /> <span>{PRODUCTO.almacenamiento}</span></p>}
       </div>
       <div class="stack" data-reveal>
-        <div class="duration">
-          <div><strong>{DIAS_POR_FRASCO} días</strong><span>con 1 frasco ({uno.capsulas} cápsulas)</span></div>
-          <div><strong>{DIAS_POR_FRASCO * 2} días</strong><span>con 2 frascos ({dos.capsulas} cápsulas)</span></div>
-        </div>
-        <p class="note"><Icon name="box" size={20} /> <span>{PRODUCTO.almacenamiento} No superar la dosis recomendada.</span></p>
-        <p class="small">Te recomendamos el paquete de 2 frascos para una rutina continua de {DIAS_POR_FRASCO * 2} días, con un ahorro de {formatoUSD(ahorro.ahorroCentavos)}.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================ ETIQUETA REAL -->
-  <section class="section" id="etiqueta" aria-labelledby="t-etiqueta">
-    <div class="container split">
-      <div class="stack" data-reveal>
-        <span class="eyebrow">Transparencia</span>
-        <h2 id="t-etiqueta" style="font-size:var(--fs-h2)">La etiqueta real, sin filtros</h2>
-        <p class="lead">Antes de pedir, revisa ingredientes, modo de uso y advertencias. Toca una foto para ampliarla.</p>
-        <div class="labels">
-          <figure style="margin:0">
-            <button type="button" data-ampliar={zoomNutricional.src} data-alt="Etiqueta del frasco: ingredientes e información nutricional" aria-label="Ampliar foto de ingredientes e información nutricional">
-              <Picture src={etiquetaNutricional} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[300, 602]} sizes="(min-width: 920px) 270px, 46vw" alt="Etiqueta: ingredientes e información nutricional" />
-              <span class="zoom"><Icon name="zoom" size={14} /> Ampliar</span>
-            </button>
-            <figcaption>Ingredientes e información nutricional</figcaption>
-          </figure>
-          <figure style="margin:0">
-            <button type="button" data-ampliar={zoomUso.src} data-alt="Etiqueta del frasco: modo de consumo, almacenamiento y advertencias" aria-label="Ampliar foto de modo de consumo y advertencias">
-              <Picture src={etiquetaUso} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[300, 532]} sizes="(min-width: 920px) 270px, 46vw" alt="Etiqueta: modo de consumo, almacenamiento y advertencias" />
-              <span class="zoom"><Icon name="zoom" size={14} /> Ampliar</span>
-            </button>
-            <figcaption>Modo de consumo y advertencias</figcaption>
-          </figure>
-        </div>
-      </div>
-      <div class="stack" data-reveal>
-        <table class="facts">
-          <caption>Información nutricional · porción 3 cápsulas (1800 mg)</caption>
-          <thead><tr><th scope="col">Nutriente</th><th scope="col">Por porción</th><th scope="col">%VDR</th></tr></thead>
-          <tbody>
-            {PRODUCTO.activos.map((a) => <tr class="hl"><td>{a.nombre}</td><td>{a.cantidad}</td><td>{a.vdr ?? "*"}</td></tr>)}
-            {PRODUCTO.nutricional.map(([n, c]) => <tr><td>{n}</td><td>{c}</td><td>0 %</td></tr>)}
-          </tbody>
-        </table>
-        <p class="small">* Valor diario no establecido. Valores diarios basados en una dieta de 2000 kcal.</p>
-        <details class="details">
-          <summary>Ingredientes <Icon name="chevron" size={20} /></summary>
-          <div class="details__body"><p>{PRODUCTO.ingredientes}</p></div>
-        </details>
         <details class="details" open>
-          <summary>Precauciones y advertencias <Icon name="chevron" size={20} /></summary>
+          <summary>{PRODUCTO.advertencias.length ? "Advertencias de la etiqueta" : "Antes de consumirlo"} <Icon name="chevron" size={20} /></summary>
           <div class="details__body">
             <ul class="warnings">
-              {PRODUCTO.advertencias.map((a) => <li><Icon name="alert" size={16} /> {a}</li>)}
+              {(PRODUCTO.advertencias.length
+                ? PRODUCTO.advertencias
+                : [
+                    "Producto para hombres adultos. Manténgase fuera del alcance de los niños.",
+                    "No apto para mujeres embarazadas o en período de lactancia.",
+                    "Si tomas algún medicamento o tienes una condición de salud, consulta a tu médico antes de consumirlo.",
+                    "No superes la dosis recomendada en la etiqueta.",
+                    "No lo uses si el sello de seguridad está roto o no lo tiene.",
+                  ]
+              ).map((a) => <li><Icon name="alert" size={16} /> {a}</li>)}
             </ul>
           </div>
         </details>
-        <p class="small">Elaborado y distribuido por {PRODUCTO.fabricante}, según la etiqueta.{TIENDA.sanitario.notificacionSanitaria && ` Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.`}</p>
+        <p class="note"><Icon name="info" size={20} /> <span>Es un suplemento alimenticio: complementa tu alimentación, no la reemplaza, y no sustituye ningún tratamiento médico.</span></p>
       </div>
     </div>
   </section>
@@ -282,13 +249,13 @@ const ingredientes = [
   <section class="section" id="oferta" aria-labelledby="t-oferta">
     <div class="container">
       <div class="offer" data-oculta-barra>
-        <div class="offer__media">
-          <Picture src={frasco} formats={["avif", "webp"]} fallbackFormat="webp" quality={78} widths={[420, 700]} sizes="(min-width: 920px) 460px, 90vw" alt="Maca Negra + L-Arginina, frasco de 30 cápsulas" />
+        <div class="offer__media offer__media--studio">
+          <Picture {...fotoProps} sizes="(min-width: 920px) 460px, 90vw" alt="TESTO-GH, frasco de 60 cápsulas" />
         </div>
         <div class="offer__box">
           <span class="eyebrow">Oferta especial — lleva 2</span>
           <h2 id="t-oferta">2 frascos por solo {formatoUSD(dos.precioCentavos)}</h2>
-          <p class="lead">Ahorras {formatoUSD(ahorro.ahorroCentavos)} frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}). Cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
+          <p class="lead">Ahorras {formatoUSD(ahorro.ahorroCentavos)} frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}). Recibes {dos.capsulas} cápsulas y cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
           <PackSelector grupo="oferta" titulo="Tu paquete" />
           <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
             <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span></span></span>
@@ -327,20 +294,13 @@ const ingredientes = [
   <!-- ============================================================ CIERRE -->
   <section class="section" aria-label="Información importante">
     <div class="container narrow disclaimer">
-      <p><strong>Importante.</strong> {PRODUCTO.nombre} es un suplemento alimenticio para adultos. No es un medicamento, no está destinado a diagnosticar, tratar, curar ni prevenir enfermedades y no reemplaza una alimentación variada y equilibrada. Los resultados pueden variar de una persona a otra.</p>
-      <p>Si tomas medicamentos o tienes alguna condición de salud, consulta a tu médico antes de consumirlo. No apto para mujeres embarazadas o en período de lactancia ni para niños.</p>
+      <p><strong>Importante.</strong> TESTO-GH es un suplemento alimenticio para hombres adultos. No es un medicamento, no está destinado a diagnosticar, tratar, curar ni prevenir enfermedades y no reemplaza una alimentación variada y equilibrada. Los resultados pueden variar de una persona a otra.</p>
+      <p>Si tomas medicamentos o tienes alguna condición de salud, consulta a tu médico antes de consumirlo. No apto para menores de edad ni para mujeres embarazadas o en período de lactancia.</p>
     </div>
   </section>
 
   <Fragment slot="despues">
     <OrderDialog />
-
-    <dialog class="viewer" id="dlg-imagen" aria-label="Foto ampliada de la etiqueta">
-      <div class="viewer__in">
-        <img data-visor alt="" width="602" height="1200" decoding="async" />
-        <button type="button" class="icon-btn" data-cerrar-visor aria-label="Cerrar"><Icon name="close" /></button>
-      </div>
-    </dialog>
 
     <div class="sticky" data-sticky aria-hidden="true">
       <div class="sticky__info">
@@ -358,20 +318,4 @@ const ingredientes = [
 
 <script>
   import "../scripts/pedido";
-
-  // Visor de las fotos de la etiqueta
-  const visor = document.querySelector<HTMLDialogElement>("#dlg-imagen");
-  const img = visor?.querySelector<HTMLImageElement>("[data-visor]");
-  document.querySelectorAll<HTMLButtonElement>("[data-ampliar]").forEach((b) =>
-    b.addEventListener("click", () => {
-      if (!visor || !img) return;
-      img.src = b.dataset.ampliar!;
-      img.alt = b.dataset.alt ?? "";
-      visor.showModal();
-    }),
-  );
-  visor?.addEventListener("click", (e) => {
-    const t = e.target as Element;
-    if (t === visor || t.closest("[data-cerrar-visor]")) visor.close();
-  });
 </script>

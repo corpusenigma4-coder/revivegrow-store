@@ -7,24 +7,30 @@ const envio = TIENDA.envio;
 /** Preguntas frecuentes. El HTML permitido es solo <a> y <strong> escritos aquí. */
 export const FAQ: { p: string; r: string }[] = [
   {
-    p: "¿Qué es exactamente este producto?",
-    r: `${PRODUCTO.descripcionEtiqueta} Cada frasco trae ${PRODUCTO.capsulasPorFrasco} cápsulas de ${PRODUCTO.mgPorCapsula} mg. Está dirigido a hombres mayores de 19 años, según su etiqueta.`,
+    p: "¿Qué es TESTO-GH?",
+    r: `Según su envase, TESTO-GH (${PRODUCTO.marca}) es un <strong>multivitamínico para hombres</strong> (Multi Vitamin For Men) en cápsulas. Cada frasco trae <strong>${PRODUCTO.capsulasPorFrasco} cápsulas</strong>.${PRODUCTO.ingredientes ? ` Ingredientes: ${PRODUCTO.ingredientes}` : ""}`,
   },
   {
     p: "¿Cómo se toma?",
-    r: `Según la etiqueta: <strong>1 cápsula tres veces al día, después de las principales comidas</strong> (desayuno, almuerzo y cena). No superes la dosis recomendada.`,
+    r: PRODUCTO.modoDeUso
+      ? `Según la etiqueta: <strong>${PRODUCTO.modoDeUso}</strong> No superes la dosis recomendada.`
+      : "Sigue siempre el modo de uso impreso en la etiqueta del frasco y no superes la dosis recomendada. Si tienes dudas, escríbenos por WhatsApp antes de comprar.",
   },
-  {
-    p: "¿Cuánto me dura un frasco?",
-    r: `Con la dosis de la etiqueta (3 cápsulas al día), un frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas rinde <strong>${DIAS_POR_FRASCO} días</strong>. El paquete de 2 frascos rinde <strong>${DIAS_POR_FRASCO * 2} días</strong>.`,
-  },
+  ...(DIAS_POR_FRASCO
+    ? [{
+        p: "¿Cuánto me dura un frasco?",
+        r: `Con la dosis de la etiqueta, un frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas rinde <strong>${DIAS_POR_FRASCO} días</strong>. El paquete de 2 frascos rinde <strong>${DIAS_POR_FRASCO * 2} días</strong>.`,
+      }]
+    : []),
   {
     p: "¿Qué resultados puedo esperar?",
-    r: "Es un suplemento alimenticio que complementa tu alimentación; no es un medicamento y no promete resultados específicos. La respuesta a cualquier suplemento varía de una persona a otra. Si buscas tratar una condición de salud, consulta a un médico.",
+    r: "Es un suplemento alimenticio que complementa tu alimentación; no es un medicamento y no promete resultados específicos. La respuesta a cualquier suplemento varía de una persona a otra y depende también de tu alimentación, descanso y entrenamiento. Si buscas tratar una condición de salud, consulta a un médico.",
   },
   {
     p: "¿Quién no debe tomarlo?",
-    r: "Según la etiqueta, no es apto para mujeres embarazadas o en período de lactancia ni para niños. Si tomas algún medicamento, consulta a tu médico antes de consumirlo. Contiene lactosa.",
+    r: PRODUCTO.advertencias.length
+      ? `Según la etiqueta: ${PRODUCTO.advertencias.join(" ")}`
+      : "Es un producto para hombres adultos. No es para menores de edad ni para mujeres embarazadas o en período de lactancia. Si tomas algún medicamento o tienes una condición de salud, consulta a tu médico antes de consumirlo.",
   },
   {
     p: "¿Cómo funciona el pago contra entrega?",
@@ -51,7 +57,7 @@ export const FAQ: { p: string; r: string }[] = [
   },
   {
     p: "¿Quién fabrica el producto y quién lo vende?",
-    r: `Según la etiqueta, lo elabora y distribuye <strong>${PRODUCTO.fabricante}</strong>. REVIVE GROW es la tienda que lo comercializa en línea; no somos el fabricante.`,
+    r: `TESTO-GH es de la marca <strong>${PRODUCTO.marca}</strong>${PRODUCTO.fabricante ? `, fabricado por <strong>${PRODUCTO.fabricante}</strong>` : ""}. REVIVE GROW es la tienda que lo comercializa en línea en Ecuador; no somos el fabricante.`,
   },
 ];
 

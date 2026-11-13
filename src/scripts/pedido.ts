@@ -14,6 +14,7 @@ import {
   type Campo, type DatosPedido, type Paquete,
 } from "../lib/pedido";
 import { PAQUETES } from "../config/tienda";
+import { PRODUCTO } from "../config/producto";
 
 type Modo = "servidor" | "whatsapp";
 type Fbq = (...a: unknown[]) => void;
@@ -269,7 +270,7 @@ function mensajeWhatsApp(p: Paquete, datos: DatosPedido) {
 function pintarRevision(p: Paquete, datos: DatosPedido) {
   const t = totalPedido(p, datos.provincia);
   $("[data-resumen-pedido]")?.replaceChildren(
-    fila("Producto", "Maca Negra + L-Arginina 600 mg"),
+    fila("Producto", PRODUCTO.nombreCompleto),
     fila("Cantidad", `${p.nombre} (${p.capsulas} cápsulas)`),
     fila("Precio del paquete", formatoUSD(p.precioCentavos)),
     fila("Envío", t.envio.estado === "definido" ? textoEnvio(t.envio) : "Por confirmar"),

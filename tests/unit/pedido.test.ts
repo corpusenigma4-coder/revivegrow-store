@@ -6,6 +6,7 @@ import {
   formatoUSD, mensajePedido, normalizarCelular, numeroPedido, paqueteDisponible, paquetePorId, totalPedido, validarPedido,
 } from "../../src/lib/pedido.ts";
 import { PROVINCIAS } from "../../src/lib/provincias.ts";
+import { PRODUCTO } from "../../src/config/producto.ts";
 
 const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
@@ -26,11 +27,20 @@ test("ahorro real del paquete doble frente a 2 frascos individuales", () => {
   assert.equal(ahorroPaquete(uno).ahorroCentavos, 0);
 });
 
-test("duración según la dosis de la etiqueta (3 cápsulas/día)", () => {
-  assert.equal(diasDeConsumo(uno), 10);
-  assert.equal(diasDeConsumo(dos), 20);
-  assert.equal(costoPorDiaCentavos(dos), 187);
-  assert.equal(costoPorDiaCentavos(uno), 274);
+test("duración: sin dosis confirmada no se calcula; con dosis sí", () => {
+  assert.equal(diasDeConsumo(dos), null);
+  assert.equal(costoPorDiaCentavos(dos), null);
+  assert.equal(diasDeConsumo(uno, 30), 30);
+  assert.equal(diasDeConsumo(dos, 30), 60);
+  assert.equal(costoPorDiaCentavos(dos, 30), 62);
+});
+
+test("producto TESTO-GH: 60 cápsulas, sin composición inventada", () => {
+  assert.equal(PRODUCTO.nombre, "TESTO-GH");
+  assert.equal(PRODUCTO.capsulasPorFrasco, 60);
+  assert.equal(dos.capsulas, 120);
+  assert.equal(PRODUCTO.ingredientes, null);
+  assert.equal(PRODUCTO.modoDeUso, null);
 });
 
 test("paquete doble preseleccionado y destacado", () => {
@@ -98,7 +108,7 @@ test("mensaje de WhatsApp con todos los datos del pedido", () => {
   for (const parte of [
     "PEDIDO DE PRUEBA", "Pedido: RG-261113-ABCDE", "Fecha: 13/11/2026 14:05", "Nombre: Juan Pérez", "Celular: 099 123 4567",
     "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. Amazonas N24-03 y Colón", "Referencia: Edificio azul",
-    "Cantidad: 2 frascos (60 cápsulas)", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar",
+    "Producto: TESTO-GH Multi Vitamin For Men (60 cápsulas por frasco)", "Cantidad: 2 frascos (120 cápsulas)", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar",
     "Pago: contra entrega",
   ]) assert.ok(m.includes(parte), parte);
 });

@@ -122,13 +122,13 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Quién vende",
         parrafos: [
-          `La tienda revivegrow.ec es operada por ${vendedor}. REVIVE GROW comercializa el producto ${PRODUCTO.nombreCompleto}, fabricado por ${PRODUCTO.fabricante} según su etiqueta. REVIVE GROW no es el fabricante.`,
+          `La tienda revivegrow.ec es operada por ${vendedor}. REVIVE GROW comercializa el producto ${PRODUCTO.nombreCompleto}, de la marca ${PRODUCTO.marca}, fabricado por ${v(PRODUCTO.fabricante, "fabricante o titular según la etiqueta posterior y la Notificación Sanitaria")}. REVIVE GROW no es el fabricante ni el titular de la marca.`,
         ],
       },
       {
         titulo: "Producto",
         parrafos: [
-          `${PRODUCTO.descripcionEtiqueta} Frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas de ${PRODUCTO.mgPorCapsula} mg (contenido neto ${PRODUCTO.contenidoNeto}). ${TIENDA.sanitario.notificacionSanitaria ? `Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.` : `Notificación Sanitaria: ${P("número de Notificación Sanitaria ARCSA verificado")}.`}`,
+          `${PRODUCTO.tipo} (Multi Vitamin For Men, según el envase). Frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas. Composición: ${v(PRODUCTO.ingredientes, "lista de ingredientes y cantidades de la etiqueta posterior")}. ${TIENDA.sanitario.notificacionSanitaria ? `Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.` : `Notificación Sanitaria: ${P("número de Notificación Sanitaria ARCSA verificado")}.`}`,
           "Es un suplemento alimenticio: no es un medicamento y no sustituye una alimentación variada ni un tratamiento médico. Lee la etiqueta, las advertencias y el modo de uso antes de consumirlo.",
         ],
       },
@@ -168,7 +168,7 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Uso del producto",
         parrafos: [
-          `${PRODUCTO.modoDeUso} ${PRODUCTO.publico} No superar la dosis recomendada. No apto para mujeres embarazadas o en período de lactancia ni para niños. Si tomas algún medicamento, consulta a tu médico antes de consumirlo.`,
+          `Modo de uso: ${v(PRODUCTO.modoDeUso, "modo de uso literal de la etiqueta")} No superar la dosis recomendada. No apto para mujeres embarazadas o en período de lactancia ni para niños. Si tomas algún medicamento, consulta a tu médico antes de consumirlo.`,
           "No garantizamos resultados específicos: la respuesta a un suplemento varía de una persona a otra.",
         ],
       },

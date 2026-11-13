@@ -1,5 +1,53 @@
 # Análisis de materiales, afirmaciones y cumplimiento
 
+> **Producto actual: TESTO-GH (GENETICS Nutrition & Business).** La landing se adaptó desde la versión
+> de Maca Negra + L-Arginina (commit `b55c634`, cuyo análisis se conserva más abajo como referencia).
+
+## TESTO-GH — materiales recibidos (`assets-sources/testo-gh/`)
+
+| Archivo | Qué es | Uso |
+|---|---|---|
+| 07-frasco-frontal.webp (1024×1536) | Foto del frasco sobre fondo blanco | Foto principal y oferta, sin modificar |
+| 06-poster-promocional-NO-USAR.webp | Póster con culturista, rayos y afirmaciones | **No se usa** |
+| 08-anuncio-antes-despues-NO-USAR.webp | Antes/después con el frasco pegado | **No se usa** |
+
+### Lo que se puede afirmar con los materiales
+Solo lo que muestra el frente del envase: **TESTO-GH**, marca **GENETICS Nutrition & Business**,
+**Multi Vitamin For Men** (multivitamínico para hombres), **60 cápsulas**. Precios iguales a la versión anterior:
+1 frasco $27,40 · 2 frascos $37,40 (120 cápsulas, ahorro $17,40 / 31,8 %).
+
+### Lo que falta y NO se inventó
+No hay etiqueta posterior: **composición, cantidades, dosis, días por frasco, fabricante, advertencias,
+Notificación Sanitaria y lote/caducidad son desconocidos.** La página lo dice con honestidad y ofrece
+«Pedir foto de la etiqueta» por WhatsApp. Al completar `src/config/producto.ts`, la tabla nutricional,
+el modo de uso, la duración (días por frasco, costo por día) y las advertencias aparecen solos.
+
+### Alertas importantes
+1. **La foto del frasco parece generada por IA:** contiene textos sin sentido («PITASETINE NERIM GRTON»,
+   «INCENDIALE», «Contimae:», sello «GEENTICS»). Pide al proveedor **fotos reales del frasco físico**
+   (frente, laterales, etiqueta posterior, lote y caducidad) antes de vender o anunciar.
+2. **Leyendas del envase:** «Increase Testosterone», «Increase Muscle Mass», «Support Libido»,
+   «Support Sport Strength». Son afirmaciones que no se repiten en la landing y que la etiqueta aprobada por
+   ARCSA debe respaldar; si la Notificación Sanitaria no las incluye, el producto podría no ser comercializable.
+3. **Nombre «GH»:** puede sugerir hormona de crecimiento. Verificar en la composición que no contiene hormonas
+   ni sustancias prohibidas.
+4. **El póster y el antes/después** prometen testosterona, masa muscular, fuerza, libido, «resultados comprobados»
+   y «calidad certificada», sin sustento. El antes/después reutiliza las mismas personas del anuncio de maca
+   (incluso con raíces de maca en la mesa): no son resultados reales de TESTO-GH. No deben usarse en la web
+   ni en anuncios de Meta (además, Meta restringe anuncios de suplementos con antes/después y promesas corporales).
+
+### Copia usada en la landing
+Descriptiva y verificable: «Multivitamínico para hombres», «60 cápsulas», «pensado para hombres con una rutina
+activa» (posicionamiento, sin efecto prometido), formato práctico, oferta x2, pago contra entrega.
+Evitado: testosterona, masa muscular, fuerza, rendimiento, libido, energía, resultados, certificaciones.
+
+Las verificaciones de producto están en `VERIFICACION_PRODUCTO` (`src/config/producto.ts`) y bloquean
+el paso a «operativa» junto con el resto de pendientes (`npm run check:launch`).
+
+---
+
+# Referencia: versión anterior (Maca Negra + L-Arginina)
+
 ## 1. Materiales recibidos (copias sin modificar en `assets-sources/maca-negra/`)
 
 | Archivo | Qué es | Uso |
@@ -49,7 +97,7 @@ Alternativa elegida: una sección visual de **rutina diaria** (desayuno / almuer
 ## 6. Requisitos antes de vender (lista de `npm run check:launch`)
 1. **ARCSA:** verificar en la consulta pública de ARCSA el número de Notificación Sanitaria del producto, su titular y su vigencia; confirmar que la comercialización por un tercero está permitida y conservar la factura de compra al proveedor.
 2. **Publicidad:** revisar los textos con la normativa ARCSA vigente para suplementos alimenticios (Resolución ARCSA-DE-028-2016-YMIH y su reforma ARCSA-DE-2026-021-DASP, que entra en vigencia seis meses después de su publicación) — no se pudo consultar el texto oficial desde este entorno.
-3. **Lote:** confirmar caducidad del lote en venta.
+3. **Producto:** fotos reales, composición, dosis, advertencias, fabricante y caducidad del lote (ver alertas de TESTO-GH).
 4. **Datos del vendedor:** razón social, RUC, domicilio y horario (páginas legales y pie).
 5. **Envío y pago:** empresa de mensajería, cobertura, costo, plazo, intentos de entrega y formas de pago al recibir.
 6. **Tributario:** si los precios incluyen IVA y qué comprobante se emite.

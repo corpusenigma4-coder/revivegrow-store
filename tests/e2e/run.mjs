@@ -60,14 +60,14 @@ try {
     return { ctx, page, errores };
   };
 
-  await prueba("Inicio en móvil: producto, precios, ahorro y sin desbordamiento", async () => {
+  await prueba("Inicio en móvil: TESTO-GH, precios, ahorro y sin desbordamiento", async () => {
     const { ctx, page, errores } = await nuevaPagina();
     await page.goto(BASE + "/");
-    await assert.doesNotReject(page.waitForSelector("h1:has-text('Maca Negra + L-Arginina')"));
+    await assert.doesNotReject(page.waitForSelector("h1:has-text('TESTO-GH')"));
     const texto = await page.textContent("body");
-    for (const t of ["$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "1000 mg", "207 mg", "40 mg", "266 %", "10 días", "20 días", "$1,87 por día"])
+    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "Pedir foto de la etiqueta"])
       assert.ok(texto.includes(t), `falta «${t}»`);
-    for (const prohibido of ["testosterona", "+ MÚSCULO", "30 días", "garantizado", "cura "])
+    for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso", "maca"])
       assert.ok(!texto.toLowerCase().includes(prohibido.toLowerCase()), `texto no permitido: «${prohibido}»`);
     assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true, "2 frascos preseleccionado");
     const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -108,13 +108,13 @@ try {
     await page.click("[data-btn-revisar]");
     await page.waitForSelector("[data-paso='2']:not([hidden])");
     const resumen = await page.textContent("[data-paso='2']");
-    for (const t of ["2 frascos (60 cápsulas)", "$37,40", "Por confirmar", "$37,40 + envío por confirmar", "Carlos Andrade", "099 876 5432", "Quito, Pichincha"])
+    for (const t of ["2 frascos (120 cápsulas)", "TESTO-GH Multi Vitamin For Men", "$37,40", "Por confirmar", "$37,40 + envío por confirmar", "Carlos Andrade", "099 876 5432", "Quito, Pichincha"])
       assert.ok(resumen.includes(t), `resumen sin «${t}»`);
     assert.equal(await page.locator("[data-confirmar]").isHidden(), true, "sin servidor no hay botón de confirmar");
     const href = await page.getAttribute("[data-enviar-wa]", "href");
     assert.ok(href.startsWith("https://wa.me/593960702682?text="));
     const msg = decodeURIComponent(href.split("text=")[1]);
-    for (const t of ["PEDIDO DE PRUEBA", "Pedido: RG-", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Cantidad: 2 frascos", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar", "Fecha: "])
+    for (const t of ["PEDIDO DE PRUEBA", "Pedido: RG-", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Producto: TESTO-GH", "Cantidad: 2 frascos (120 cápsulas)", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar", "Fecha: "])
       assert.ok(msg.includes(t), `mensaje sin «${t}»`);
     await page.screenshot({ path: `${OUT}/movil-revision.png` });
     const [popup] = await Promise.all([ctx.waitForEvent("page"), page.click("[data-enviar-wa]")]);
@@ -184,22 +184,21 @@ try {
     await ctx.close();
   });
 
-  await prueba("WhatsApp flotante y visor de etiqueta", async () => {
+  await prueba("WhatsApp flotante y solicitud de foto de la etiqueta", async () => {
     const { ctx, page } = await nuevaPagina();
     await page.goto(BASE + "/");
     const href = await page.getAttribute(".fab", "href");
     assert.ok(href.startsWith("https://wa.me/593960702682?text="));
-    const b = page.locator("[data-ampliar]").first();
-    await b.evaluate((el) => el.scrollIntoView({ block: "center" }));
-    await b.click();
-    await page.waitForSelector("#dlg-imagen[open] img[src*='etiqueta']");
-    await page.screenshot({ path: `${OUT}/movil-visor-etiqueta.png` });
+    assert.match(decodeURIComponent(href), /TESTO-GH/);
+    const et = await page.getAttribute("a:has-text('Pedir foto de la etiqueta')", "href");
+    assert.match(decodeURIComponent(et), /etiqueta posterior de TESTO-GH/);
     await ctx.close();
   });
 
   await prueba("Escritorio: diseño a dos columnas y diálogo centrado", async () => {
     const { ctx, page, errores } = await nuevaPagina({ viewport: { width: 1366, height: 860 } });
     await page.goto(BASE + "/");
+    await page.waitForFunction(() => [...document.querySelectorAll(".hero__media img")].every((i) => i.complete && i.naturalWidth > 0));
     await page.screenshot({ path: `${OUT}/escritorio-inicio.png` });
     await revelarTodo(page);
     await page.screenshot({ path: `${OUT}/escritorio-completa.png`, fullPage: true });

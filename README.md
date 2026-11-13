@@ -1,6 +1,6 @@
 # REVIVE GROW Ecuador — landing de venta contra entrega
 
-Landing de **Maca Negra + L-Arginina 600 mg** (30 cápsulas) para Ecuador: español, USD, pago contra entrega,
+Landing de **TESTO-GH Multi Vitamin For Men** (GENETICS Nutrition & Business, 60 cápsulas) para Ecuador: español, USD, pago contra entrega,
 pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudflare Pages**.
 
 > **Estado: vista previa.** `noindex`, aviso visible y pedidos marcados como PRUEBA hasta completar los
@@ -9,8 +9,10 @@ pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudfla
 ## Oferta
 | Paquete | Precio | Detalle |
 |---|---|---|
-| 2 frascos (destacado, preseleccionado) | **$37,40** | $18,70 c/u · ahorro real $17,40 (31,8 %) frente a 2 × $27,40 = $54,80 · 20 días |
-| 1 frasco | $27,40 | 10 días (dosis de etiqueta: 3 cápsulas/día) |
+| 2 frascos (destacado, preseleccionado) | **$37,40** | 120 cápsulas · $18,70 c/u · ahorro real $17,40 (31,8 %) frente a 2 × $27,40 = $54,80 |
+| 1 frasco | $27,40 | 60 cápsulas |
+
+> Composición, dosis y advertencias de TESTO-GH aún no están disponibles (falta la etiqueta posterior): se completan en `src/config/producto.ts`. La versión anterior para Maca Negra + L-Arginina está en el commit `b55c634`.
 
 ## Uso
 ```bash
@@ -23,7 +25,7 @@ npm run check:launch  # pendientes antes del lanzamiento
 ## Dónde se edita
 - `src/config/tienda.ts` — precios, envío, pago, datos del vendedor, estado, píxel de Meta.
 - `src/config/inventario.ts` — unidades reales disponibles (nunca bajan solas).
-- `src/config/producto.ts` — ficha transcrita de la etiqueta.
+- `src/config/producto.ts` — ficha del producto (solo datos visibles en el envase) y verificaciones pendientes.
 - `src/data/faq.ts`, `src/data/legal.ts` — preguntas y páginas legales (`{{P:…}}` = dato pendiente).
 
 ## Arquitectura
