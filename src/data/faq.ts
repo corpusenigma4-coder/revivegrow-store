@@ -1,35 +1,62 @@
-/** Questions fréquentes — réponses factuelles, sans allégation de santé. */
-export const FAQ = [
+import { TIENDA } from "../config/tienda.ts";
+import { PRODUCTO, DIAS_POR_FRASCO } from "../config/producto.ts";
+import { formatoUSD } from "../lib/pedido.ts";
+
+const envio = TIENDA.envio;
+
+/** Preguntas frecuentes. El HTML permitido es solo <a> y <strong> escritos aquí. */
+export const FAQ: { p: string; r: string }[] = [
   {
-    q: "Comment régler la hauteur de l’oreiller ?",
-    a: "Ouvrez la housse, puis ajoutez ou retirez un ou deux inserts de 3&nbsp;cm placés sous le noyau. Vous obtenez trois hauteurs&nbsp;: 8, 11 ou 14&nbsp;cm. Refermez ensuite la housse, noyau bien à plat.",
+    p: "¿Qué es exactamente este producto?",
+    r: `${PRODUCTO.descripcionEtiqueta} Cada frasco trae ${PRODUCTO.capsulasPorFrasco} cápsulas de ${PRODUCTO.mgPorCapsula} mg. Está dirigido a hombres mayores de 19 años, según su etiqueta.`,
   },
   {
-    q: "Les deux cadeaux sont-ils vraiment inclus ?",
-    a: "Oui. Le masque de sommeil et la boîte de bandelettes nasales sont livrés avec l’oreiller, dans la même commande et sans supplément. Vous n’avez rien à ajouter au panier&nbsp;: le prix affiché est celui des trois articles.",
+    p: "¿Cómo se toma?",
+    r: `Según la etiqueta: <strong>1 cápsula tres veces al día, después de las principales comidas</strong> (desayuno, almuerzo y cena). No superes la dosis recomendada.`,
   },
   {
-    q: "Quels sont les délais et frais de livraison ?",
-    a: "La livraison est offerte en France métropolitaine. Votre commande arrive sous 3 à 5 jours ouvrés, les trois articles dans le même colis. Détails sur la <a href=\"/livraison\">politique de livraison</a>.",
+    p: "¿Cuánto me dura un frasco?",
+    r: `Con la dosis de la etiqueta (3 cápsulas al día), un frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas rinde <strong>${DIAS_POR_FRASCO} días</strong>. El paquete de 2 frascos rinde <strong>${DIAS_POR_FRASCO * 2} días</strong>.`,
   },
   {
-    q: "Que couvre la garantie de 90 jours ?",
-    a: "Il s’agit d’une garantie commerciale «&nbsp;satisfait ou remboursé&nbsp;» qui s’ajoute à vos droits légaux sans les remplacer&nbsp;: droit de rétractation de 14 jours et garantie légale de conformité de 2 ans. Conditions détaillées sur la page <a href=\"/garantie-90-jours\">Garantie 90 jours</a>.",
+    p: "¿Qué resultados puedo esperar?",
+    r: "Es un suplemento alimenticio que complementa tu alimentación; no es un medicamento y no promete resultados específicos. La respuesta a cualquier suplemento varía de una persona a otra. Si buscas tratar una condición de salud, consulta a un médico.",
   },
   {
-    q: "Les bandelettes nasales empêchent-elles de ronfler ?",
-    a: "Nous ne l’affirmons pas. Les bandelettes se posent à l’extérieur du nez et écartent mécaniquement les ailes du nez. Ce n’est pas un traitement. En cas de gêne respiratoire ou de ronflements persistants, demandez conseil à un professionnel de santé.",
+    p: "¿Quién no debe tomarlo?",
+    r: "Según la etiqueta, no es apto para mujeres embarazadas o en período de lactancia ni para niños. Si tomas algún medicamento, consulta a tu médico antes de consumirlo. Contiene lactosa.",
   },
   {
-    q: "Pourquoi deux cadeaux sont-ils inclus ?",
-    a: "C’est notre offre spéciale Pré-Black Friday&nbsp;: pendant cette période, le masque de sommeil et les bandelettes nasales accompagnent l’oreiller, sans supplément. Ils sont ajoutés automatiquement à votre commande.",
+    p: "¿Cómo funciona el pago contra entrega?",
+    r: "Haces tu pedido aquí sin pagar nada. Te confirmamos el pedido y el total por WhatsApp, y <strong>pagas cuando recibes el producto</strong>. No pedimos tarjeta ni datos bancarios.",
   },
   {
-    q: "Comment vous contacter ?",
-    a: "Par e-mail à <a href=\"mailto:corpusenigma4@gmail.com\">corpusenigma4@gmail.com</a> ou depuis la page <a href=\"/contact\">Contact</a>. Nous vous répondons personnellement.",
+    p: "¿Cuánto cuesta el envío?",
+    r:
+      envio.costoCentavos === null
+        ? "Te informamos el costo exacto de envío a tu ciudad por WhatsApp <strong>antes de despachar</strong>. Solo enviamos el pedido cuando aceptas el total final."
+        : envio.costoCentavos === 0
+          ? "El envío es gratis."
+          : `El envío cuesta ${formatoUSD(envio.costoCentavos)}${Object.keys(envio.porProvincia).length ? " (algunas provincias tienen tarifa especial)" : ""}. Lo verás en el resumen antes de confirmar.`,
   },
   {
-    q: "Comment puis-je payer ?",
-    a: "Cliquez sur «&nbsp;Obtenir l’offre&nbsp;», vérifiez votre commande, indiquez votre e-mail et votre adresse, puis payez avec PayPal ou par carte bancaire (débit ou crédit) via le formulaire sécurisé de PayPal, lorsque PayPal le propose. Le total, 32,40&nbsp;€ TTC livraison comprise, est affiché avant le paiement. Aucun compte à créer, aucun numéro de téléphone obligatoire. Nous n’avons jamais accès à vos données bancaires.",
+    p: "¿Cuánto tarda en llegar?",
+    r: envio.plazo
+      ? `El plazo estimado es de ${envio.plazo}, desde que confirmamos tu pedido.`
+      : "Depende de tu ciudad. Te confirmamos el plazo estimado por WhatsApp al confirmar tu pedido.",
+  },
+  {
+    p: "¿Puedo devolverlo?",
+    r: 'Sí, con el frasco cerrado y el sello intacto, dentro del plazo legal. Si recibes un producto dañado, equivocado o con el sello roto, lo cambiamos sin costo. Revisa la <a href="/devoluciones/">política de cambios y devoluciones</a>.',
+  },
+  {
+    p: "¿Quién fabrica el producto y quién lo vende?",
+    r: `Según la etiqueta, lo elabora y distribuye <strong>${PRODUCTO.fabricante}</strong>. REVIVE GROW es la tienda que lo comercializa en línea; no somos el fabricante.`,
   },
 ];
+
+if (TIENDA.sanitario.notificacionSanitaria)
+  FAQ.push({
+    p: "¿Tiene Notificación Sanitaria?",
+    r: `Sí. Notificación Sanitaria ARCSA: <strong>${TIENDA.sanitario.notificacionSanitaria}</strong>.`,
+  });

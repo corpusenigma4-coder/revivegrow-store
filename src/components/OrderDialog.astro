@@ -1,0 +1,159 @@
+---
+/** Formulario de pedido contra entrega en 3 pasos (datos → revisar → enviar). Lógica: src/scripts/pedido.ts */
+import { PAQUETES, PAQUETE_INICIAL, TIENDA } from "../config/tienda";
+import { PROVINCIAS } from "../lib/provincias";
+import { ahorroPaquete, formatoUSD } from "../lib/pedido";
+import Icon from "./Icon.astro";
+---
+<dialog class="sheet" id="dlg-pedido" aria-labelledby="dlg-titulo">
+  <div class="sheet__panel">
+    <div class="sheet__head">
+      <div>
+        <h2 id="dlg-titulo">Pedido con pago al recibir</h2>
+        <div class="sheet__steps" aria-label="Pasos del pedido">
+          <span data-indicador="1" aria-current="step">1. Datos</span><span aria-hidden="true">›</span>
+          <span data-indicador="2">2. Revisar</span><span aria-hidden="true">›</span>
+          <span data-indicador="3">3. Enviar</span>
+        </div>
+      </div>
+      <button type="button" class="icon-btn" data-cerrar aria-label="Cerrar el pedido"><Icon name="close" /></button>
+    </div>
+
+    <!-- PASO 1 -->
+    <form id="form-pedido" class="sheet__view" data-paso="1" novalidate>
+      <div class="sheet__body">
+        <fieldset class="seg" data-campo="paquete">
+          <legend>Paquete</legend>
+          {PAQUETES.map((p) => (
+            <label>
+              <input type="radio" name="paquete-dialogo" value={p.id} checked={p.id === PAQUETE_INICIAL} data-paquete />
+              <span>
+                <b>{p.nombre} · {formatoUSD(p.precioCentavos)}</b>
+                {p.capsulas} cápsulas
+                {ahorroPaquete(p).ahorroCentavos > 0 && <em>Ahorras {formatoUSD(ahorroPaquete(p).ahorroCentavos)}</em>}
+              </span>
+            </label>
+          ))}
+          <p class="field__error" id="e-paquete" role="alert"></p>
+        </fieldset>
+        <p class="pack-note" data-aviso-paquete hidden></p>
+
+        <div class="field" data-campo="nombre">
+          <label for="f-nombre">Nombre y apellido</label>
+          <input class="input" id="f-nombre" name="nombre" autocomplete="name" autocapitalize="words" maxlength="80" required aria-describedby="e-nombre" />
+          <p class="field__error" id="e-nombre"></p>
+        </div>
+        <div class="field" data-campo="celular">
+          <label for="f-celular">Número de celular</label>
+          <input class="input" id="f-celular" name="celular" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="09XXXXXXXX" maxlength="20" required aria-describedby="h-celular e-celular" />
+          <span class="hint" id="h-celular">Te escribiremos a este número por WhatsApp para confirmar.</span>
+          <p class="field__error" id="e-celular"></p>
+        </div>
+        <div class="row-2">
+          <div class="field" data-campo="provincia">
+            <label for="f-provincia">Provincia</label>
+            <select class="input" id="f-provincia" name="provincia" autocomplete="address-level1" required aria-describedby="h-envio e-provincia">
+              <option value="">Elige…</option>
+              {PROVINCIAS.map((p) => <option value={p} disabled={TIENDA.envio.sinCobertura.includes(p)}>{p}</option>)}
+            </select>
+            <p class="field__error" id="e-provincia"></p>
+          </div>
+          <div class="field" data-campo="ciudad">
+            <label for="f-ciudad">Ciudad o cantón</label>
+            <input class="input" id="f-ciudad" name="ciudad" autocomplete="address-level2" autocapitalize="words" maxlength="60" required aria-describedby="e-ciudad" />
+            <p class="field__error" id="e-ciudad"></p>
+          </div>
+        </div>
+        <span class="hint small" id="h-envio" data-envio-hint>Elige tu provincia para ver el costo de envío.</span>
+        <div class="field" data-campo="direccion">
+          <label for="f-direccion">Dirección</label>
+          <input class="input" id="f-direccion" name="direccion" autocomplete="street-address" maxlength="160" placeholder="Calle principal, secundaria y número" required aria-describedby="e-direccion" />
+          <p class="field__error" id="e-direccion"></p>
+        </div>
+        <div class="field" data-campo="referencia">
+          <label for="f-referencia">Referencia de entrega</label>
+          <textarea class="input" id="f-referencia" name="referencia" maxlength="160" rows="2" placeholder="Ej.: casa blanca de dos pisos, frente a la tienda Don Pepe" required aria-describedby="e-referencia"></textarea>
+          <p class="field__error" id="e-referencia"></p>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="f-empresa">No completar</label>
+          <input id="f-empresa" name="empresa_web" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="field" data-campo="acepta">
+          <label class="check">
+            <input type="checkbox" id="f-acepta" name="acepta" required aria-describedby="e-acepta" />
+            <span>Acepto los <a class="link" href="/terminos/" target="_blank">términos y condiciones</a> y la <a class="link" href="/privacidad/" target="_blank">política de privacidad</a>. Mis datos se usan solo para gestionar y entregar este pedido.</span>
+          </label>
+          <p class="field__error" id="e-acepta"></p>
+        </div>
+      </div>
+      <div class="sheet__foot">
+        <button type="submit" class="btn btn--cta btn--block" data-btn-revisar>Revisar mi pedido <Icon name="arrow" size={20} /></button>
+        <p class="small" style="text-align:center"><Icon name="lock" size={14} class="inline-icon" /> Sin tarjeta ni datos bancarios: pagas al recibir.</p>
+      </div>
+    </form>
+
+    <!-- PASO 2 -->
+    <div class="sheet__view" data-paso="2" hidden>
+      <div class="sheet__body">
+        <div class="summary">
+          <dl data-resumen-pedido></dl>
+        </div>
+        <div class="summary">
+          <h3>Entrega</h3>
+          <dl data-resumen-entrega></dl>
+        </div>
+        <div class="alert alert--warn" data-alerta-envio hidden>
+          <Icon name="info" size={20} />
+          <span data-alerta-envio-texto></span>
+        </div>
+        <div class="alert alert--info" data-alerta-modo hidden>
+          <Icon name="whatsapp" size={20} />
+          <span>Se abrirá WhatsApp con tu pedido ya escrito. <strong>Para completarlo debes pulsar «Enviar» en WhatsApp.</strong></span>
+        </div>
+        <div class="alert alert--error" data-error-envio role="alert" hidden></div>
+        <div data-turnstile></div>
+      </div>
+      <div class="sheet__foot">
+        <button type="button" class="btn btn--cta btn--block" data-confirmar hidden>
+          <span class="btn-stack">Confirmar pedido<span class="sub">Pagas al recibir</span></span>
+        </button>
+        <a class="btn btn--wa btn--block" data-enviar-wa href="#" target="_blank" rel="noopener" hidden>
+          <Icon name="whatsapp" size={22} /> <span class="btn-stack">Enviar pedido por WhatsApp<span class="sub">Pagas al recibir</span></span>
+        </a>
+        <button type="button" class="btn btn--ghost btn--block" data-volver><Icon name="edit" size={18} /> Corregir datos</button>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="sheet__view" data-paso="3" hidden>
+      <div class="sheet__body">
+        <div class="result" data-resultado="ok" hidden tabindex="-1">
+          <span class="result__icon result__icon--ok"><Icon name="checkCircle" size={34} /></span>
+          <h3>¡Pedido registrado!</h3>
+          <p>Número de pedido</p>
+          <p class="num" data-numero></p>
+          <p class="muted">Te escribiremos por WhatsApp al <strong data-celular></strong> para confirmar el total con envío y coordinar la entrega. Pagas cuando recibas el producto.</p>
+          <a class="btn btn--wa btn--block" data-wa-respaldo href="#" target="_blank" rel="noopener" hidden>
+            <Icon name="whatsapp" size={22} /> Enviarnos también tu pedido por WhatsApp
+          </a>
+        </div>
+        <div class="result" data-resultado="wa" hidden tabindex="-1">
+          <span class="result__icon result__icon--wa"><Icon name="whatsapp" size={34} /></span>
+          <h3>Falta un paso</h3>
+          <p class="muted">Tu pedido <strong>aún no nos ha llegado</strong>. En WhatsApp revisa el mensaje y pulsa <strong>«Enviar»</strong>. Solo así quedará registrado.</p>
+          <p class="num" data-numero></p>
+          <a class="btn btn--wa btn--block" data-wa-reabrir href="#" target="_blank" rel="noopener"><Icon name="whatsapp" size={22} /> Abrir WhatsApp otra vez</a>
+          <p class="small">¿No se abrió? Escríbenos al WhatsApp <strong>{TIENDA.whatsapp.visible}</strong> e indica tu número de pedido.</p>
+        </div>
+      </div>
+      <div class="sheet__foot">
+        <button type="button" class="btn btn--ghost btn--block" data-cerrar>Volver a la página</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+<style>
+  .sheet__view { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+  .inline-icon { display: inline-block; vertical-align: -2px; }
+</style>

@@ -1,0 +1,29 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
+const e = TIENDA.empresa;
+const pend = (t: string) => `<mark class="pendiente">Pendiente: ${t}</mark>`;
+---
+<Base title="Contacto · REVIVE GROW Ecuador" description="Contacta con REVIVE GROW por WhatsApp para consultas, pedidos y postventa." secundaria>
+  <article class="container narrow legal">
+    <h1>Contacto</h1>
+    <p>La forma más rápida de comunicarte con nosotros es WhatsApp: consultas sobre el producto, estado de tu pedido, cambios y devoluciones.</p>
+    <p style="margin-block:1.5rem">
+      <a class="btn btn--wa" href={enlaceWhatsApp(MENSAJE_CONSULTA)} target="_blank" rel="noopener" data-evento="Contact">
+        <Icon name="whatsapp" /> WhatsApp {TIENDA.whatsapp.visible}
+      </a>
+    </p>
+    <h2>Horario de atención</h2>
+    <p set:html={e.horarioAtencion ?? pend("horario de atención")} />
+    <h2>Datos del vendedor</h2>
+    <ul>
+      <li set:html={`Nombre o razón social: ${e.razonSocial ?? pend("razón social según el RUC")}`} />
+      <li set:html={`RUC: ${e.ruc ?? pend("número de RUC")}`} />
+      <li set:html={`Domicilio: ${e.domicilio ?? pend("domicilio")}`} />
+      {e.correo && <li>Correo: <a href={`mailto:${e.correo}`}>{e.correo}</a></li>}
+    </ul>
+    <h2>Reclamos</h2>
+    <p>Si tienes un reclamo sobre tu pedido, escríbenos por WhatsApp indicando tu número de pedido. Como consumidor, también puedes acudir a la Defensoría del Pueblo del Ecuador.</p>
+  </article>
+</Base>

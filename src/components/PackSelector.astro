@@ -1,0 +1,40 @@
+---
+/**
+ * Selector de paquetes (radios nativos, accesible sin JavaScript).
+ * Varios selectores en la página se sincronizan con src/scripts/pedido.ts.
+ */
+import { PAQUETES, PAQUETE_INICIAL } from "../config/tienda";
+import { ahorroPaquete, costoPorDiaCentavos, diasDeConsumo, formatoPorcentaje, formatoUSD } from "../lib/pedido";
+import Icon from "./Icon.astro";
+interface Props { grupo: string; titulo?: string }
+const { grupo, titulo = "Elige tu paquete" } = Astro.props;
+---
+<fieldset class="packs" data-packs>
+  <legend>{titulo}</legend>
+  {PAQUETES.map((p) => {
+    const a = ahorroPaquete(p);
+    return (
+      <label class:list={["pack", { "pack--featured": p.destacado }]}>
+        <input type="radio" name={`paquete-${grupo}`} value={p.id} checked={p.id === PAQUETE_INICIAL} data-paquete />
+        <span class="pack__card">
+          {p.cinta && <span class="pack__ribbon"><Icon name="tag" size={13} /> {p.cinta}</span>}
+          <span class="pack__radio" aria-hidden="true"></span>
+          <span class="pack__name">{p.nombre}</span>
+          <span class="pack__price">
+            {a.ahorroCentavos > 0 && <span class="pack__save">AHORRA {formatoUSD(a.ahorroCentavos)}</span>}
+            <strong>{formatoUSD(p.precioCentavos)}</strong>
+            <small>{p.frascos > 1 ? `${formatoUSD(a.precioPorFrascoCentavos)} c/u` : "precio por frasco"}</small>
+          </span>
+          <span class="pack__meta">{p.capsulas} cápsulas · {diasDeConsumo(p)} días de uso*</span>
+          {a.ahorroCentavos > 0 && (
+            <span class="pack__deal">
+              <s>Por separado: {p.frascos} × {formatoUSD(a.porSeparadoCentavos / p.frascos)} = {formatoUSD(a.porSeparadoCentavos)}</s>
+              <b>Ahorras {formatoUSD(a.ahorroCentavos)} ({formatoPorcentaje(a.porcentaje)})</b>
+              <span class="small">Sale a {formatoUSD(costoPorDiaCentavos(p))} por día</span>
+            </span>
+          )}
+        </span>
+      </label>
+    );
+  })}
+</fieldset>

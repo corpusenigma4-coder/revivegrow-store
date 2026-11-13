@@ -1,56 +1,44 @@
-# REVIVE GROW — tienda online (Francia metropolitana)
+# REVIVE GROW Ecuador — landing de venta contra entrega
 
-Marca premium de descanso. Sitio en **francés de Francia**, precios en **EUR TTC**.
-Dirección creativa: **« Le calme, pensé dans le détail »**.
+Landing de **Maca Negra + L-Arginina 600 mg** (30 cápsulas) para Ecuador: español, USD, pago contra entrega,
+pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudflare Pages**.
 
-> Estado: **Fase 2**, solo vista previa. `noindex` activo, **ningún pago activo** y la producción (`main` / GitHub Pages) intacta.
+> **Estado: vista previa.** `noindex`, aviso visible y pedidos marcados como PRUEBA hasta completar los
+> requisitos sanitarios y comerciales (`npm run check:launch`). Ver [docs/CUMPLIMIENTO.md](docs/CUMPLIMIENTO.md).
 
-## Puesta en marcha
+## Oferta
+| Paquete | Precio | Detalle |
+|---|---|---|
+| 2 frascos (destacado, preseleccionado) | **$37,40** | $18,70 c/u · ahorro real $17,40 (31,8 %) frente a 2 × $27,40 = $54,80 · 20 días |
+| 1 frasco | $27,40 | 10 días (dosis de etiqueta: 3 cápsulas/día) |
 
+## Uso
 ```bash
 npm ci
-npm run dev          # http://localhost:4321
-npm test             # unitarios + build + navegador (Playwright/Chromium)
-npm run check:launch # lista lo que bloquea el lanzamiento
+npm run dev           # http://localhost:4321
+npm test              # unitarias (cálculos, validación, servidor con SQLite) + build + navegador
+npm run check:launch  # pendientes antes del lanzamiento
 ```
+
+## Dónde se edita
+- `src/config/tienda.ts` — precios, envío, pago, datos del vendedor, estado, píxel de Meta.
+- `src/config/inventario.ts` — unidades reales disponibles (nunca bajan solas).
+- `src/config/producto.ts` — ficha transcrita de la etiqueta.
+- `src/data/faq.ts`, `src/data/legal.ts` — preguntas y páginas legales (`{{P:…}}` = dato pendiente).
 
 ## Arquitectura
-
 | Capa | Elección |
 |---|---|
-| Framework | Astro 7 (estático, islas JS mínimas), TypeScript estricto |
-| Tipografías | Cormorant Garamond (títulos) + Instrument Sans Variable (UI), autoalojadas vía Fontsource |
-| Imágenes | `astro:assets`: AVIF/WebP responsive, generadas en el build |
-| Hosting | **GitHub Pages** (estático, dominio revivegrow.store), publicación manual: `.github/workflows/deploy-pages.yml` |
-| Pagos | Botón alojado de PayPal u API externa: ver `docs/PAIEMENTS-ET-COMMANDES.md` |
-| Contacto | Email directo + formulario Formspree (se activa con `CONTACT.formEndpoint`) |
+| Sitio | Astro 7 estático, CSS propio, ~1 script pequeño; Archivo Variable autoalojada; imágenes AVIF/WebP |
+| Pedidos (A, activo) | WhatsApp con mensaje prellenado; el cliente pulsa «Enviar» (se le indica claramente) |
+| Pedidos (B, preparado) | `functions/api/pedido.ts` (Cloudflare Pages Functions) → D1 + aviso por WhatsApp Cloud API oficial |
+| Seguridad | Cabeceras CSP/HSTS (`public/_headers`), trampa anti-bots, límite por IP, anti-duplicados, Turnstile opcional |
+| Pruebas | `tests/unit` (node:test) y `tests/e2e/run.mjs` (Playwright, iPhone 13 y escritorio) |
 
-```
-src/
-  config/      site.ts · campaign.ts (fechas reales, hora de París) · product.ts (specs con verified:false)
-  lib/         campaign.ts (fases, cuenta atrás, testeado) · format.ts (precios/fechas FR)
-  components/  Header, CampaignBar, Countdown, BuyBox, PackList, HeightConfigurator, PillowPlan,
-               Gallery, SupplierProof, Services, Faq, StickyBuy, Button, Price, Pending, Icon, Logo
-  layouts/     Base.astro (SEO, OG, robots, fase de campaña antes del primer render)
-  pages/       index · oreiller-cervical-ajustable · [legal] (9 páginas) · systeme · 404
-  data/        faq.ts · legal.ts
-assets-sources/  imágenes originales entregadas (sin modificar)
-tests/unit       campaña y formatos (node:test)
-tests/e2e        Playwright: páginas, enlaces, campaña con reloj simulado, interacciones, capturas
-scripts/         launch-check.mjs
-docs/            PLAN-MAESTRO.md
-```
+Configuración de Cloudflare, D1, WhatsApp y Turnstile: [docs/CONFIGURACION.md](docs/CONFIGURACION.md).
 
-## Reglas de honestidad comercial (aplicadas en código y en tests)
-
-- Sin precio tachado ni «−40 %» mientras `CAMPAIGN.referencePrice.evidence` sea `null` (art. L112-1-1 C. conso).
-- Campaña configurable en `src/config/campaign.ts`: `enabled` la activa o desactiva; sin `endsAt` se muestra «durée limitée» sin fecha ni cuenta atrás; con `endsAt` aparecen la fecha real y la cuenta atrás, que se para al final.
-- Sin stock inventado, sin compradores ficticios, sin opiniones inventadas.
-- Las cifras 4,9/5 y +3.000 clientes se atribuyen al fabricante, sin datos estructurados `AggregateRating`.
-- Toda especificación no confirmada lleva `verified: false` y se muestra como «À confirmer» en la vista previa.
-
-## Copias de seguridad (F0)
-
-- Rama `archive/mini-dreams` → `1db5c44` (estado de `main` antes de REVIVE GROW).
-- Rama `archive/revivegrow-uk` → `d1581ac` (tienda original del deshumidificador).
-- El historial completo se conserva; esta rama solo retira los archivos de Mini Dreams de su árbol de trabajo.
+## Historial
+Este repositorio contenía la tienda francesa anterior de REVIVE GROW (almohada cervical, PayPal, GitHub Pages).
+Sigue intacta en la rama `main` (commit `9c5e974`) y en el historial; sus imágenes y documentos se conservan en
+`assets-sources/archivo-tienda-fr/` y `docs/archivo-tienda-fr/`. Los flujos de publicación en GitHub Pages y el
+diagnóstico de PayPal se retiraron de esta rama para no publicar la nueva landing en el dominio anterior.

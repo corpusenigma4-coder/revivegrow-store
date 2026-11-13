@@ -1,81 +1,105 @@
 ---
-import "@fontsource/cormorant-garamond/500.css";
-import "@fontsource/cormorant-garamond/500-italic.css";
-import "@fontsource/cormorant-garamond/600.css";
-import "@fontsource-variable/instrument-sans/wght.css";
-import "../styles/tokens.css";
-import "../styles/base.css";
-import { SITE } from "../config/site";
-import { CAMPAIGN } from "../config/campaign";
-import { campaignPhase, offerOpen } from "../lib/campaign";
-import CampaignBar from "../components/CampaignBar.astro";
-import Header from "../components/Header.astro";
+import "@fontsource-variable/archivo/wdth.css";
+import fuenteLatin from "@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url";
+import "../styles/global.css";
+import { Image } from "astro:assets";
+import logo from "../assets/img/logo.webp";
+import Icon from "../components/Icon.astro";
 import Footer from "../components/Footer.astro";
-import CheckoutHeader from "../components/CheckoutHeader.astro";
-import CheckoutFooter from "../components/CheckoutFooter.astro";
+import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
 
 interface Props {
   title: string;
-  description?: string;
-  image?: string;
-  noindex?: boolean;
+  description: string;
   jsonLd?: Record<string, unknown>[];
-  /** Tunnel de commande : en-tête réduit, sans bandeau ni menu, pied de page minimal. */
-  checkout?: boolean;
+  /** Páginas secundarias: cabecera con enlace de vuelta a la oferta. */
+  secundaria?: boolean;
 }
-const { title, description = SITE.description, image = "/og-revivegrow.jpg", noindex = false, jsonLd = [], checkout = false } = Astro.props;
-const canonical = new URL(Astro.url.pathname.replace(/\.html$/, "").replace(/\/index$/, "/"), SITE.url).href;
-const robots = SITE.indexable && !noindex ? "index, follow" : "noindex, nofollow";
-const fullTitle = title.includes("REVIVE GROW") ? title : `${title} · REVIVE GROW`;
-const initialPhase = campaignPhase(Date.now(), CAMPAIGN);
-const org = { "@context": "https://schema.org", "@type": "Organization", name: SITE.name, url: SITE.url };
+const { title, description, jsonLd = [], secundaria = false } = Astro.props;
+const vistaPrevia = TIENDA.estado !== "operativa";
+const canonical = new URL(Astro.url.pathname, TIENDA.url).href;
+const ogImage = new URL("/og-revivegrow-ec.jpg", TIENDA.url).href;
+const robots = vistaPrevia ? "noindex, nofollow" : "index, follow";
+const pixel = TIENDA.metaPixelId;
 ---
 <!doctype html>
-<html lang="fr-FR" data-phase={initialPhase} data-offer={offerOpen(initialPhase) ? "open" : "closed"}>
+<html lang="es-EC">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>{fullTitle}</title>
+    <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#F7F3EC" />
+    <meta name="theme-color" content="#f6f1e9" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={fuenteLatin} as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale" content="es_EC" />
     <meta property="og:site_name" content="REVIVE GROW" />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(image, SITE.url).href} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Frasco de Maca Negra + L-Arginina, 30 cápsulas de 600 mg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script is:inline define:vars={{ on: CAMPAIGN.enabled, s: CAMPAIGN.startsAt ? Date.parse(CAMPAIGN.startsAt) : null, e: CAMPAIGN.endsAt ? Date.parse(CAMPAIGN.endsAt) : null }}>
-      (function (d) {
-        d.classList.add("js");
-        var n = Date.now(), closed = !on || (e !== null && n > e) || (s !== null && n < s);
-        if (closed) { d.dataset.offer = "closed"; d.dataset.phase = !on ? "off" : (e !== null && n > e) ? "ended" : "upcoming"; }
-      })(document.documentElement);
-    </script>
-    {[org, ...jsonLd].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+    {pixel && (
+      /* Píxel de Meta: solo se inserta si TIENDA.metaPixelId tiene un valor. Sin coincidencias avanzadas (no se envían datos personales). */
+      <script is:inline define:vars={{ pixel }}>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', pixel); fbq('track', 'PageView');
+      </script>
+    )}
   </head>
   <body>
-    <a class="skip-link" href="#contenu">Aller au contenu</a>
-    {checkout ? <CheckoutHeader /> : <><CampaignBar /><Header /></>}
-    <main id="contenu">
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    {vistaPrevia && (
+      <div class="preview-bar" role="note">
+        <strong>Vista previa.</strong> La tienda aún no está habilitada para ventas: los pedidos enviados se marcan como PRUEBA.
+      </div>
+    )}
+    <header class="header">
+      <div class="container header__in">
+        <a class="header__logo" href="/" aria-label="REVIVE GROW, inicio">
+          <Image src={logo} alt="REVIVE GROW" height={40} widths={[167, 334]} sizes="167px" loading="eager" />
+        </a>
+        <div class="header__right">
+          {secundaria ? (
+            <a class="header__wa" href="/#oferta"><Icon name="tag" size={18} /> Ver la oferta</a>
+          ) : (
+            <span class="header__cod"><Icon name="cash" size={20} /> Pagas al recibir</span>
+          )}
+          <a class="header__wa" href={enlaceWhatsApp(MENSAJE_CONSULTA)} target="_blank" rel="noopener" data-evento="Contact" aria-label="Escríbenos por WhatsApp">
+            <Icon name="whatsapp" size={20} /> <span>WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </header>
+    <main id="contenido">
       <slot />
     </main>
-    {checkout ? <CheckoutFooter /> : <Footer />}
-    <slot name="after" />
+    <Footer />
+    <slot name="despues" />
     <script>
-      import "../scripts/campaign-client";
       const els = document.querySelectorAll("[data-reveal]");
       if ("IntersectionObserver" in window && els.length) {
-        const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-          if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
-        }), { rootMargin: "0px 0px -8% 0px" });
+        document.documentElement.classList.add("reveal");
+        const io = new IntersectionObserver(
+          (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); } }),
+          { rootMargin: "0px 0px -6% 0px" },
+        );
         els.forEach((el) => io.observe(el));
       } else els.forEach((el) => el.classList.add("is-visible"));
+      document.addEventListener("click", (ev) => {
+        const a = (ev.target as Element).closest<HTMLElement>("[data-evento]");
+        const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+        if (a && w.fbq) w.fbq("track", a.dataset.evento);
+      });
     </script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-name: REVIVE GROW — Qualité
+name: REVIVE GROW — Calidad
 on:
   push:
     branches: [main, 'claude/**', 'feat/**']
@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   quality:
-    name: Tests unitaires, build et navigateur
+    name: Pruebas unitarias, build y navegador
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -18,19 +18,19 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Tests unitaires (campagne, formats)
+      - name: Pruebas unitarias (cálculos, pedidos, servidor)
         run: npm run test:unit
-      - name: Build de production
+      - name: Build de producción
         run: npm run build
-      - name: Navigateur Chromium
+      - name: Navegador Chromium
         run: npx playwright install --with-deps chromium
-      - name: Tests navigateur + captures
+      - name: Pruebas de navegador + capturas
         run: npm run test:e2e
-      - name: Rapport avant lancement (informatif en phase 1)
+      - name: Pendientes antes del lanzamiento (informativo)
         run: npm run check:launch || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: captures-revivegrow
+          name: capturas-revivegrow
           path: screenshots/
           if-no-files-found: ignore

@@ -1,447 +1,236 @@
 /**
- * Tests navigateur (Playwright + Chromium) sur le build de production, servi comme GitHub Pages.
- * Usage : npm run build && npm run test:e2e   (captures dans screenshots/ ; SHOTS=0 pour les désactiver)
+ * Pruebas en navegador (Chromium/Playwright) sobre el build de producción (`astro preview`).
+ * Verifica: precios y cálculos visibles, selector de paquetes, formulario (validación, revisión,
+ * WhatsApp prellenado y modalidad servidor simulada), botón de WhatsApp, páginas legales,
+ * ausencia de desbordamiento horizontal en móvil y capturas de pantalla.
  */
-import { mkdirSync, readFileSync, existsSync } from "node:fs";
-import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdirSync } from "node:fs";
 import { chromium, devices } from "playwright";
-import { startPagesServer } from "./pages-server.mjs";
+import assert from "node:assert/strict";
 
-const PORT = 4321;
+const PORT = 4329;
 const BASE = `http://127.0.0.1:${PORT}`;
-const PAGES = ["/", "/oreiller-cervical-ajustable", "/commande/", "/contact", "/mentions-legales", "/cgv", "/livraison", "/retours", "/garantie-90-jours",
-  "/garanties-legales", "/retractation", "/confidentialite", "/cookies", "/systeme"];
-const SHOTS = process.env.SHOTS !== "0";
-mkdirSync("screenshots", { recursive: true });
+const OUT = process.env.SCREENSHOTS_DIR ?? "screenshots";
+mkdirSync(OUT, { recursive: true });
 
-const server = await startPagesServer("dist", PORT);
-let failures = 0, passes = 0;
-async function t(name, fn) {
-  try { await fn(); passes++; console.log("  ✓", name); }
-  catch (e) { failures++; console.error("  ✗", name, "\n    ", String(e.message).split("\n").slice(0, 5).join("\n     ")); }
+const server = spawn("npx", ["astro", "preview", "--port", String(PORT), "--host", "127.0.0.1"], { stdio: "pipe" });
+const listo = async () => {
+  for (let i = 0; i < 60; i++) {
+    try { if ((await fetch(BASE)).ok) return; } catch {}
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw new Error("El servidor de vista previa no arrancó");
+};
+
+let fallos = 0;
+const prueba = async (nombre, fn) => {
+  try { await fn(); console.log(`✔ ${nombre}`); }
+  catch (e) { fallos++; console.error(`✖ ${nombre}\n  ${e.stack?.split("\n").slice(0, 4).join("\n  ")}`); }
+};
+
+const datos = {
+  nombre: "Carlos Andrade", celular: "099 876 5432", provincia: "Pichincha", ciudad: "Quito",
+  direccion: "Av. 6 de Diciembre N34-12 y Portugal", referencia: "Edificio gris, junto a la panadería",
+};
+async function revelarTodo(page) {
+  for (let y = 0; y < 20000; y += 600) { await page.evaluate((v) => window.scrollTo(0, v), y); await page.waitForTimeout(60); }
+  await page.waitForTimeout(700);
+}
+async function llenar(page) {
+  await page.fill("#f-nombre", datos.nombre);
+  await page.fill("#f-celular", datos.celular);
+  await page.selectOption("#f-provincia", datos.provincia);
+  await page.fill("#f-ciudad", datos.ciudad);
+  await page.fill("#f-direccion", datos.direccion);
+  await page.fill("#f-referencia", datos.referencia);
+  await page.check("#f-acepta");
 }
 
-const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
-const iphone = { ...devices["iPhone 13"], locale: "fr-FR", timezoneId: "Europe/Paris" };
-const android = { ...devices["Pixel 7"], locale: "fr-FR", timezoneId: "Europe/Paris" };
-const desktop = { viewport: { width: 1440, height: 900 }, locale: "fr-FR", timezoneId: "Europe/Paris" };
-
-console.log("GitHub Pages");
-await t("dist/CNAME = revivegrow.store, .nojekyll présent, aucun dossier « _ »", async () => {
-  assert.equal(readFileSync("dist/CNAME", "utf8").trim(), "revivegrow.store");
-  assert.ok(existsSync("dist/.nojekyll"));
-  assert.ok(!existsSync("dist/_astro"));
-  assert.ok(existsSync("dist/404.html"));
-});
-await t("URL sans extension et page 404 servies comme sur GitHub Pages", async () => {
-  assert.equal((await fetch(BASE + "/contact")).status, 200);
-  assert.equal((await fetch(BASE + "/page-inexistante")).status, 404);
-});
-
-console.log("Pages");
-for (const path of PAGES) {
-  await t(`${path} : statut, langue, h1 unique, noindex, sans erreur, sans débordement à 360 px`, async () => {
-    const ctx = await browser.newContext({ ...iphone, viewport: { width: 360, height: 780 } });
+try {
+  await listo();
+  const browser = await chromium.launch();
+  const movil = { ...devices["iPhone 13"] };
+  const nuevaPagina = async (ctxOpts = movil) => {
+    const ctx = await browser.newContext({ ...ctxOpts, locale: "es-EC" });
     const page = await ctx.newPage();
-    const errors = [];
-    page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console", (m) => { if (m.type() === "error" && !(m.location()?.url || "").includes("paypal.com")) errors.push(m.text()); });
-    page.on("requestfailed", (r) => { if (!r.url().startsWith("https://www.paypal.com/")) errors.push("échec de chargement : " + r.url()); });
-    await page.route("https://www.paypal.com/**", (r) => r.abort());
-    const res = await page.goto(BASE + path, { waitUntil: "networkidle" });
-    assert.equal(res.status(), 200);
-    assert.equal(await page.getAttribute("html", "lang"), "fr-FR");
-    assert.equal(await page.locator("h1").count(), 1, "un seul h1");
-    assert.match(await page.getAttribute('meta[name="robots"]', "content"), /noindex/);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    assert.ok(overflow <= 0, `débordement horizontal de ${overflow}px`);
-    assert.equal(await page.locator("img:not([alt])").count(), 0, "images sans alt");
-    assert.deepEqual(errors, []);
-    await ctx.close();
-  });
-}
+    const errores = [];
+    page.on("pageerror", (e) => errores.push(e.message));
+    page.on("console", (m) => { if (m.type() === "error" && !/api\/pedido/.test(m.text()) && !/404/.test(m.text())) errores.push(m.text()); });
+    return { ctx, page, errores };
+  };
 
-await t("liens et ressources internes : tous résolus (200)", async () => {
-  const ctx = await browser.newContext(desktop); const page = await ctx.newPage();
-  const urls = new Set();
-  for (const p of PAGES) {
-    await page.goto(BASE + p);
-    for (const h of await page.$$eval("a[href^='/'], link[href^='/'], img[src^='/'], source[srcset]", (els) =>
-      els.flatMap((el) => el.tagName === "SOURCE" ? el.getAttribute("srcset").split(",").map((x) => x.trim().split(" ")[0]) : [el.getAttribute("href") || el.getAttribute("src")]))) {
-      if (h && h.startsWith("/")) urls.add(h.split("#")[0] || "/");
-    }
-  }
-  for (const u of urls) { const r = await fetch(BASE + u); assert.equal(r.status, 200, `${u} → ${r.status}`); }
-  await ctx.close();
-});
-
-console.log("Offre et honnêteté");
-await t("offre active en continu, sans date ni compte à rebours", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.goto(BASE + "/");
-  assert.equal(await page.locator("[data-countdown]").count(), 0);
-  const body = await page.locator("body").innerText();
-  assert.match(body, /Offre spéciale Pré-Black Friday/i);
-  assert.ok(!/jusqu’au \d/.test(body), "date de fin affichée sans configuration");
-  assert.equal(await page.getAttribute("html", "data-offer"), "open");
-  await ctx.close();
-});
-await t("aucun prix barré, aucun pourcentage, aucun stock restant ; 32,40 € et livraison offerte", async () => {
-  const ctx = await browser.newContext(desktop); const page = await ctx.newPage();
-  await page.goto(BASE + "/");
-  const body = await page.locator("body").innerText();
-  assert.ok(!/−\s?40|-\s?40\s?%/.test(body), "pourcentage affiché");
-  assert.ok(!/(il reste|plus que|derniers? articles?|en stock)/i.test(body), "mention de stock");
-  assert.equal(await page.locator(".price__ref").count(), 0);
-  assert.match(body, /32,40 €/);
-  assert.match(body, /Livraison gratuite/i);
-  await ctx.close();
-});
-await t("politiques : pages en français, mentions manquantes signalées, aucune donnée inventée", async () => {
-  for (const p of ["/cgv", "/mentions-legales", "/retours"]) {
-    const r = await (await fetch(BASE + p)).text();
-    assert.match(r, /À compléter/);
-  }
-});
-const MOCK_SDK = `
-  window.__orders = [];
-  window.paypal = { FUNDING: { PAYPAL: "paypal", CARD: "card" }, Buttons(opts) {
-    return { isEligible() { return true; }, render(sel) {
-      const b = document.createElement("button"); b.type = "button"; b.textContent = "MOCK " + opts.fundingSource; b.dataset.mock = opts.fundingSource;
-      b.onclick = async () => {
-        const actions = { restart() {}, order: {
-          create: (o) => { window.__orders.push(o); return Promise.resolve("ORDER-1"); },
-          capture: () => Promise.resolve({ id: "ORDER-1", status: "COMPLETED", purchase_units: [{ payments: { captures: [{ id: "CAP-1", status: "COMPLETED", amount: { currency_code: "EUR", value: "32.40" } }] } }] })
-        } };
-        const id = await opts.createOrder({}, actions); await opts.onApprove({ orderID: id }, actions);
-      };
-      document.querySelector(sel).appendChild(b); return Promise.resolve();
-    } };
-  } };`;
-
-console.log("Tunnel « Obtenir l’offre »");
-for (const [label, opts] of [["iPhone SE", { ...devices["iPhone SE"], locale: "fr-FR" }], ["iPhone 13", iphone], ["Android", android], ["ordinateur", desktop]]) {
-  await t(`${label} : « Obtenir l’offre » visible dès le premier écran, avec le prix et les cadeaux, et mène à /commande/`, async () => {
-    const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
+  await prueba("Inicio en móvil: producto, precios, ahorro y sin desbordamiento", async () => {
+    const { ctx, page, errores } = await nuevaPagina();
     await page.goto(BASE + "/");
-    const cta = page.locator("[data-hero] [data-cta='offre']");
-    assert.equal((await cta.textContent()).trim(), "Obtenir l’offre");
-    assert.equal(await cta.getAttribute("href"), "/commande/");
-    const box = await cta.boundingBox(); const vh = page.viewportSize().height;
-    assert.ok(box && box.y + box.height <= vh, `bouton hors du premier écran (${Math.round(box?.y ?? -1)} / ${vh})`);
-    const hero = await page.locator("[data-hero]").innerText();
-    assert.match(hero, /32,40 €/); assert.match(hero, /2 cadeaux offerts/i); assert.match(hero, /PayPal/); assert.match(hero, /Carte bancaire/i);
+    await assert.doesNotReject(page.waitForSelector("h1:has-text('Maca Negra + L-Arginina')"));
+    const texto = await page.textContent("body");
+    for (const t of ["$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "1000 mg", "207 mg", "40 mg", "266 %", "10 días", "20 días", "$1,87 por día"])
+      assert.ok(texto.includes(t), `falta «${t}»`);
+    for (const prohibido of ["testosterona", "+ MÚSCULO", "30 días", "garantizado", "cura "])
+      assert.ok(!texto.toLowerCase().includes(prohibido.toLowerCase()), `texto no permitido: «${prohibido}»`);
+    assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true, "2 frascos preseleccionado");
+    const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    assert.ok(ancho <= 0, `desbordamiento horizontal de ${ancho}px`);
+    assert.equal(await page.getAttribute("meta[name=robots]", "content"), "noindex, nofollow");
+    await page.screenshot({ path: `${OUT}/movil-inicio.png` });
+    await revelarTodo(page);
+    await page.screenshot({ path: `${OUT}/movil-completa.png`, fullPage: true });
+    assert.deepEqual(errores, []);
     await ctx.close();
   });
-}
-await t("aucun libellé « Commander le pack », « Voir le pack », « Découvrir l’offre »", async () => {
-  for (const p of ["/", "/oreiller-cervical-ajustable", "/commande/"]) {
-    const html = await (await fetch(BASE + p)).text();
-    assert.ok(!/Commander le pack|Voir le pack|Découvrir l’offre|Découvrir le pack|Voir l’offre/.test(html), p);
-  }
-});
-await t("tous les boutons d’achat (en-tête, hero, offre, fiche, barre mobile) mènent directement à /commande/", async () => {
-  for (const p of ["/", "/oreiller-cervical-ajustable"]) {
-    const html = await (await fetch(BASE + p)).text();
-    const hrefs = [...html.matchAll(/<a[^>]*data-cta="offre"[^>]*>/g)].map((m) => (m[0].match(/href="([^"]+)"/) || [])[1]);
-    assert.ok(hrefs.length >= 2, p); assert.ok(hrefs.every((h) => h === "/commande/"), `${p} : ${hrefs}`);
-  }
-});
-const MOCK_HOSTED = `window.__hosted = [];
-  window.paypal = { HostedButtons(o) { window.__hosted.push(o); return { render(sel) { const b = document.createElement("div"); b.dataset.mock = "hosted"; b.textContent = "MOCK hosted"; document.querySelector(sel).appendChild(b); return Promise.resolve(); } }; } };`;
-const FULL_MODE = /clientId:\s*"[^"]+"/.test(readFileSync("src/config/commerce.ts", "utf8").split("paypalButtons")[1] || "");
-await t("parcours : « Obtenir l’offre » → Commande → Suivant → Livraison → Suivant → Paiement (bouton hébergé SZCKF3B62AX6A)", async () => {
-  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
-  const sdk = [];
-  await page.route("https://www.paypal.com/sdk/**", (r) => { sdk.push(r.request().url()); r.fulfill({ contentType: "text/javascript", body: FULL_MODE ? MOCK_SDK : MOCK_HOSTED }); });
-  await page.goto(BASE + "/");
-  await page.locator("[data-hero] [data-cta='offre']").click();
-  await page.waitForURL(/\/commande\/$/);
-  const s1 = page.locator("[data-step='commande']");
-  const t1 = await s1.innerText();
-  for (const re of [/Votre commande/, /Pack Sommeil REVIVE GROW/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /Offertes/i, /1 pack/, /Gratuite/i, /32,40 €/]) assert.match(t1, re);
-  assert.equal(await s1.locator("button").count(), 1);
-  assert.equal((await s1.locator("button").textContent()).trim(), "Suivant");
-  assert.equal(await page.locator("input[type=tel], [name*=phone], [name*=tel]").count(), 0, "téléphone demandé");
-  await s1.locator("button").click();
-  if (FULL_MODE) {
-    let formsubmit = 0;
-    await page.route("https://formsubmit.co/**", (r) => { formsubmit++; r.abort(); });
-    const s2 = page.locator("[data-step='livraison']");
-    await s2.waitFor();
-    await s2.locator("button[type=submit]").click();
-    assert.equal(await page.locator("[data-err='email']").isVisible(), true, "validation e-mail");
-    await page.fill("#co-email", "marie@example.fr"); await page.fill("#co-name", "Marie Durand");
-    await page.fill("#co-address1", "12 rue des Lilas"); await page.fill("#co-postal", "69003"); await page.fill("#co-city", "Lyon");
-    await s2.locator("button[type=submit]").click();
-    const s3 = page.locator("[data-step='paiement']");
-    await s3.waitFor();
-    const t3 = await s3.innerText();
-    assert.match(t3, /Total à payer\u00A0:\s*32,40\u00A0€/);
-    assert.match(t3, /12 rue des Lilas, 69003 Lyon, France/);
-    await page.locator("[data-mock='paypal']").waitFor();
-    assert.equal(await page.locator("[data-mock='card']").count(), 1);
-    assert.match(sdk[0], /client-id=BAAQ-8n51AMovSQJMduZqWI5bu7ey6YdzkXHePhKeqSIIzkxH37XKZmzIWFFXQeoXaoOhGR0tXEvtFEE0w&components=buttons/);
-    await page.locator("[data-mock='card']").click();
-    await page.locator("[data-step='confirmation']").waitFor();
-    const order = await page.evaluate(() => window.__orders[0]);
-    const u = order.purchase_units[0];
-    assert.equal(order.payer.email_address, "marie@example.fr");
-    assert.equal(u.amount.value, "32.40"); assert.equal(u.amount.breakdown.shipping.value, "0.00");
-    assert.deepEqual(u.shipping.address, { address_line_1: "12 rue des Lilas", admin_area_2: "Lyon", postal_code: "69003", country_code: "FR" });
-    assert.equal(order.application_context.shipping_preference, "SET_PROVIDED_ADDRESS");
-    assert.match(await page.locator("[data-step='confirmation']").innerText(), /Merci, votre commande est confirmée[\s\S]*RG-[\s\S]*CAP-1/);
-    assert.equal(formsubmit, 0, "aucun service tiers : les données partent uniquement avec la commande PayPal");
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    assert.ok(overflow <= 0);
-    await ctx.close();
-    return;
-  }
-  const sent = [];
-  await page.route("https://formsubmit.co/**", (r) => { sent.push(JSON.parse(r.request().postData() || "{}")); r.fulfill({ contentType: "application/json", body: '{"success":"true"}' }); });
-  // Étape 2 — livraison
-  const s2 = page.locator("[data-step='livraison']");
-  await s2.waitFor();
-  assert.equal(await page.locator("#co-email").getAttribute("inputmode"), "email");
-  await s2.locator("button[type=submit]").click();
-  assert.equal(await page.locator("[data-err='email']").isVisible(), true, "validation e-mail");
-  await page.fill("#co-email", "marie@example.fr"); await page.fill("#co-name", "Marie Durand");
-  await page.fill("#co-address1", "12 rue des Lilas"); await page.fill("#co-postal", "69003"); await page.fill("#co-city", "Lyon");
-  await s2.locator("button[type=submit]").click();
-  // Étape 3 — paiement
-  const s3 = page.locator("[data-step='paiement']");
-  await s3.waitFor();
-  assert.equal(sent.length, 1, "coordonnées transmises au vendeur");
-  assert.equal(sent[0]["E-mail"], "marie@example.fr"); assert.equal(sent[0]["Adresse"], "12 rue des Lilas");
-  assert.equal(sent[0]["Code postal"], "69003"); assert.equal(sent[0]["Ville"], "Lyon"); assert.equal(sent[0]["Pays"], "France");
-  assert.match(sent[0]["Référence"], /^RG-/);
-  const t3 = await s3.innerText();
-  assert.match(t3, /Total à payer :\s*32,40 €/);
-  assert.match(t3, /12 rue des Lilas, 69003 Lyon, France/);
-  assert.match(t3, /Référence de commande : RG-/);
-  await page.locator("[data-mock='hosted']").waitFor();
-  assert.equal(await page.evaluate(() => window.__hosted[0].hostedButtonId), "SZCKF3B62AX6A");
-  assert.match(sdk[0], /client-id=BAADEUfdEuuHimsc_A7p393C8mMrLLqiuSAoQT_ffCMJ0mfNs_Vn5nXVEExDk-DrZJfJIEhv1BmPniL3Pw&components=hosted-buttons&disable-funding=venmo&currency=EUR&locale=fr_FR$/);
-  // Aller-retour : pas de second envoi si rien ne change, données conservées
-  await s3.locator("button", { hasText: "Retour" }).click();
-  await s2.waitFor();
-  assert.equal(await page.locator("#co-city").inputValue(), "Lyon");
-  await s2.locator("button[type=submit]").click();
-  await s3.waitFor();
-  assert.equal(sent.length, 1);
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  assert.ok(overflow <= 0);
-  await ctx.close();
-});
-await t("paiement indisponible : message clair, aucune fausse confirmation ; pas de barre fixe dans le tunnel", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.route("https://www.paypal.com/**", (r) => r.abort());
-  await page.goto(BASE + "/commande/");
-  assert.equal(await page.locator("[data-sticky], .cbar, .hdr__nav").count(), 0);
-  await page.route("https://formsubmit.co/**", (r) => r.abort());
-  await page.locator("[data-step='commande'] button").click();
-  for (const [id, v] of [["#co-email", "a@b.fr"], ["#co-name", "A B"], ["#co-address1", "1 rue X"], ["#co-postal", "75001"], ["#co-city", "Paris"]]) await page.fill(id, v);
-  await page.locator("[data-step='livraison'] button[type=submit]").click();
-  await page.locator("[data-step='paiement']").waitFor(); // l'échec d'envoi ne bloque jamais l'achat
-  const err = page.locator("[data-pay-error]");
-  await err.waitFor({ state: "visible", timeout: 8000 });
-  assert.match(await err.textContent(), /n’a pas pu se charger/);
-  assert.equal(await page.locator("[data-step='confirmation']").isVisible(), false);
-  await ctx.close();
-});
-await t("le bloc d’achat montre le contenu, le prix et la livraison gratuite avant le paiement", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.route("https://www.paypal.com/**", (r) => r.abort());
-  await page.goto(BASE + "/oreiller-cervical-ajustable");
-  const box = await page.locator("#commander").innerText();
-  for (const re of [/Pack Sommeil REVIVE GROW/, /32,40\u00A0€/, /Oreiller cervical ergonomique ajustable/, /Masque de sommeil premium/, /Bandelettes nasales premium/, /OFFERT/i, /Livraison gratuite/i, /3 à 5 jours ouvrés/, /Obtenir l’offre/]) assert.match(box, re);
-  const payTop = await page.locator("#paiement").evaluate((el) => el.getBoundingClientRect().top);
-  const priceTop = await page.locator("#commander .price").evaluate((el) => el.getBoundingClientRect().top);
-  assert.ok(priceTop < payTop, "le prix précède le paiement");
-  await ctx.close();
-});
 
-console.log("Comparateur avant / après");
-for (const [label, dev] of [["iPhone", iphone], ["Android", android]]) {
-  await t(`${label} : glisser au doigt révèle progressivement l’image`, async () => {
-    const ctx = await browser.newContext({ ...dev, reducedMotion: "reduce" }); const page = await ctx.newPage();
-    await page.goto(BASE + "/#difference");
-    const frame = page.locator("[data-ba-frame]").first();
-    await frame.scrollIntoViewIfNeeded();
-    const box = await frame.boundingBox();
-    const y = box.y + box.height / 2;
-    const cdp = await ctx.newCDPSession(page);
-    const touch = (type, x) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" ? [] : [{ x, y }] });
-    await touch("touchStart", box.x + box.width * 0.5);
-    for (let i = 1; i <= 8; i++) await touch("touchMove", box.x + box.width * (0.5 - i * 0.05));
-    await touch("touchEnd");
-    await page.waitForTimeout(100);
-    const now = Number(await page.locator("[data-ba-handle]").first().getAttribute("aria-valuenow"));
-    assert.ok(now >= 5 && now <= 15, `position attendue ≈ 10, obtenue ${now}`);
-    const clip = await page.locator(".ba__after").first().evaluate((el) => getComputedStyle(el).clipPath);
-    assert.match(clip, /inset\(0px 0px 0px/);
-    await ctx.close();
-  });
-}
-await t("clavier : flèches, Origine, Fin", async () => {
-  const ctx = await browser.newContext({ ...desktop, reducedMotion: "reduce" }); const page = await ctx.newPage();
-  await page.goto(BASE + "/");
-  const h = page.locator("[data-ba-handle]").first();
-  await h.focus();
-  await page.keyboard.press("ArrowRight"); await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(50);
-  assert.equal(await h.getAttribute("aria-valuenow"), "54");
-  await page.keyboard.press("Home"); await page.waitForTimeout(50);
-  assert.equal(await h.getAttribute("aria-valuenow"), "0");
-  await page.keyboard.press("End"); await page.waitForTimeout(50);
-  assert.equal(await h.getAttribute("aria-valuenow"), "100");
-  await ctx.close();
-});
-await t("images avant/après superposées exactement (mêmes dimensions affichées)", async () => {
-  for (const dev of [iphone, desktop]) {
-    const ctx = await browser.newContext(dev); const page = await ctx.newPage();
+  await prueba("Selector de paquetes sincronizado (sin cambios automáticos)", async () => {
+    const { ctx, page } = await nuevaPagina();
     await page.goto(BASE + "/");
-    const boxes = await page.locator("[data-ba-frame] .ba__img").evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map(Math.round).join(","); }));
-    assert.equal(boxes.length, 2); assert.equal(boxes[0], boxes[1]);
+    await page.click("label:has(input[name='paquete-hero'][value='uno'])");
+    assert.equal(await page.locator("input[name='paquete-oferta'][value='uno']").isChecked(), true);
+    assert.equal(await page.locator("input[name='paquete-dialogo'][value='uno']").isChecked(), true);
+    assert.equal((await page.textContent("#comprar [data-sel-precio]")).trim(), "$27,40");
+    await page.mouse.wheel(0, 2500);
+    await page.waitForSelector("[data-sticky][data-visible]");
+    assert.equal((await page.textContent("[data-sticky] [data-sel-precio]")).trim(), "$27,40");
+    await page.screenshot({ path: `${OUT}/movil-barra-fija.png` });
     await ctx.close();
-  }
-});
+  });
 
-console.log("Anatomie");
-await t("repères posés sur la photo, alignés à 360, 390 et 1440 px", async () => {
-  for (const vp of [{ width: 360, height: 780 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
-    const ctx = await browser.newContext({ viewport: vp, locale: "fr-FR", reducedMotion: "reduce" }); const page = await ctx.newPage();
-    await page.goto(BASE + "/#forme");
-    const res = await page.locator("[data-ana]").first().evaluate((root) => {
-      const f = root.querySelector(".ana__frame").getBoundingClientRect();
-      return Array.from(root.querySelectorAll(".ana__pin")).map((p) => {
-        const r = p.getBoundingClientRect(); const cx = r.x + r.width / 2, cy = r.y + r.height / 2;
-        return { n: p.dataset.pt, x: ((cx - f.x) / f.width) * 100, y: ((cy - f.y) / f.height) * 100, w: r.width };
-      });
+  await prueba("Pedido sin servidor: validación, revisión y WhatsApp prellenado (modalidad A)", async () => {
+    const { ctx, page, errores } = await nuevaPagina();
+    await page.goto(BASE + "/");
+    await page.click("#comprar [data-abrir-pedido]");
+    await page.waitForSelector("#dlg-pedido[open]");
+    await page.click("[data-btn-revisar]");
+    for (const c of ["nombre", "celular", "provincia", "ciudad", "direccion", "referencia", "acepta"])
+      assert.ok(await page.locator(`[data-campo='${c}'][data-error]`).count(), `sin error en ${c}`);
+    await page.screenshot({ path: `${OUT}/movil-formulario-errores.png` });
+    await llenar(page);
+    assert.match(await page.textContent("[data-envio-hint]"), /Por confirmar/);
+    await page.click("[data-btn-revisar]");
+    await page.waitForSelector("[data-paso='2']:not([hidden])");
+    const resumen = await page.textContent("[data-paso='2']");
+    for (const t of ["2 frascos (60 cápsulas)", "$37,40", "Por confirmar", "$37,40 + envío por confirmar", "Carlos Andrade", "099 876 5432", "Quito, Pichincha"])
+      assert.ok(resumen.includes(t), `resumen sin «${t}»`);
+    assert.equal(await page.locator("[data-confirmar]").isHidden(), true, "sin servidor no hay botón de confirmar");
+    const href = await page.getAttribute("[data-enviar-wa]", "href");
+    assert.ok(href.startsWith("https://wa.me/593960702682?text="));
+    const msg = decodeURIComponent(href.split("text=")[1]);
+    for (const t of ["PEDIDO DE PRUEBA", "Pedido: RG-", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Cantidad: 2 frascos", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar", "Fecha: "])
+      assert.ok(msg.includes(t), `mensaje sin «${t}»`);
+    await page.screenshot({ path: `${OUT}/movil-revision.png` });
+    const [popup] = await Promise.all([ctx.waitForEvent("page"), page.click("[data-enviar-wa]")]);
+    await popup.close().catch(() => {});
+    await page.waitForSelector("[data-resultado='wa']:not([hidden])");
+    const final = await page.textContent("[data-paso='3']");
+    assert.ok(final.includes("Falta un paso") && final.includes("aún no nos ha llegado"));
+    assert.ok(!final.includes("Pedido registrado") || (await page.locator("[data-resultado='ok']").isHidden()));
+    await page.screenshot({ path: `${OUT}/movil-falta-un-paso.png` });
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+
+  await prueba("Pedido con servidor simulado (modalidad B): confirmación con número", async () => {
+    const { ctx, page } = await nuevaPagina();
+    let cuerpo = null;
+    await page.route("**/api/pedido", async (route) => {
+      const req = route.request();
+      if (req.method() === "GET") return route.fulfill({ json: { activo: true, notificacionWhatsApp: true, turnstileSiteKey: null } });
+      cuerpo = req.postDataJSON();
+      return route.fulfill({ json: { ok: true, numero: "RG-261113-TEST2", duplicado: false, notificado: true } });
     });
-    const expect = { 1: [50, 52], 2: [84, 48], 3: [50, 22] };
-    assert.equal(res.length, 3);
-    for (const r of res) {
-      assert.ok(Math.abs(r.x - expect[r.n][0]) < 0.6 && Math.abs(r.y - expect[r.n][1]) < 0.6, `repère ${r.n} décalé à ${vp.width}px`);
-      assert.ok(r.w >= 30, "repère trop petit");
-    }
+    await page.goto(BASE + "/");
+    await page.click("#comprar [data-abrir-pedido]");
+    await llenar(page);
+    await page.waitForTimeout(4100);
+    await page.click("[data-btn-revisar]");
+    await page.waitForSelector("[data-confirmar]:not([hidden])");
+    assert.equal(await page.locator("[data-enviar-wa]").isHidden(), true);
+    await page.click("[data-confirmar]");
+    await page.waitForSelector("[data-resultado='ok']:not([hidden])");
+    assert.equal((await page.textContent("[data-resultado='ok'] [data-numero]")).trim(), "RG-261113-TEST2");
+    assert.equal(cuerpo.paquete, "dos");
+    assert.equal(cuerpo.celular, "0998765432");
+    assert.ok(cuerpo.transcurridoMs >= 4000 && cuerpo.clave.length >= 16 && cuerpo.empresa_web === "");
+    assert.equal(await page.locator("[data-wa-respaldo]").isHidden(), true, "notificado: sin botón de respaldo");
+    await page.screenshot({ path: `${OUT}/movil-pedido-registrado.png` });
     await ctx.close();
-  }
-});
-await t("toucher un repère met en évidence le point correspondant", async () => {
-  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
-  await page.goto(BASE + "/#forme");
-  await page.locator(".ana__pin[data-pt='1']").first().tap();
-  await page.waitForTimeout(400);
-  assert.equal(await page.locator(".ana__item[data-pt='1']").first().evaluate((el) => el.classList.contains("is-on")), true);
-  assert.match(await page.locator("[data-ana-live]").first().textContent(), /Creux central/);
-  await ctx.close();
-});
-
-console.log("Galerie et visionneuse");
-await t("galerie du hero : 5 visuels, glisser, miniatures, plein écran avec flèches et Échap", async () => {
-  const ctx = await browser.newContext({ ...iphone, reducedMotion: "reduce" }); const page = await ctx.newPage();
-  await page.route("https://www.paypal.com/**", (r) => r.abort());
-  await page.goto(BASE + "/");
-  await page.waitForTimeout(400);
-  assert.equal(await page.evaluate(() => window.scrollY), 0, "la galerie ne doit pas faire défiler la page au chargement");
-  const g = page.locator("#galerie-accueil");
-  assert.equal(await g.locator(".mg__slide").count(), 5);
-  await g.locator("[data-mg-go='2']").click(); await page.waitForTimeout(300);
-  assert.equal(await g.getAttribute("data-index"), "2");
-  await g.locator("[data-mg-open='2']").click();
-  const dlg = g.locator("[data-mg-dialog]");
-  assert.equal(await dlg.isVisible(), true);
-  await page.waitForTimeout(200);
-  assert.match(await g.locator("[data-mg-count]").textContent(), /^3 \/ 5$/);
-  await page.keyboard.press("ArrowRight"); await page.waitForTimeout(300);
-  assert.match(await g.locator("[data-mg-count]").textContent(), /^4 \/ 5$/);
-  await page.keyboard.press("Escape");
-  assert.equal(await dlg.isVisible(), false);
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  assert.ok(overflow <= 0);
-  await ctx.close();
-});
-await t("logo officiel dans l’en-tête, le tunnel et le pied de page", async () => {
-  for (const p of ["/", "/commande/"]) {
-    const html = await (await fetch(BASE + p)).text();
-    assert.match(html, /src="\/logo-revivegrow\.webp"/, p);
-  }
-  assert.equal((await fetch(BASE + "/logo-revivegrow.webp")).status, 200);
-  assert.equal((await fetch(BASE + "/logo-revivegrow-clair.webp")).status, 200);
-});
-
-console.log("Contact");
-await t("adresse e-mail cliquable ; aucun formulaire non branché affiché", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.goto(BASE + "/contact");
-  assert.equal(await page.locator("a[href^='mailto:corpusenigma4@gmail.com']").count() >= 2, true);
-  assert.equal(await page.locator("[data-form]").count(), 0);
-  await ctx.close();
-});
-
-console.log("Interactions");
-await t("configurateur : 14 cm → 2 inserts, annonce accessible", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.goto(BASE + "/#reglage");
-  const cfg = page.locator("[data-cfg]").first();
-  await cfg.locator("label.cfg__opt", { hasText: "14" }).click();
-  assert.equal(await cfg.getAttribute("data-layers"), "2");
-  assert.match(await cfg.locator("[data-cfg-live]").textContent(), /14 centimètres/);
-  await ctx.close();
-});
-await t("menu mobile : ouverture, fermeture par Échap", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.goto(BASE + "/");
-  await page.locator("[data-menu-open]").click();
-  assert.equal(await page.locator("#menu").isVisible(), true);
-  await page.keyboard.press("Escape");
-  assert.equal(await page.locator("#menu").isVisible(), false);
-  await ctx.close();
-});
-await t("barre d’achat mobile : cachée sur le hero, visible ensuite", async () => {
-  const ctx = await browser.newContext(iphone); const page = await ctx.newPage();
-  await page.goto(BASE + "/");
-  assert.equal(await page.locator("[data-sticky]").evaluate((el) => el.classList.contains("is-on")), false);
-  await page.evaluate(() => { const h = document.querySelector("[data-hero]"); window.scrollTo({ top: h.offsetTop + h.offsetHeight + 300, behavior: "instant" }); }); await page.waitForTimeout(500);
-  assert.equal(await page.locator("[data-sticky]").evaluate((el) => el.classList.contains("is-on")), true);
-  await ctx.close();
-});
-
-if (SHOTS) {
-  console.log("Captures");
-  const prep = async (page) => page.evaluate(async () => {
-    document.querySelectorAll("[data-reveal]").forEach((e) => e.classList.add("is-visible"));
-    document.querySelectorAll("img[loading=lazy]").forEach((i) => { i.loading = "eager"; });
-    for (let y = 0; y < document.body.scrollHeight; y += innerHeight / 2) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
-    scrollTo(0, 0);
-    await Promise.all(Array.from(document.images).map((i) => i.complete && i.naturalWidth ? null : new Promise((r) => { i.onload = i.onerror = r; setTimeout(r, 3000); })));
-    const s = document.querySelector("[data-sticky]"); if (s) s.style.display = "none";
   });
-  for (const [name, opts] of [["mobile", iphone], ["desktop", { ...desktop, deviceScaleFactor: 1 }]]) {
-    for (const [slug, path] of [["accueil", "/"], ["produit", "/oreiller-cervical-ajustable"], ["contact", "/contact"]]) {
-      const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
-      await page.route("https://www.paypal.com/**", (r) => r.abort());
-      await page.goto(BASE + path, { waitUntil: "networkidle" });
-      await prep(page);
-      await page.screenshot({ path: `screenshots/${slug}-${name}-ecran1.png` });
-      await page.screenshot({ path: `screenshots/${slug}-${name}.png`, fullPage: true });
-      await ctx.close();
-    }
-    for (const id of ["difference", "forme", "offre"]) {
-      const ctx = await browser.newContext({ ...opts, reducedMotion: "reduce" }); const page = await ctx.newPage();
-      await page.route("https://www.paypal.com/**", (r) => r.abort());
-      await page.goto(BASE + "/", { waitUntil: "networkidle" });
-      await prep(page);
-      await page.evaluate(() => { const h = document.querySelector("[data-header]"); if (h) h.style.position = "static"; });
-      await page.locator("#" + id).screenshot({ path: `screenshots/section-${id}-${name}.png` });
-      await ctx.close();
-    }
-  }
-  console.log("  → screenshots/");
-}
 
-await browser.close();
-server.close();
-console.log(`\n${passes} réussis, ${failures} en échec`);
-process.exit(failures ? 1 : 0);
+  await prueba("Servidor con error: no se muestra confirmación y se ofrece WhatsApp", async () => {
+    const { ctx, page } = await nuevaPagina();
+    await page.route("**/api/pedido", (route) =>
+      route.request().method() === "GET"
+        ? route.fulfill({ json: { activo: true, turnstileSiteKey: null } })
+        : route.fulfill({ status: 500, json: { ok: false, codigo: "ERROR_GUARDADO" } }));
+    await page.goto(BASE + "/");
+    await page.click("#comprar [data-abrir-pedido]");
+    await llenar(page);
+    await page.click("[data-btn-revisar]");
+    await page.click("[data-confirmar]");
+    await page.waitForSelector("[data-error-envio]:not([hidden])");
+    assert.match(await page.textContent("[data-error-envio]"), /no se ha guardado/);
+    assert.equal(await page.locator("[data-enviar-wa]").isVisible(), true);
+    assert.equal(await page.locator("[data-resultado='ok']").isHidden(), true);
+    await ctx.close();
+  });
+
+  await prueba("Botón atrás de Android cierra el formulario sin salir de la página", async () => {
+    const { ctx, page } = await nuevaPagina();
+    await page.goto(BASE + "/");
+    await page.click("#comprar [data-abrir-pedido]");
+    await page.waitForSelector("#dlg-pedido[open]");
+    await page.goBack();
+    await page.waitForSelector("#dlg-pedido:not([open])", { state: "attached" });
+    assert.equal(new URL(page.url()).pathname, "/");
+    await ctx.close();
+  });
+
+  await prueba("WhatsApp flotante y visor de etiqueta", async () => {
+    const { ctx, page } = await nuevaPagina();
+    await page.goto(BASE + "/");
+    const href = await page.getAttribute(".fab", "href");
+    assert.ok(href.startsWith("https://wa.me/593960702682?text="));
+    const b = page.locator("[data-ampliar]").first();
+    await b.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await b.click();
+    await page.waitForSelector("#dlg-imagen[open] img[src*='etiqueta']");
+    await page.screenshot({ path: `${OUT}/movil-visor-etiqueta.png` });
+    await ctx.close();
+  });
+
+  await prueba("Escritorio: diseño a dos columnas y diálogo centrado", async () => {
+    const { ctx, page, errores } = await nuevaPagina({ viewport: { width: 1366, height: 860 } });
+    await page.goto(BASE + "/");
+    await page.screenshot({ path: `${OUT}/escritorio-inicio.png` });
+    await revelarTodo(page);
+    await page.screenshot({ path: `${OUT}/escritorio-completa.png`, fullPage: true });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.click("#comprar [data-abrir-pedido]");
+    await page.waitForSelector("#dlg-pedido[open]");
+    await page.screenshot({ path: `${OUT}/escritorio-formulario.png` });
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+
+  await prueba("Páginas legales y contacto: cargan, enlaces internos válidos y pendientes visibles", async () => {
+    const { ctx, page } = await nuevaPagina();
+    const visitadas = new Set();
+    for (const ruta of ["/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
+      const r = await page.goto(BASE + ruta);
+      assert.equal(r.status(), 200, ruta);
+      if (ruta !== "/") assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
+      for (const h of await page.$$eval("a[href^='/']", (as) => as.map((a) => a.getAttribute("href").split("#")[0])))
+        if (h && !visitadas.has(h)) { visitadas.add(h); assert.equal((await fetch(BASE + h)).status, 200, `enlace roto ${h}`); }
+    }
+    await page.goto(BASE + "/privacidad/");
+    await page.screenshot({ path: `${OUT}/movil-privacidad.png` });
+    await ctx.close();
+  });
+
+  await browser.close();
+} finally {
+  server.kill();
+  // Astro 7 deja el servidor de vista previa en segundo plano: detenerlo.
+  spawn("npx", ["astro", "preview", "stop"], { stdio: "ignore" });
+}
+console.log(fallos ? `\n${fallos} prueba(s) fallida(s). Capturas en ${OUT}/` : `\nTodas las pruebas de navegador pasaron. Capturas en ${OUT}/`);
+process.exit(fallos ? 1 : 0);

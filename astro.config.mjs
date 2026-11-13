@@ -1,15 +1,12 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 
-// Site 100 % statique, publié sur GitHub Pages avec le domaine personnalisé revivegrow.store.
-// - build.format "file" : /contact → contact.html (GitHub Pages sert les URL sans extension) ;
-// - build.assets "assets" : pas de dossier commençant par « _ » (ignoré par Jekyll) ;
-// - aucune fonction serveur : paiement et commandes passent par des services externes (docs/).
+// Sitio estático (Cloudflare Pages). La recepción de pedidos vive en functions/api/pedido.ts
+// (Cloudflare Pages Functions), que Cloudflare compila aparte: no hace falta adaptador.
 export default defineConfig({
-  site: "https://revivegrow.store",
-  trailingSlash: "always",
-  build: { format: "directory", assets: "assets", inlineStylesheets: "auto" },
+  site: "https://revivegrow.ec",
+  trailingSlash: "ignore",
+  build: { format: "directory", assets: "assets", inlineStylesheets: "always" },
   compressHTML: true,
-  image: { layout: "constrained", responsiveStyles: true },
   devToolbar: { enabled: false },
 });
