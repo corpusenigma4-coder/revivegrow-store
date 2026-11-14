@@ -2,8 +2,12 @@
 import { Image } from "astro:assets";
 import logo from "../assets/img/logo.webp";
 import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
-import { PRODUCTO } from "../config/producto";
+import { CATALOGO, type ProductoVenta } from "../config/catalogo";
 import { ruta } from "../lib/ruta";
+interface Props { producto?: ProductoVenta }
+const { producto } = Astro.props;
+const fichas = producto ? [producto.ficha] : Object.values(CATALOGO).map((p) => p.ficha);
+const mensaje = producto?.mensajeConsulta ?? MENSAJE_CONSULTA;
 const e = TIENDA.empresa;
 const anio = new Date().getFullYear();
 ---
@@ -14,7 +18,7 @@ const anio = new Date().getFullYear();
         <span class="footer__logo"><Image src={logo} alt="REVIVE GROW" height={30} widths={[125, 250]} sizes="125px" /></span>
         <p>Tienda en línea en Ecuador. Pedidos con pago contra entrega y atención por WhatsApp.</p>
         <p>
-          <a href={enlaceWhatsApp(MENSAJE_CONSULTA)} target="_blank" rel="noopener">WhatsApp {TIENDA.whatsapp.visible}</a>
+          <a href={enlaceWhatsApp(mensaje)} target="_blank" rel="noopener">WhatsApp {TIENDA.whatsapp.visible}</a>
           {e.horarioAtencion && <><br />{e.horarioAtencion}</>}
         </p>
       </div>
@@ -34,18 +38,18 @@ const anio = new Date().getFullYear();
           <li>{e.razonSocial ?? <span>REVIVE GROW</span>}</li>
           {e.ruc && <li>RUC {e.ruc}</li>}
           {e.domicilio && <li>{e.domicilio}</li>}
-          <li>Marca del producto: {PRODUCTO.marca}{PRODUCTO.fabricante && ` · Fabricante: ${PRODUCTO.fabricante}`}</li>
+          {fichas.map((f) => <li>{fichas.length > 1 ? `${f.nombre} — marca` : "Marca del producto"}: {f.marca}{f.fabricante && ` · Fabricante: ${f.fabricante}`}</li>)}
           {TIENDA.sanitario.notificacionSanitaria && <li>Notificación Sanitaria: {TIENDA.sanitario.notificacionSanitaria}</li>}
         </ul>
       </div>
     </div>
     <div class="footer__legal">
       <p>
-        {PRODUCTO.nombre} es un suplemento alimenticio para adultos. No es un medicamento y no está destinado a diagnosticar, tratar, curar ni prevenir
-        enfermedades. No reemplaza una alimentación variada y equilibrada ni un estilo de vida saludable. Consulta a tu médico si tomas
+        {producto ? `${producto.ficha.nombre} es un suplemento alimenticio para adultos. No es un medicamento y no está destinado` : "Los productos de esta tienda son suplementos alimenticios para adultos. No son medicamentos y no están destinados"} a diagnosticar, tratar, curar ni prevenir
+        enfermedades. {producto ? "No reemplaza" : "No reemplazan"} una alimentación variada y equilibrada ni un estilo de vida saludable. Consulta a tu médico si tomas
         medicamentos o tienes alguna condición de salud.
       </p>
-      <p>REVIVE GROW comercializa este producto; no es su fabricante ni el titular de la marca. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
+      <p>REVIVE GROW comercializa {producto ? "este producto" : "estos productos"}; no es su fabricante ni el titular de la marca. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
       <p>© {anio} REVIVE GROW · Ecuador</p>
     </div>
   </div>

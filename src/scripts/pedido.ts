@@ -6,15 +6,13 @@
  * Modalidad A (respaldo): sin servidor, se abre WhatsApp con el pedido escrito y se le pide al
  *   cliente que pulse «Enviar». Nunca se muestra «pedido registrado» en esta modalidad.
  */
-import { PAQUETE_INICIAL, TIENDA, enlaceWhatsApp } from "../config/tienda";
-import { INVENTARIO } from "../config/inventario";
+import { TIENDA, enlaceWhatsApp } from "../config/tienda";
+import { PRODUCTO_PREDETERMINADO, productoPorId } from "../config/catalogo";
 import {
   celularVisible, costoEnvio, disponibilidad, fechaCortaEcuador, formatoUSD, mensajePedido, numeroPedido,
   paqueteDisponible, paquetePorId, textoEnvio, textoTotal, totalPedido, validarPedido,
   type Campo, type DatosPedido, type Paquete,
 } from "../lib/pedido";
-import { PAQUETES } from "../config/tienda";
-import { PRODUCTO } from "../config/producto";
 import { ruta } from "../lib/ruta";
 
 type Modo = "servidor" | "whatsapp";
@@ -31,10 +29,14 @@ function rastrear(evento: string, datos?: Record<string, unknown>) {
   if (fbq) fbq("track", evento, datos);
 }
 
-const disp = disponibilidad(INVENTARIO);
+/** Producto de esta landing: <body data-producto="flo">; por defecto, TESTO-GH. */
+const PROD = productoPorId(document.body.dataset.producto) ?? PRODUCTO_PREDETERMINADO;
+const PAQUETES = PROD.paquetes;
+const API = TIENDA.apiPedidos ?? ruta("/api/pedido");
+const disp = disponibilidad(PROD.inventario);
 
 const estado = {
-  paquete: PAQUETE_INICIAL as string,
+  paquete: PROD.paqueteInicial,
   modo: null as Modo | null,
   turnstileSiteKey: null as string | null,
   turnstileToken: "",
@@ -49,7 +51,7 @@ const estado = {
 /* ================================================================ paquetes */
 
 function paqueteActual(): Paquete {
-  return paquetePorId(estado.paquete) ?? PAQUETES[0];
+  return paquetePorId(estado.paquete, PROD) ?? PAQUETES[0];
 }
 
 function fijarPaquete(id: string) {
@@ -70,7 +72,7 @@ document.addEventListener("change", (ev) => {
 
 function aplicarDisponibilidad() {
   $$<HTMLInputElement>("input[data-paquete]").forEach((i) => {
-    const p = paquetePorId(i.value);
+    const p = paquetePorId(i.value, PROD);
     i.disabled = !p || !paqueteDisponible(p, disp);
   });
   const stock = $$("[data-stock]");
@@ -117,7 +119,7 @@ function detectarModo(): Promise<Modo> {
     try {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 3500);
-      const r = await fetch(ruta("/api/pedido"), { headers: { accept: "application/json" }, signal: ctrl.signal, cache: "no-store" });
+      const r = await fetch(API, { headers: { accept: "application/json" }, signal: ctrl.signal, cache: "no-store" });
       clearTimeout(t);
       if (r.ok && (r.headers.get("content-type") ?? "").includes("json")) {
         const j = (await r.json()) as { activo?: boolean; turnstileSiteKey?: string | null };
@@ -219,7 +221,7 @@ form?.addEventListener("input", (ev) => {
 $<HTMLSelectElement>("#f-provincia")?.addEventListener("change", (ev) => {
   const prov = (ev.target as HTMLSelectElement).value;
   const hint = $("[data-envio-hint]");
-  if (hint) hint.textContent = prov ? `Envío a ${prov}: ${textoEnvio(costoEnvio(prov))}.` : "Elige tu provincia para ver el costo de envío.";
+  if (hint) hint.textContent = prov ? `Envío a ${prov}: ${textoEnvio(costoEnvio(prov, PROD.envio))}.` : "Elige tu provincia para ver el costo de envío.";
 });
 
 function leerFormulario() {
@@ -238,7 +240,7 @@ function leerFormulario() {
 
 form?.addEventListener("submit", async (ev) => {
   ev.preventDefault();
-  const v = validarPedido(leerFormulario(), { disponibilidad: disp });
+  const v = validarPedido(leerFormulario(), { disponibilidad: disp, producto: PROD });
   if (!v.ok || !v.paquete) return mostrarErrores(v.errores);
   const btn = $<HTMLButtonElement>("[data-btn-revisar]");
   const textoBtn = btn?.innerHTML ?? "";
@@ -265,13 +267,13 @@ function fila(dt: string, dd: string, clase = "") {
 }
 
 function mensajeWhatsApp(p: Paquete, datos: DatosPedido) {
-  return mensajePedido({ numero: estado.numero, fecha: estado.fecha, datos, paquete: p, prueba: TIENDA.estado !== "operativa" });
+  return mensajePedido({ numero: estado.numero, fecha: estado.fecha, datos, paquete: p, prueba: TIENDA.estado !== "operativa", producto: PROD });
 }
 
 function pintarRevision(p: Paquete, datos: DatosPedido) {
-  const t = totalPedido(p, datos.provincia);
+  const t = totalPedido(p, datos.provincia, PROD.envio);
   $("[data-resumen-pedido]")?.replaceChildren(
-    fila("Producto", PRODUCTO.nombreCompleto),
+    fila("Producto", PROD.ficha.nombreCompleto),
     fila("Cantidad", `${p.nombre} (${p.capsulas} cápsulas)`),
     fila("Precio del paquete", formatoUSD(p.precioCentavos)),
     fila("Envío", t.envio.estado === "definido" ? textoEnvio(t.envio) : "Por confirmar"),
@@ -374,11 +376,12 @@ $("[data-confirmar]")?.addEventListener("click", async () => {
   btn.textContent = "Registrando tu pedido…";
   const fd = new FormData(form!);
   try {
-    const r = await fetch(ruta("/api/pedido"), {
+    const r = await fetch(API, {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({
         ...estado.datos,
+        producto: PROD.id,
         paquete: estado.paquete,
         acepta: true,
         clave: estado.clave,

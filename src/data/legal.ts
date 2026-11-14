@@ -7,6 +7,7 @@
  */
 import { TIENDA } from "../config/tienda.ts";
 import { PRODUCTO } from "../config/producto.ts";
+import { FICHA_FLO, VERIFICACION_FLO } from "../config/producto-flo.ts";
 import { formatoUSD } from "../lib/pedido.ts";
 
 const P = (txt: string) => `{{P:${txt}}}`;
@@ -122,14 +123,15 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Quién vende",
         parrafos: [
-          `La tienda revivegrow.ec es operada por ${vendedor}. REVIVE GROW comercializa el producto ${PRODUCTO.nombreCompleto}, de la marca ${PRODUCTO.marca}, fabricado por ${v(PRODUCTO.fabricante, "fabricante o titular según la etiqueta posterior y la Notificación Sanitaria")}. REVIVE GROW no es el fabricante ni el titular de la marca.`,
+          `La tienda revivegrow.ec es operada por ${vendedor}. REVIVE GROW comercializa los productos ${PRODUCTO.nombreCompleto}, de la marca ${PRODUCTO.marca} (fabricante: ${v(PRODUCTO.fabricante, "fabricante o titular según la etiqueta posterior y la Notificación Sanitaria")}), y ${FICHA_FLO.nombre}, de la marca ${FICHA_FLO.marca} (importador en Ecuador: ${P("importador o titular de la Notificación Sanitaria de FLO")}). REVIVE GROW no es el fabricante ni el titular de las marcas.`,
         ],
       },
       {
-        titulo: "Producto",
+        titulo: "Productos",
         parrafos: [
           `${PRODUCTO.tipo} (Multi Vitamin For Men, según el envase). Frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas. Composición: ${v(PRODUCTO.ingredientes, "lista de ingredientes y cantidades de la etiqueta posterior")}. ${TIENDA.sanitario.notificacionSanitaria ? `Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.` : `Notificación Sanitaria: ${P("número de Notificación Sanitaria ARCSA verificado")}.`}`,
-          "Es un suplemento alimenticio: no es un medicamento y no sustituye una alimentación variada ni un tratamiento médico. Lee la etiqueta, las advertencias y el modo de uso antes de consumirlo.",
+          `${FICHA_FLO.nombreCompleto}: ${FICHA_FLO.tipo.toLowerCase()}, frasco de ${FICHA_FLO.capsulasPorFrasco} cápsulas. Por porción de 3 cápsulas: mio-inositol 2000 mg, DIM 100 mg, D-quiro-inositol 50 mg, folato 680 mcg DFE. Notificación Sanitaria: ${v(VERIFICACION_FLO.notificacionSanitaria, "número de Notificación Sanitaria ARCSA de FLO verificado")}.`,
+          "Son suplementos alimenticios: no son medicamentos y no sustituyen una alimentación variada ni un tratamiento médico. Lee la etiqueta, las advertencias y el modo de uso antes de consumirlo.",
         ],
       },
       {
@@ -137,7 +139,8 @@ export const LEGAL: PaginaLegal[] = [
         parrafos: [
           "Los precios están expresados en dólares de los Estados Unidos (USD) y son los publicados en el sitio al momento del pedido. El ahorro del paquete de 2 frascos se calcula frente a la compra de 2 frascos individuales al precio publicado.",
           iva,
-          textoCostoEnvio,
+          `${PRODUCTO.nombre}: ${textoCostoEnvio}`,
+          `${FICHA_FLO.nombre}: el envío es gratis para la clienta.`,
         ],
       },
       {
@@ -193,7 +196,7 @@ export const LEGAL: PaginaLegal[] = [
             : `Cobertura de entrega con pago contra entrega: ${P("confirmar provincias y ciudades atendidas por la empresa de mensajería")}. Si tu localidad no tiene cobertura, te avisaremos por WhatsApp antes de despachar.`,
         ],
       },
-      { titulo: "Costo de envío", parrafos: [textoCostoEnvio] },
+      { titulo: "Costo de envío", parrafos: [`${PRODUCTO.nombre}: ${textoCostoEnvio}`, `${FICHA_FLO.nombre}: envío totalmente gratis.`] },
       {
         titulo: "Plazos",
         parrafos: [

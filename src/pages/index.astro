@@ -10,6 +10,7 @@ import { PRODUCTO, DIAS_POR_FRASCO, DURACION, textoDuracion } from "../config/pr
 import { ahorroPaquete, formatoUSD, paquetePorId } from "../lib/pedido";
 import { FAQ } from "../data/faq";
 import { ruta } from "../lib/ruta";
+import { CATALOGO } from "../config/catalogo";
 
 const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
@@ -44,7 +45,7 @@ const jsonLd = [
 ];
 const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFormat: "webp" as const, quality: 80, widths: [480, 760, 1024] };
 ---
-<Base title={titulo} description={descripcion} jsonLd={jsonLd}>
+<Base title={titulo} description={descripcion} jsonLd={jsonLd} producto={CATALOGO["testo-gh"]}>
   <!-- ============================================================ HERO + OFERTA -->
   <section class="hero" aria-labelledby="titulo-producto">
     <div class="container hero__grid">

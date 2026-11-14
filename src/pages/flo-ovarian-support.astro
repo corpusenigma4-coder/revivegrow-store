@@ -1,0 +1,411 @@
+---
+/**
+ * Landing de FLO Ovarian Support (O Positiv Health) — /flo-ovarian-support/
+ * Independiente de la landing principal (TESTO-GH): comparte solo el formulario, la lógica de pedidos y el pie.
+ */
+import "@fontsource-variable/fraunces/wght.css";
+import "@fontsource-variable/fraunces/wght-italic.css";
+import fuenteSerif from "@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url";
+import "../styles/flo.css";
+import { Picture, getImage } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PackSelector from "../components/PackSelector.astro";
+import OrderDialog from "../components/OrderDialog.astro";
+import frasco from "../assets/img/flo/frasco.jpg";
+import capsula from "../assets/img/flo/capsula.png";
+import ingredientesImg from "../assets/img/flo/ingredientes.png";
+import etiqueta from "../assets/img/flo/etiqueta.png";
+import fotoVioleta from "../assets/img/flo/resena-violeta.png";
+import fotoNicole from "../assets/img/flo/resena-nicole.png";
+import fotoCindy from "../assets/img/flo/resena-cindy.png";
+import fotoRebeca from "../assets/img/flo/resena-rebeca.png";
+import { CATALOGO } from "../config/catalogo";
+import { PROMO_FLO } from "../config/producto-flo";
+import { TIENDA, enlaceWhatsApp } from "../config/tienda";
+import { ahorroPaquete, costoPorDiaCentavos, fechaCortaEcuador, formatoPorcentaje, formatoUSD, paquetePorId } from "../lib/pedido";
+import { FAQ_FLO } from "../data/faq-flo";
+import { RESENAS_FLO } from "../data/resenas-flo";
+import { ruta } from "../lib/ruta";
+
+const flo = CATALOGO.flo;
+const ficha = flo.ficha;
+const dos = paquetePorId("dos", flo)!;
+const uno = paquetePorId("uno", flo)!;
+const ahorro = ahorroPaquete(dos, flo);
+const inicial = paquetePorId(flo.paqueteInicial, flo)!;
+const dias = flo.diasPorFrasco ?? 30;
+const porDia = costoPorDiaCentavos(dos, flo.diasPorFrasco)!;
+const waPedido = enlaceWhatsApp("Hola REVIVE GROW, quiero pedir FLO Ovarian Support con pago contra entrega.");
+const finPromo = PROMO_FLO.terminaEl ? fechaCortaEcuador(new Date(PROMO_FLO.terminaEl)) : null;
+const fotos = { violeta: fotoVioleta, nicole: fotoNicole, cindy: fotoCindy, rebeca: fotoRebeca };
+const zoomEtiqueta = await getImage({ src: etiqueta, format: "webp", width: 1254 });
+
+const titulo = "FLO Ovarian Support | Black Friday: 2 frascos por $35 · Envío gratis · REVIVE GROW Ecuador";
+const descripcion = `FLO Ovarian Support de O Positiv Health: mio-inositol, D-quiro-inositol, DIM y folato en cápsulas veganas. Black Friday: 2 frascos por ${formatoUSD(dos.precioCentavos)} (ahorras ${formatoUSD(ahorro.ahorroCentavos)}). Envío gratis y pago contra entrega en Ecuador.`;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: ficha.nombreCompleto,
+    description: "Suplemento alimenticio en cápsulas veganas con mio-inositol, D-quiro-inositol, DIM y folato. 90 cápsulas.",
+    brand: { "@type": "Brand", name: ficha.marca },
+    offers: flo.paquetes.map((p) => ({
+      "@type": "Offer",
+      name: p.nombre,
+      price: (p.precioCentavos / 100).toFixed(2),
+      priceCurrency: "USD",
+      availability: "https://schema.org/LimitedAvailability",
+      areaServed: "EC",
+      shippingDetails: { "@type": "OfferShippingDetails", shippingRate: { "@type": "MonetaryAmount", value: "0", currency: "USD" } },
+      seller: { "@type": "Organization", name: "REVIVE GROW" },
+    })),
+  },
+];
+
+const ingredientes = [
+  {
+    nombre: "Mio-Inositol",
+    cantidad: "2000 mg",
+    texto: "El ingrediente principal. Es una molécula que el cuerpo también produce y que está presente en frutas como el melón y los cítricos. Es uno de los compuestos más estudiados en relación con el equilibrio del ciclo y la función ovárica.",
+  },
+  {
+    nombre: "D-Quiro-Inositol",
+    cantidad: "50 mg",
+    texto: "La otra forma del inositol, obtenida de las vainas de algarrobo. Se combina con el mio-inositol en proporción 40:1, la proporción que más se ha estudiado.",
+  },
+  {
+    nombre: "DIM",
+    cantidad: "100 mg",
+    texto: "Diindolilmetano: un compuesto que se forma a partir de vegetales crucíferos como el brócoli y la col rizada. Se estudia por su papel en el metabolismo de los estrógenos.",
+  },
+  {
+    nombre: "Folato",
+    cantidad: "680 mcg DFE",
+    texto: "Vitamina B (como ácido fólico) recomendada para las mujeres en edad fértil. Una porción aporta el 170 % del valor diario.",
+  },
+];
+---
+<Base
+  title={titulo}
+  description={descripcion}
+  jsonLd={jsonLd}
+  producto={flo}
+  tema="flo"
+  ogImagen="/og-flo.jpg"
+  ogAlt="Frasco de FLO Ovarian Support, 90 cápsulas veganas. Black Friday: 2 frascos por $35 con envío gratis."
+  colorTema="#fff7f9"
+  etiquetaCabecera="Envío gratis · Pagas al recibir"
+>
+  <link slot="head" rel="preload" href={fuenteSerif} as="font" type="font/woff2" crossorigin />
+
+  <div class="bf-bar" role="note">
+    <strong>BLACK FRIDAY</strong> · <span>2 frascos por {formatoUSD(dos.precioCentavos)}</span> · <span>Envío gratis</span> · <span>Pagas al recibir</span>
+  </div>
+
+  <!-- ============================================================ HERO -->
+  <section class="flo-hero" aria-labelledby="titulo-producto">
+    <div class="container hero__grid">
+      <figure class="flo-media hero__media">
+        <Picture src={frasco} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 760, 1000]} quality={80} sizes="(min-width: 920px) 560px, 100vw" alt="Frasco rosa de FLO Ovarian Support de O Positiv Health, 90 cápsulas veganas" loading="eager" fetchpriority="high" />
+        <div class="bf-badge" aria-label={`Black Friday: 2 frascos por ${formatoUSD(dos.precioCentavos)}`}>
+          <small>BLACK FRIDAY</small>
+          <strong>2 × {formatoUSD(dos.precioCentavos).replace(",00", "")}</strong>
+          <span>Ahorras {formatoUSD(ahorro.ahorroCentavos)}</span>
+        </div>
+        <div class="flo-stamps">
+          <span class="tag"><Icon name="truck" size={15} /> Envío gratis</span>
+          <span class="tag"><Icon name="cash" size={15} /> Pagas al recibir</span>
+        </div>
+      </figure>
+
+      <div class="buy" id="comprar">
+        <span class="eyebrow">Bienestar femenino</span>
+        <h1 id="titulo-producto">FLO Ovarian Support <span>Cuida tu ciclo desde adentro</span></h1>
+        <p class="buy__lead">
+          Mio-inositol, D-quiro-inositol, DIM y folato en una rutina diaria de 3 cápsulas veganas.
+          Pídelo hoy: <strong>el envío es gratis y pagas cuando lo recibes</strong>.
+        </p>
+
+        <PackSelector grupo="hero" producto={flo} titulo="Elige tu paquete Black Friday" />
+        <p class="pack-note" data-aviso-paquete hidden></p>
+
+        <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido data-oculta-barra>
+          <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span> · envío gratis</span></span>
+        </a>
+
+        <p class="free-ship"><Icon name="gift" size={24} /> <span>Envío totalmente gratis<small>Pagas solo el precio del paquete, al recibirlo.</small></span></p>
+
+        <ul class="trust">
+          <li><Icon name="cash" /> <div>Pago contra entrega <span>— sin tarjeta ni pagos por adelantado.</span></div></li>
+          <li><Icon name="whatsapp" /> <div>Confirmación por WhatsApp <span>— te escribimos antes de enviar.</span></div></li>
+          <li><Icon name="shield" /> <div>Frasco original sellado <span>— verifícalo al recibir.</span></div></li>
+        </ul>
+
+        <p class="stock" data-stock role="status">
+          <Icon name="clock" size={20} />
+          <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Precios Black Friday{finPromo ? ` hasta el ${finPromo}` : ""} · Unidades limitadas, sujetas a disponibilidad.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ¿TE IDENTIFICAS? -->
+  <section class="section section--white" aria-labelledby="t-sientes">
+    <div class="container feel">
+      <div class="feel__img" data-reveal>
+        <Picture src={capsula} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 800, 1254]} quality={78} sizes="(min-width: 920px) 520px, 100vw" alt="Mano sosteniendo una cápsula de FLO sobre fondo rosa: sin OGM, 100 % vegano, sin gluten" />
+      </div>
+      <div data-reveal>
+        <span class="eyebrow">¿Te pasa cada mes?</span>
+        <h2 id="t-sientes" style="font-size:var(--fs-h2)">Tu ciclo también es <em>tu bienestar</em></h2>
+        <ul class="feel__list">
+          <li><Icon name="cycle" /> Un ciclo que llega cuando quiere</li>
+          <li><Icon name="drop" /> Cólicos y molestias que te cambian los planes</li>
+          <li><Icon name="wave" /> Cambios de ánimo y sensación de hinchazón</li>
+          <li><Icon name="heart" /> Sentir que tu cuerpo no está en equilibrio</li>
+        </ul>
+        <p class="feel__quote">No estás sola, y no tienes que acostumbrarte a sentirte así.</p>
+        <p class="lead" style="margin-top:0.75rem">
+          FLO es un suplemento diario creado para acompañar el bienestar de tu ciclo y tu salud ovárica, con
+          ingredientes que puedes leer en la etiqueta.
+        </p>
+        <p class="note" style="margin-top:1rem"><Icon name="info" size={20} /> <span>FLO no es un analgésico. Si tus cólicos son intensos o cambian, consulta a tu ginecóloga: tu bienestar va primero.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ INGREDIENTES -->
+  <section class="section" id="ingredientes" aria-labelledby="t-ing">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">La fórmula</span>
+        <h2 id="t-ing">4 ingredientes estudiados, <em>3 cápsulas al día</em></h2>
+        <p class="lead">Cantidades por porción diaria, tal como figuran en la información del suplemento.</p>
+      </div>
+      <div class="ingredients">
+        <div class="ingredients__img" data-reveal>
+          <Picture src={ingredientesImg} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 800, 1254]} quality={78} sizes="(min-width: 920px) 480px, 100vw" alt="Frasco de FLO con melón, col rizada, brócoli y algarrobo: DIM, folato, mio-inositol y D-quiro-inositol" />
+        </div>
+        <div class="ing-list">
+          {ingredientes.map((i) => (
+            <article class="ing" data-reveal>
+              <div class="ing__top"><h3>{i.nombre}</h3><span class="ing__qty">{i.cantidad}</span></div>
+              <p>{i.texto}</p>
+            </article>
+          ))}
+          <div class="ratio" data-reveal>
+            <strong>40 : 1</strong>
+            <p>2000 mg de mio-inositol y 50 mg de D-quiro-inositol: la proporción entre ambos inositoles más utilizada en la investigación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ RESEÑAS -->
+  <section class="section section--white" id="resenas" aria-labelledby="t-resenas">
+    <div class="container">
+      <div class="head head--center" data-reveal>
+        <span class="eyebrow">Opiniones reales</span>
+        <h2 id="t-resenas">Lo que cuentan las mujeres <em>que ya usan FLO</em></h2>
+        <div class="stars" aria-label="Cinco estrellas">{[1, 2, 3, 4, 5].map(() => <Icon name="starFill" size={22} />)}</div>
+      </div>
+      <div class="reviews" role="list" tabindex="0" aria-label="Reseñas de clientas (desliza para ver más)">
+        {RESENAS_FLO.map((r) => (
+          <article class="review" role="listitem">
+            <Picture src={fotos[r.foto]} formats={["avif", "webp"]} fallbackFormat="webp" widths={[400, 513]} quality={75} sizes="(min-width: 1060px) 270px, 84vw" alt={`Foto de ${r.nombre} con su frasco de FLO`} />
+            <div class="review__body">
+              <div class="stars" aria-label="5 de 5 estrellas">{[1, 2, 3, 4, 5].map(() => <Icon name="starFill" size={17} />)}</div>
+              <h3>{r.titulo}</h3>
+              <blockquote>“{r.texto}”</blockquote>
+              <div class="review__who"><b>{r.nombre}</b><span class="verified"><Icon name="checkCircle" size={15} /> Compra verificada</span></div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="reviews-hint" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <p class="small" style="text-align:center;margin-top:1rem">
+        Reseñas de compradoras de FLO Ovarian Support. Son experiencias personales: los resultados varían de una persona a otra y no sustituyen la consulta médica.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================ RUTINA -->
+  <section class="section" id="uso" aria-labelledby="t-uso">
+    <div class="container caps-split">
+      <div class="stack" data-reveal>
+        <span class="eyebrow">Tu rutina</span>
+        <h2 id="t-uso" style="font-size:var(--fs-h2)">3 cápsulas, <em>una vez al día</em></h2>
+        <p class="lead">{ficha.modoDeUso}</p>
+        <div class="days">
+          <div><strong>{dias} días</strong><span>con 1 frasco ({uno.capsulas} cápsulas)</span></div>
+          <div><strong>{dias * 2} días</strong><span>con 2 frascos · {formatoUSD(porDia)} al día</span></div>
+        </div>
+        <ul class="chips" aria-label="Características">
+          <li class="chip"><Icon name="leaf" size={16} /> Cápsulas veganas</li>
+          <li class="chip"><Icon name="sparkle" size={16} /> Sin OGM</li>
+          <li class="chip"><Icon name="checkCircle" size={16} /> Sin gluten</li>
+        </ul>
+        <p class="small">Para mantener tu rutina sin interrupciones, el paquete de 2 frascos te cubre {dias * 2} días con envío gratis.</p>
+      </div>
+      <div data-reveal>
+        <Picture src={fotoNicole} formats={["avif", "webp"]} fallbackFormat="webp" widths={[400, 510]} quality={78} sizes="(min-width: 920px) 520px, 100vw" alt="Frasco abierto de FLO lleno de cápsulas rosadas" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ETIQUETA -->
+  <section class="section section--white" id="etiqueta" aria-labelledby="t-etiqueta">
+    <div class="container split">
+      <div class="stack" data-reveal>
+        <span class="eyebrow">Transparencia</span>
+        <h2 id="t-etiqueta" style="font-size:var(--fs-h2)">Información <em>del suplemento</em></h2>
+        <button type="button" class="label-zoom" data-ampliar={zoomEtiqueta.src} data-alt="Información del suplemento de FLO Ovarian Support" aria-label="Ampliar la información del suplemento">
+          <Picture src={etiqueta} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 800]} quality={80} sizes="(min-width: 920px) 520px, 100vw" alt="Información del suplemento: porción 3 cápsulas, 30 porciones; folato 680 mcg DFE, mio-inositol 2000 mg, DIM 100 mg, D-quiro-inositol 50 mg" />
+          <span class="zoom"><Icon name="zoom" size={14} /> Ampliar</span>
+        </button>
+      </div>
+      <div class="stack" data-reveal>
+        <table class="facts">
+          <caption>Porción: 3 cápsulas · 30 porciones por envase</caption>
+          <thead><tr><th scope="col">Ingrediente</th><th scope="col">Por porción</th><th scope="col">%VD</th></tr></thead>
+          <tbody>{ficha.activos.map((a) => <tr class="hl"><td>{a.nombre}</td><td>{a.cantidad}</td><td>{a.vdr ?? "†"}</td></tr>)}</tbody>
+        </table>
+        <p class="small">† Valor diario no establecido. {ficha.ingredientes}</p>
+        <details class="details" open>
+          <summary>Antes de tomarlo <Icon name="chevron" size={20} /></summary>
+          <div class="details__body">
+            <ul class="care">
+              <li><Icon name="alert" size={16} /> Para mujeres adultas. Mantener fuera del alcance de los niños.</li>
+              <li><Icon name="alert" size={16} /> No lo tomes durante el embarazo o la lactancia sin indicación médica.</li>
+              <li><Icon name="alert" size={16} /> Consulta a tu médico si usas anticonceptivos hormonales, tratamientos hormonales o de fertilidad, u otros medicamentos.</li>
+              <li><Icon name="alert" size={16} /> No superes la dosis recomendada. {ficha.almacenamiento}</li>
+            </ul>
+            <p>Es un suplemento alimenticio: complementa tu alimentación y no sustituye ningún tratamiento médico.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ CONTRA ENTREGA -->
+  <section class="section section--navy" id="contra-entrega" aria-labelledby="t-cod">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">Envío gratis + pago contra entrega</span>
+        <h2 id="t-cod">Lo pides hoy. <em>Pagas cuando llega.</em></h2>
+        <p class="lead">Sin tarjetas, sin transferencias por adelantado y sin costo de envío.</p>
+      </div>
+      <ol class="steps">
+        <li class="step" data-reveal><span class="step__n">1</span><h3>Elige tu paquete</h3><p>1 frasco o 2 frascos con ahorro Black Friday de {formatoUSD(ahorro.ahorroCentavos)}.</p></li>
+        <li class="step" data-reveal><span class="step__n">2</span><h3>Déjanos tus datos</h3><p>Nombre, celular y dirección. Menos de un minuto.</p></li>
+        <li class="step" data-reveal><span class="step__n">3</span><h3>Te confirmamos</h3><p>Te escribimos por WhatsApp para coordinar la entrega.</p></li>
+        <li class="step" data-reveal><span class="step__n">4</span><h3>Recibes y pagas</h3><p>Verificas tu paquete y pagas al recibirlo{TIENDA.pago.formasAlRecibir?.length ? ` (${TIENDA.pago.formasAlRecibir.join(" o ")})` : ""}. El envío es gratis.</p></li>
+      </ol>
+      <ul class="cod-facts">
+        <li><Icon name="lock" size={20} /> No pedimos datos de tarjeta ni bancarios.</li>
+        <li><Icon name="truck" size={20} /> {flo.envio.plazo ? `Entrega estimada: ${flo.envio.plazo}.` : "Plazo de entrega confirmado por WhatsApp según tu ciudad."}</li>
+        <li><Icon name="chat" size={20} /> ¿Dudas? Escríbenos al WhatsApp {TIENDA.whatsapp.visible}.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ OFERTA BLACK FRIDAY -->
+  <section class="section" id="oferta" aria-labelledby="t-oferta">
+    <div class="container">
+      <div class="bf-offer" data-oculta-barra>
+        <div class="bf-offer__img">
+          <Picture src={fotoRebeca} formats={["avif", "webp"]} fallbackFormat="webp" widths={[400, 510]} quality={78} sizes="(min-width: 920px) 460px, 90vw" alt="Mano sosteniendo un frasco de FLO Ovarian Support junto a una planta" />
+        </div>
+        <div class="bf-offer__box">
+          <span class="bf-kicker">BLACK FRIDAY</span>
+          <h2 id="t-oferta">2 frascos por <em>{formatoUSD(dos.precioCentavos)}</em></h2>
+          <p class="lead">
+            Ahorras {formatoUSD(ahorro.ahorroCentavos)} ({formatoPorcentaje(ahorro.porcentaje)}) frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}).
+            {dias * 2} días de rutina, {formatoUSD(ahorro.precioPorFrascoCentavos)} por frasco y <strong>envío gratis</strong>.
+          </p>
+          <PackSelector grupo="oferta" producto={flo} titulo="Tu paquete" />
+          <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
+            <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span> · envío gratis</span></span>
+          </a>
+          <p class="stock" data-stock role="status">
+            <Icon name="clock" size={20} />
+            <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Precio Black Friday{finPromo ? ` hasta el ${finPromo}` : ""} mientras haya unidades disponibles.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ FAQ -->
+  <section class="section section--white" id="preguntas" aria-labelledby="t-faq">
+    <div class="container narrow">
+      <div class="head head--center" data-reveal>
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 id="t-faq">Todo lo que <em>quieres saber</em></h2>
+      </div>
+      <div class="faq">
+        {FAQ_FLO.map((f, i) => (
+          <details class="details" open={i === 0}>
+            <summary>{f.p} <Icon name="chevron" size={20} /></summary>
+            <div class="details__body"><p set:html={f.r} /></div>
+          </details>
+        ))}
+      </div>
+      <div class="stack" style="margin-top:2rem;justify-items:center;text-align:center">
+        <p class="muted">¿Tienes otra duda? Te respondemos con gusto.</p>
+        <a class="btn btn--wa" href={enlaceWhatsApp(flo.mensajeConsulta)} target="_blank" rel="noopener" data-evento="Contact"><Icon name="whatsapp" /> Escríbenos por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Información importante">
+    <div class="container narrow disclaimer">
+      <p><strong>Importante.</strong> FLO Ovarian Support es un suplemento alimenticio. No es un medicamento, no está destinado a diagnosticar, tratar, curar ni prevenir enfermedades y no reemplaza una alimentación variada ni la atención médica. Los resultados pueden variar de una persona a otra.</p>
+      <p>Si estás embarazada, en lactancia, tomas medicamentos o tienes una condición de salud, consulta a tu médico antes de consumirlo.</p>
+    </div>
+  </section>
+
+  <Fragment slot="despues">
+    <OrderDialog producto={flo} />
+
+    <dialog class="viewer" id="dlg-imagen" aria-label="Información del suplemento ampliada">
+      <div class="viewer__in">
+        <img data-visor alt="" width="1254" height="1254" decoding="async" />
+        <button type="button" class="icon-btn" data-cerrar-visor aria-label="Cerrar"><Icon name="close" /></button>
+      </div>
+    </dialog>
+
+    <div class="sticky" data-sticky aria-hidden="true">
+      <div class="sticky__info">
+        <small><span data-sel-nombre>{inicial.nombre}</span> · envío gratis</small>
+        <strong data-sel-precio>{formatoUSD(inicial.precioCentavos)}</strong>
+      </div>
+      <a class="btn btn--cta" href={waPedido} data-abrir-pedido tabindex="-1">PEDIR AHORA</a>
+    </div>
+
+    <a class="fab" href={enlaceWhatsApp(flo.mensajeConsulta)} target="_blank" rel="noopener" aria-label="Consultas por WhatsApp" data-evento="Contact">
+      <Icon name="whatsapp" size={30} />
+    </a>
+  </Fragment>
+</Base>
+
+<script>
+  import "../scripts/pedido";
+
+  const visor = document.querySelector<HTMLDialogElement>("#dlg-imagen");
+  const img = visor?.querySelector<HTMLImageElement>("[data-visor]");
+  document.querySelectorAll<HTMLButtonElement>("[data-ampliar]").forEach((b) =>
+    b.addEventListener("click", () => {
+      if (!visor || !img) return;
+      img.src = b.dataset.ampliar!;
+      img.alt = b.dataset.alt ?? "";
+      visor.showModal();
+    }),
+  );
+  visor?.addEventListener("click", (e) => {
+    const t = e.target as Element;
+    if (t === visor || t.closest("[data-cerrar-visor]")) visor.close();
+  });
+</script>

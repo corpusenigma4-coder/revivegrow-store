@@ -213,16 +213,110 @@ try {
   await prueba("Páginas legales y contacto: cargan, enlaces internos válidos y pendientes visibles", async () => {
     const { ctx, page } = await nuevaPagina();
     const visitadas = new Set();
-    for (const ruta of ["/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
+    for (const ruta of ["/", "/flo-ovarian-support/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
       const r = await page.goto(BASE + ruta);
       assert.equal(r.status(), 200, ruta);
-      if (ruta !== "/") assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
+      if (!["/", "/flo-ovarian-support/"].includes(ruta)) assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
       for (const h of await page.$$eval("a[href^='/']", (as) => as.map((a) => a.getAttribute("href").split("#")[0])))
         if (h && !visitadas.has(h)) { visitadas.add(h); assert.equal((await fetch(BASE + h)).status, 200, `enlace roto ${h}`); }
     }
     await page.goto(BASE + "/privacidad/");
     await page.screenshot({ path: `${OUT}/movil-privacidad.png` });
     await ctx.close();
+  });
+
+  /* ======================================================== FLO Ovarian Support */
+  const FLO = BASE + "/flo-ovarian-support/";
+
+  await prueba("FLO en móvil: Black Friday, precios, envío gratis, 4 reseñas y sin desbordamiento", async () => {
+    const { ctx, page, errores } = await nuevaPagina();
+    const r = await page.goto(FLO);
+    assert.equal(r.status(), 200);
+    await page.waitForSelector("h1:has-text('FLO Ovarian Support')");
+    assert.equal(await page.getAttribute("body", "data-producto"), "flo");
+    const texto = await page.textContent("body");
+    for (const t of ["BLACK FRIDAY", "$35,00", "$26,60", "AHORRA $18,20", "34,2 %", "$17,50 c/u", "$53,20", "Envío totalmente gratis", "180 cápsulas", "90 cápsulas", "30 días", "60 días", "2000 mg", "50 mg", "100 mg", "680 mcg DFE", "40 : 1", "PEDIR AHORA — PAGA AL RECIBIR", "Violeta", "Nicole A.", "Cindy", "Rebeca", "Manteniendo esta rutina", "Producto soñado", "Me encanta", "Era escéptica, ahora la recomiendo", "Compra verificada", "no es un analgésico", "Vista previa"])
+      assert.ok(texto.includes(t), `falta «${t}»`);
+    for (const prohibido of ["alivia", "elimina los cólicos", "cura ", "garantizado", "comprobado", "Dra.", "Shepherd", "Grewal"])
+      assert.ok(!texto.includes(prohibido), `texto no permitido: «${prohibido}»`);
+    assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true);
+    assert.equal(await page.locator(".review").count(), 4);
+    const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    assert.ok(ancho <= 0, `desbordamiento horizontal de ${ancho}px`);
+    assert.match(await page.getAttribute("meta[property='og:image']", "content"), /og-flo\.jpg$/);
+    await page.waitForFunction(() => [...document.querySelectorAll(".flo-media img")].every((i) => i.complete && i.naturalWidth > 0));
+    await page.screenshot({ path: `${OUT}/flo-movil-inicio.png` });
+    await revelarTodo(page);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: `${OUT}/flo-movil-completa.png`, fullPage: true });
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+
+  await prueba("FLO: pedido por WhatsApp con producto, envío gratis y total exacto", async () => {
+    const { ctx, page, errores } = await nuevaPagina();
+    await page.goto(FLO);
+    await page.click("label:has(input[name='paquete-hero'][value='uno'])");
+    assert.equal((await page.textContent("#comprar [data-sel-precio]")).trim(), "$26,60");
+    await page.click("label:has(input[name='paquete-hero'][value='dos'])");
+    await page.click("#comprar [data-abrir-pedido]");
+    await page.waitForSelector("#dlg-pedido[open]");
+    await llenar(page);
+    assert.match(await page.textContent("[data-envio-hint]"), /Gratis/);
+    await page.click("[data-btn-revisar]");
+    await page.waitForSelector("[data-paso='2']:not([hidden])");
+    const resumen = await page.textContent("[data-paso='2']");
+    for (const t of ["FLO Ovarian Support — O Positiv Health", "2 frascos (180 cápsulas)", "Gratis", "$35,00"]) assert.ok(resumen.includes(t), `resumen sin «${t}»`);
+    assert.ok(!resumen.includes("por confirmar"), "FLO no debe tener envío por confirmar");
+    assert.equal(await page.locator("[data-alerta-envio]").isHidden(), true);
+    const msg = decodeURIComponent((await page.getAttribute("[data-enviar-wa]", "href")).split("text=")[1]);
+    for (const t of ["Producto: FLO Ovarian Support — O Positiv Health (90 cápsulas por frasco)", "Cantidad: 2 frascos (180 cápsulas)", "Precio del paquete: $35,00", "Envío: Gratis", "Total: $35,00", "Nombre: Carlos Andrade", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Ciudad/cantón: Quito"])
+      assert.ok(msg.includes(t), `mensaje sin «${t}»`);
+    await page.screenshot({ path: `${OUT}/flo-movil-revision.png` });
+    assert.ok((await page.getAttribute("[data-enviar-wa]", "href")).startsWith("https://wa.me/593960702682?text="));
+    const [popup] = await Promise.all([ctx.waitForEvent("page"), page.click("[data-enviar-wa]")]);
+    await popup.close().catch(() => {});
+    await page.waitForSelector("[data-resultado='wa']:not([hidden])");
+    assert.deepEqual(errores, []);
+    await ctx.close();
+  });
+
+  await prueba("FLO: con servidor de pedidos envía producto=flo y muestra el número", async () => {
+    const { ctx, page } = await nuevaPagina();
+    let cuerpo = null;
+    await page.route("**/api/pedido", (route) =>
+      route.request().method() === "GET"
+        ? route.fulfill({ json: { activo: true, notificacionWhatsApp: true, turnstileSiteKey: null } })
+        : ((cuerpo = route.request().postDataJSON()), route.fulfill({ json: { ok: true, numero: "RG-261120-FLO22", notificado: true } })));
+    await page.goto(FLO);
+    await page.click("#comprar [data-abrir-pedido]");
+    await llenar(page);
+    await page.click("[data-btn-revisar]");
+    await page.click("[data-confirmar]");
+    await page.waitForSelector("[data-resultado='ok']:not([hidden])");
+    assert.equal(cuerpo.producto, "flo");
+    assert.equal(cuerpo.paquete, "dos");
+    await ctx.close();
+  });
+
+  await prueba("FLO: WhatsApp flotante, visor de la etiqueta y escritorio", async () => {
+    const { ctx, page } = await nuevaPagina();
+    await page.goto(FLO);
+    assert.match(decodeURIComponent(await page.getAttribute(".fab", "href")), /FLO Ovarian Support/);
+    const b = page.locator("[data-ampliar]").first();
+    await b.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await b.click();
+    await page.waitForSelector("#dlg-imagen[open] img[src*='etiqueta']");
+    await ctx.close();
+    const d = await nuevaPagina({ viewport: { width: 1366, height: 860 } });
+    await d.page.goto(FLO);
+    await d.page.waitForFunction(() => [...document.querySelectorAll(".flo-media img")].every((i) => i.complete && i.naturalWidth > 0));
+    await d.page.screenshot({ path: `${OUT}/flo-escritorio-inicio.png` });
+    await revelarTodo(d.page);
+    await d.page.evaluate(() => window.scrollTo(0, 0));
+    await d.page.screenshot({ path: `${OUT}/flo-escritorio-completa.png`, fullPage: true });
+    assert.deepEqual(d.errores, []);
+    await d.ctx.close();
   });
 
   await browser.close();

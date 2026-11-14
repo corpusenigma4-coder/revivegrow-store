@@ -11,6 +11,14 @@
  * `npm run check:launch` lo lista como pendiente.
  */
 
+export interface ConfigEnvio {
+  costoCentavos: number | null;
+  porProvincia: Record<string, number>;
+  sinCobertura: readonly string[];
+  plazo: string | null;
+  courier: string | null;
+}
+
 /** Precios en CENTAVOS de dólar (2740 = $27,40) para evitar errores de redondeo. */
 export const PAQUETES = [
   {
@@ -93,7 +101,7 @@ export const TIENDA = {
     plazo: null as string | null,
     /** Empresa de mensajería. */
     courier: null as string | null,
-  },
+  } as ConfigEnvio,
 
   pago: {
     /** Formas de pago aceptadas al recibir, ej.: ["efectivo"] o ["efectivo", "transferencia"]. */
@@ -118,6 +126,13 @@ export const TIENDA = {
 
   /** Píxel de Meta: queda inactivo mientras sea null. */
   metaPixelId: null as string | null,
+
+  /**
+   * Dirección del servidor de pedidos cuando la web está en GitHub Pages (que no ejecuta servidor),
+   * ej.: "https://revivegrow-pedidos.<tu-cuenta>.workers.dev/api/pedido" (carpeta worker/).
+   * null → se usa /api/pedido del mismo sitio (Cloudflare Pages) y, si no existe, WhatsApp prellenado.
+   */
+  apiPedidos: null as string | null,
 } as const;
 
 /** Enlace de WhatsApp con mensaje opcional. */

@@ -8,6 +8,7 @@ import Icon from "../components/Icon.astro";
 import Footer from "../components/Footer.astro";
 import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
 import { ruta } from "../lib/ruta";
+import type { ProductoVenta } from "../config/catalogo";
 
 interface Props {
   title: string;
@@ -15,12 +16,28 @@ interface Props {
   jsonLd?: Record<string, unknown>[];
   /** Páginas secundarias: cabecera con enlace de vuelta a la oferta. */
   secundaria?: boolean;
+  /** Producto de la landing (activa su formulario, WhatsApp y pie de página). */
+  producto?: ProductoVenta;
+  /** Tema visual adicional (clase tema-<nombre> en <body>). */
+  tema?: string;
+  ogImagen?: string;
+  ogAlt?: string;
+  colorTema?: string;
+  /** Texto corto junto al botón de WhatsApp de la cabecera. */
+  etiquetaCabecera?: string;
 }
-const { title, description, jsonLd = [], secundaria = false } = Astro.props;
+const {
+  title, description, jsonLd = [], secundaria = false, producto, tema,
+  ogImagen = "/og-revivegrow-ec.jpg",
+  ogAlt = "Frasco de TESTO-GH Multi Vitamin For Men, 60 cápsulas",
+  colorTema = "#f6f1e9",
+  etiquetaCabecera = "Pagas al recibir",
+} = Astro.props;
+const mensajeConsulta = producto?.mensajeConsulta ?? MENSAJE_CONSULTA;
 const vistaPrevia = TIENDA.estado !== "operativa";
 const origen = Astro.site ?? new URL(TIENDA.url);
 const canonical = new URL(Astro.url.pathname, origen).href;
-const ogImage = new URL(ruta("/og-revivegrow-ec.jpg"), origen).href;
+const ogImage = new URL(ruta(ogImagen), origen).href;
 const robots = vistaPrevia ? "noindex, nofollow" : "index, follow";
 const pixel = TIENDA.metaPixelId;
 ---
@@ -33,7 +50,7 @@ const pixel = TIENDA.metaPixelId;
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#f6f1e9" />
+    <meta name="theme-color" content={colorTema} />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href={ruta("/favicon.svg")} type="image/svg+xml" />
     <link rel="preload" href={fuenteLatin} as="font" type="font/woff2" crossorigin />
@@ -46,9 +63,10 @@ const pixel = TIENDA.metaPixelId;
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Frasco de TESTO-GH Multi Vitamin For Men, 60 cápsulas" />
+    <meta property="og:image:alt" content={ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
     {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
     {pixel && (
       /* Píxel de Meta: solo se inserta si TIENDA.metaPixelId tiene un valor. Sin coincidencias avanzadas (no se envían datos personales). */
@@ -58,7 +76,7 @@ const pixel = TIENDA.metaPixelId;
       </script>
     )}
   </head>
-  <body>
+  <body data-producto={producto?.id} class={tema ? `tema-${tema}` : undefined}>
     <a class="skip" href="#contenido">Saltar al contenido</a>
     {vistaPrevia && (
       <div class="preview-bar" role="note">
@@ -74,9 +92,9 @@ const pixel = TIENDA.metaPixelId;
           {secundaria ? (
             <a class="header__wa" href={ruta("/#oferta")}><Icon name="tag" size={18} /> Ver la oferta</a>
           ) : (
-            <span class="header__cod"><Icon name="cash" size={20} /> Pagas al recibir</span>
+            <span class="header__cod"><Icon name="cash" size={20} /> {etiquetaCabecera}</span>
           )}
-          <a class="header__wa" href={enlaceWhatsApp(MENSAJE_CONSULTA)} target="_blank" rel="noopener" data-evento="Contact" aria-label="Escríbenos por WhatsApp">
+          <a class="header__wa" href={enlaceWhatsApp(mensajeConsulta)} target="_blank" rel="noopener" data-evento="Contact" aria-label="Escríbenos por WhatsApp">
             <Icon name="whatsapp" size={20} /> <span>WhatsApp</span>
           </a>
         </div>
@@ -85,7 +103,7 @@ const pixel = TIENDA.metaPixelId;
     <main id="contenido">
       <slot />
     </main>
-    <Footer />
+    <Footer producto={producto} />
     <slot name="despues" />
     <script>
       const els = document.querySelectorAll("[data-reveal]");

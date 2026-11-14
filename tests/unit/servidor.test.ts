@@ -2,7 +2,7 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { recibirPedido, estadoServicio, cuerpoPlantilla, _reiniciarEsquema, type D1Like, type Entorno } from "../../src/server/pedidos.ts";
+import { recibirPedido, estadoServicio, cuerpoPlantilla, origenPermitido, _reiniciarEsquema, type D1Like, type Entorno } from "../../src/server/pedidos.ts";
 
 function d1Falso(): D1Like & { sql: DatabaseSync } {
   const sql = new DatabaseSync(":memory:");
@@ -135,4 +135,43 @@ test("destinatario por defecto: WhatsApp de la tienda", () => {
   const c = cuerpoPlantilla({}, { numero: "RG-1", fecha: "", prueba: false, nombre: "a", celular: "0991234567", destino: "", direccion: "", referencia: "", producto: "", envio: "", total: "" });
   assert.equal(c.to, "593960702682");
   assert.equal(c.template.name, "nuevo_pedido");
+});
+
+test("FLO: pedido con producto, precio y envío gratis calculados en el servidor", async () => {
+  const j = await (await recibirPedido(peticion({ ...base(), producto: "flo", paquete: "dos", precioCentavos: 1 }), { DB: db }, { ahora: () => AHORA })).json();
+  assert.equal(j.ok, true);
+  const fila = db.sql.prepare("SELECT producto, precio_centavos, envio_centavos, total_centavos, frascos FROM pedidos").get() as Record<string, unknown>;
+  assert.deepEqual({ ...fila }, { producto: "flo", precio_centavos: 3500, envio_centavos: 0, total_centavos: 3500, frascos: 2 });
+});
+
+test("mismo celular y paquete en productos distintos son pedidos distintos", async () => {
+  const b = base();
+  const a = await (await recibirPedido(peticion({ ...b }), { DB: db }, { ahora: () => AHORA })).json();
+  const f = await (await recibirPedido(peticion({ ...base(), celular: b.celular, producto: "flo" }), { DB: db }, { ahora: () => AHORA })).json();
+  assert.notEqual(a.numero, f.numero);
+  assert.equal(f.duplicado, false);
+});
+
+test("producto desconocido: 422", async () => {
+  const r = await recibirPedido(peticion({ ...base(), producto: "otro" }), { DB: db });
+  assert.equal(r.status, 422);
+});
+
+test("aviso de WhatsApp de FLO con nombre del producto y total", async () => {
+  let cuerpo: any = null;
+  const fetchFalso = (async (_u: string, init: RequestInit) => { cuerpo = JSON.parse(String(init.body)); return new Response("{}", { status: 200 }); }) as unknown as typeof fetch;
+  await recibirPedido(peticion({ ...base(), producto: "flo", paquete: "uno" }), { DB: db, WHATSAPP_TOKEN: "t", WHATSAPP_PHONE_NUMBER_ID: "1" }, { ahora: () => AHORA, fetch: fetchFalso });
+  const p = cuerpo.template.components[0].parameters.map((x: { text: string }) => x.text);
+  assert.equal(p[7], "1 frasco FLO Ovarian Support (90 cápsulas) · $26,60");
+  assert.equal(p[8], "Gratis");
+  assert.equal(p[9], "$26,60");
+});
+
+test("orígenes permitidos para web en GitHub Pages + servidor externo", () => {
+  const req = new Request("https://revivegrow-pedidos.x.workers.dev/api/pedido");
+  const env = { ORIGENES_PERMITIDOS: "https://revivegrow.store, https://www.revivegrow.store" };
+  assert.equal(origenPermitido("https://revivegrow.store", req, env), true);
+  assert.equal(origenPermitido("https://www.revivegrow.store", req, env), true);
+  assert.equal(origenPermitido("https://malo.com", req, env), false);
+  assert.equal(origenPermitido("https://revivegrow-pedidos.x.workers.dev", req, {}), true);
 });

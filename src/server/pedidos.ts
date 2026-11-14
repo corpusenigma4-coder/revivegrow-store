@@ -10,8 +10,7 @@
  * página usa la modalidad A (WhatsApp con mensaje prellenado).
  */
 import { TIENDA } from "../config/tienda.ts";
-import { INVENTARIO } from "../config/inventario.ts";
-import { PRODUCTO } from "../config/producto.ts";
+import { PRODUCTO_PREDETERMINADO, productoPorId } from "../config/catalogo.ts";
 import {
   celularInternacional,
   disponibilidad,
@@ -19,6 +18,7 @@ import {
   formatoUSD,
   limpiarTexto,
   numeroPedido,
+  textoEnvio,
   textoTotal,
   totalPedido,
   validarPedido,
@@ -51,6 +51,12 @@ export interface Entorno {
   TURNSTILE_SECRET_KEY?: string;
   /** Sal secreta para anonimizar IP en el control de abuso. */
   IP_SALT?: string;
+  /**
+   * Orígenes web autorizados a enviar pedidos cuando la web está en otro dominio que el servidor
+   * (p. ej. web en GitHub Pages + servidor en Cloudflare Workers). Separados por comas:
+   * "https://revivegrow.store,https://www.revivegrow.store".
+   */
+  ORIGENES_PERMITIDOS?: string;
 }
 
 export interface Opciones {
@@ -83,6 +89,7 @@ const ESQUEMA = [
     envio_centavos INTEGER,
     total_centavos INTEGER,
     estado TEXT NOT NULL DEFAULT 'nuevo',
+    producto TEXT NOT NULL DEFAULT 'testo-gh',
     prueba INTEGER NOT NULL DEFAULT 0,
     ip_hash TEXT,
     notificado_en TEXT,
@@ -98,6 +105,20 @@ async function asegurarEsquema(db: D1Like) {
   if (esquemaListo.has(db)) return;
   for (const sql of ESQUEMA) await db.prepare(sql).bind().run();
   esquemaListo.add(db);
+}
+
+/** Mismo dominio que el servidor, o uno de ORIGENES_PERMITIDOS. */
+export function origenPermitido(origen: string, req: Request, env: Entorno): boolean {
+  try {
+    if (new URL(origen).host === new URL(req.url).host) return true;
+  } catch {
+    return false;
+  }
+  return (env.ORIGENES_PERMITIDOS ?? "")
+    .split(",")
+    .map((x) => x.trim().replace(/\/$/, ""))
+    .filter(Boolean)
+    .includes(origen.replace(/\/$/, ""));
 }
 
 function json(cuerpo: unknown, status = 200): Response {
@@ -145,7 +166,7 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
 
   // Solo peticiones desde la propia web (protección CSRF básica).
   const origen = req.headers.get("origin");
-  if (origen && new URL(origen).host !== new URL(req.url).host) return json({ ok: false, codigo: "ORIGEN" }, 403);
+  if (origen && !origenPermitido(origen, req, env)) return json({ ok: false, codigo: "ORIGEN" }, 403);
   if (!(req.headers.get("content-type") ?? "").includes("application/json")) return json({ ok: false, codigo: "FORMATO" }, 415);
 
   const crudo = await req.text();
@@ -184,7 +205,13 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
     if (!valido) return json({ ok: false, codigo: "VERIFICACION" }, 400);
   }
 
-  const v = validarPedido(cuerpo as Partial<Record<Campo, unknown>>, { disponibilidad: disponibilidad(INVENTARIO, ahora.getTime()) });
+  // Producto: si no se indica, es el de la primera landing (TESTO-GH).
+  const producto = cuerpo.producto === undefined ? PRODUCTO_PREDETERMINADO : productoPorId(cuerpo.producto);
+  if (!producto) return json({ ok: false, codigo: "DATOS", errores: { paquete: "Producto no disponible." } }, 422);
+  const v = validarPedido(cuerpo as Partial<Record<Campo, unknown>>, {
+    disponibilidad: disponibilidad(producto.inventario, ahora.getTime()),
+    producto,
+  });
   if (!v.ok || !v.paquete) return json({ ok: false, codigo: "DATOS", errores: v.errores }, 422);
   const { datos, paquete } = v;
 
@@ -197,8 +224,8 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
 
   // Mismo celular y mismo paquete hace poco: es el mismo pedido.
   const repetido = await db
-    .prepare("SELECT numero, notificado_en FROM pedidos WHERE celular = ? AND paquete = ? AND creado_en > ? ORDER BY id DESC LIMIT 1")
-    .bind(datos.celular, paquete.id, hace(VENTANA_DUPLICADO_MIN, ahora))
+    .prepare("SELECT numero, notificado_en FROM pedidos WHERE celular = ? AND producto = ? AND paquete = ? AND creado_en > ? ORDER BY id DESC LIMIT 1")
+    .bind(datos.celular, producto.id, paquete.id, hace(VENTANA_DUPLICADO_MIN, ahora))
     .first<{ numero: string; notificado_en: string | null }>();
   if (repetido) return json({ ok: true, numero: repetido.numero, duplicado: true, notificado: Boolean(repetido.notificado_en) });
 
@@ -210,7 +237,7 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
     if ((n?.n ?? 0) >= LIMITE_POR_IP) return json({ ok: false, codigo: "LIMITE" }, 429);
   }
 
-  const t = totalPedido(paquete, datos.provincia);
+  const t = totalPedido(paquete, datos.provincia, producto.envio);
   const prueba = TIENDA.estado !== "operativa";
   let numero = "";
   for (let intento = 0; intento < 4; intento++) {
@@ -219,12 +246,12 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
       await db
         .prepare(
           `INSERT INTO pedidos (numero, clave, creado_en, nombre, celular, provincia, ciudad, direccion, referencia,
-             paquete, frascos, precio_centavos, envio_centavos, total_centavos, prueba, ip_hash)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             producto, paquete, frascos, precio_centavos, envio_centavos, total_centavos, prueba, ip_hash)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           numero, clave, ahora.toISOString(), datos.nombre, datos.celular, datos.provincia, datos.ciudad, datos.direccion,
-          datos.referencia, paquete.id, paquete.frascos, paquete.precioCentavos,
+          datos.referencia, producto.id, paquete.id, paquete.frascos, paquete.precioCentavos,
           t.envio.estado === "definido" ? t.envio.centavos : null, t.totalCentavos, prueba ? 1 : 0, ipHash,
         )
         .run();
@@ -247,8 +274,8 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
       nombre: datos.nombre, celular: datos.celular,
       destino: `${datos.ciudad}, ${datos.provincia}`,
       direccion: datos.direccion, referencia: datos.referencia,
-      producto: `${paquete.nombre} ${PRODUCTO.nombre} (${paquete.capsulas} cápsulas) · ${formatoUSD(paquete.precioCentavos)}`,
-      envio: t.envio.estado === "definido" ? formatoUSD(t.envio.centavos) : "por confirmar",
+      producto: `${paquete.nombre} ${producto.ficha.nombre} (${paquete.capsulas} cápsulas) · ${formatoUSD(paquete.precioCentavos)}`,
+      envio: t.envio.estado === "definido" ? textoEnvio(t.envio) : "por confirmar",
       total: textoTotal(t),
     });
     notificado = r.ok;

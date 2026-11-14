@@ -6,7 +6,15 @@ pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudfla
 > **Estado: vista previa.** `noindex`, aviso visible y pedidos marcados como PRUEBA hasta completar los
 > requisitos sanitarios y comerciales (`npm run check:launch`). Ver [docs/CUMPLIMIENTO.md](docs/CUMPLIMIENTO.md).
 
-## Oferta
+## Landings
+| Ruta | Producto | Precios |
+|---|---|---|
+| `/` | TESTO-GH (GENETICS) | 1 frasco $27,40 · 2 frascos $37,40 |
+| `/flo-ovarian-support/` | FLO Ovarian Support (O Positiv Health) | 1 frasco $26,60 · 2 frascos $35,00 · envío gratis · Black Friday |
+
+Catálogo y precios: `src/config/catalogo.ts`. Ficha FLO: `src/config/producto-flo.ts`.
+
+## Oferta TESTO-GH
 | Paquete | Precio | Detalle |
 |---|---|---|
 | 2 frascos (destacado, preseleccionado) | **$37,40** | 120 cápsulas · $18,70 c/u · ahorro real $17,40 (31,8 %) frente a 2 × $27,40 = $54,80 |

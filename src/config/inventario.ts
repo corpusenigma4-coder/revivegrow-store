@@ -17,3 +17,10 @@ export const INVENTARIO = {
   actualizadoEl: null as string | null,
   diasValidez: 3,
 };
+
+/** Unidades reales de FLO Ovarian Support (mismas reglas que arriba). */
+export const INVENTARIO_FLO = {
+  frascos: null as number | null,
+  actualizadoEl: null as string | null,
+  diasValidez: 3,
+};

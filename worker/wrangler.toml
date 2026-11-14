@@ -1,0 +1,18 @@
+# Worker de pedidos (solo si la web se publica en GitHub Pages). Despliegue:
+#   cd worker && npx wrangler deploy
+# Secretos (no van en este archivo):
+#   npx wrangler secret put WHATSAPP_TOKEN     · npx wrangler secret put IP_SALT
+name = "revivegrow-pedidos"
+main = "pedidos.ts"
+compatibility_date = "2026-11-01"
+
+[vars]
+ORIGENES_PERMITIDOS = "https://revivegrow.store,https://www.revivegrow.store"
+# WHATSAPP_PHONE_NUMBER_ID = "..."   # ID del número emisor (Meta)
+# WHATSAPP_NOTIFY_TO = "593960702682"
+
+# Crea la base con: npx wrangler d1 create revivegrow-pedidos  → pega aquí el database_id
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "revivegrow-pedidos"
+# database_id = "PEGAR-AQUI"

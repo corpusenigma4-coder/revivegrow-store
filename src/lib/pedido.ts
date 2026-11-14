@@ -2,12 +2,11 @@
  * Lógica de pedidos SIN dependencias: la usan el navegador, la función del servidor
  * (functions/api/pedido.ts) y las pruebas. Todos los importes van en centavos.
  */
-import { PAQUETES, TIENDA } from "../config/tienda.ts";
-import { PRODUCTO, DIAS_POR_FRASCO } from "../config/producto.ts";
+import { TIENDA } from "../config/tienda.ts";
+import { PRODUCTO_PREDETERMINADO, type Paquete, type ProductoVenta } from "../config/catalogo.ts";
 import { PROVINCIAS } from "./provincias.ts";
 
-export type Paquete = (typeof PAQUETES)[number];
-export type PaqueteId = Paquete["id"];
+export type { Paquete, ProductoVenta };
 
 /* ---------------------------------------------------------------- dinero */
 
@@ -27,15 +26,14 @@ export function formatoPorcentaje(valor: number, decimales = 1): string {
   return `${valor.toFixed(decimales).replace(".", ",")} %`;
 }
 
-export function paquetePorId(id: string): Paquete | undefined {
-  return PAQUETES.find((p) => p.id === id);
+export function paquetePorId(id: string, prod: ProductoVenta = PRODUCTO_PREDETERMINADO): Paquete | undefined {
+  return prod.paquetes.find((p) => p.id === id);
 }
 
-const UNITARIO = PAQUETES.find((p) => p.frascos === 1)!;
-
 /** Ahorro REAL frente a comprar la misma cantidad de frascos individuales. */
-export function ahorroPaquete(p: Paquete) {
-  const porSeparado = UNITARIO.precioCentavos * p.frascos;
+export function ahorroPaquete(p: Paquete, prod: ProductoVenta = PRODUCTO_PREDETERMINADO) {
+  const unitario = prod.paquetes.find((x) => x.frascos === 1)!;
+  const porSeparado = unitario.precioCentavos * p.frascos;
   const ahorro = porSeparado - p.precioCentavos;
   return {
     porSeparadoCentavos: porSeparado,
@@ -46,11 +44,11 @@ export function ahorroPaquete(p: Paquete) {
 }
 
 /** Días de consumo según la dosis de la etiqueta; null mientras la dosis no esté confirmada. */
-export function diasDeConsumo(p: Paquete, diasPorFrasco: number | null = DIAS_POR_FRASCO): number | null {
+export function diasDeConsumo(p: Paquete, diasPorFrasco: number | null = PRODUCTO_PREDETERMINADO.diasPorFrasco): number | null {
   return diasPorFrasco ? p.frascos * diasPorFrasco : null;
 }
 
-export function costoPorDiaCentavos(p: Paquete, diasPorFrasco: number | null = DIAS_POR_FRASCO): number | null {
+export function costoPorDiaCentavos(p: Paquete, diasPorFrasco: number | null = PRODUCTO_PREDETERMINADO.diasPorFrasco): number | null {
   const d = diasDeConsumo(p, diasPorFrasco);
   return d ? Math.round(p.precioCentavos / d) : null;
 }
@@ -62,14 +60,14 @@ export type Envio =
   | { estado: "por-confirmar" }
   | { estado: "sin-cobertura" };
 
-export function costoEnvio(provincia: string | null | undefined, envio = TIENDA.envio): Envio {
+export function costoEnvio(provincia: string | null | undefined, envio: ProductoVenta["envio"] = TIENDA.envio): Envio {
   if (provincia && envio.sinCobertura.includes(provincia)) return { estado: "sin-cobertura" };
   if (provincia && provincia in envio.porProvincia) return { estado: "definido", centavos: envio.porProvincia[provincia] };
   if (envio.costoCentavos === null) return { estado: "por-confirmar" };
   return { estado: "definido", centavos: envio.costoCentavos };
 }
 
-export function totalPedido(p: Paquete, provincia: string | null | undefined, envio = TIENDA.envio) {
+export function totalPedido(p: Paquete, provincia: string | null | undefined, envio: ProductoVenta["envio"] = TIENDA.envio) {
   const e = costoEnvio(provincia, envio);
   return {
     precioCentavos: p.precioCentavos,
@@ -201,7 +199,11 @@ export function celularVisible(celular: string): string {
 
 const LETRAS = /\p{L}/gu;
 
-export function validarPedido(entrada: Partial<Record<Campo, unknown>>, ctx: { disponibilidad?: ReturnType<typeof disponibilidad> } = {}) {
+export function validarPedido(
+  entrada: Partial<Record<Campo, unknown>>,
+  ctx: { disponibilidad?: ReturnType<typeof disponibilidad>; producto?: ProductoVenta } = {},
+) {
+  const prod = ctx.producto ?? PRODUCTO_PREDETERMINADO;
   const errores: Partial<Record<Campo, string>> = {};
   const datos: DatosPedido = {
     nombre: limpiarTexto(entrada.nombre, 80),
@@ -224,14 +226,14 @@ export function validarPedido(entrada: Partial<Record<Campo, unknown>>, ctx: { d
 
   if (!datos.provincia) errores.provincia = "Elige tu provincia.";
   else if (!(PROVINCIAS as readonly string[]).includes(datos.provincia)) errores.provincia = "Elige una provincia de la lista.";
-  else if (costoEnvio(datos.provincia).estado === "sin-cobertura")
+  else if (costoEnvio(datos.provincia, prod.envio).estado === "sin-cobertura")
     errores.provincia = "Por ahora no tenemos pago contra entrega en esta provincia. Escríbenos por WhatsApp.";
 
   if (datos.ciudad.length < 3) errores.ciudad = "Escribe tu ciudad o cantón.";
   if (datos.direccion.length < 8) errores.direccion = "Escribe la dirección completa (calle principal, secundaria y número).";
   if (datos.referencia.length < 4) errores.referencia = "Añade una referencia para el repartidor (color de casa, local cercano…).";
 
-  const paquete = paquetePorId(datos.paquete);
+  const paquete = paquetePorId(datos.paquete, prod);
   if (!paquete) errores.paquete = "Elige 1 o 2 frascos.";
   else if (ctx.disponibilidad && !paqueteDisponible(paquete, ctx.disponibilidad))
     errores.paquete = ctx.disponibilidad.agotado
@@ -251,11 +253,12 @@ export interface ResumenPedido {
   datos: DatosPedido;
   paquete: Paquete;
   prueba?: boolean;
+  producto?: ProductoVenta;
 }
 
 /** Texto ordenado del pedido, para WhatsApp (modalidad A) y para el registro. */
-export function mensajePedido({ numero, fecha, datos, paquete, prueba }: ResumenPedido): string {
-  const t = totalPedido(paquete, datos.provincia);
+export function mensajePedido({ numero, fecha, datos, paquete, prueba, producto = PRODUCTO_PREDETERMINADO }: ResumenPedido): string {
+  const t = totalPedido(paquete, datos.provincia, producto.envio);
   const lineas = [
     prueba ? "*PEDIDO DE PRUEBA — tienda en vista previa*" : null,
     `*NUEVO PEDIDO — ${TIENDA.marca}*`,
@@ -271,7 +274,7 @@ export function mensajePedido({ numero, fecha, datos, paquete, prueba }: Resumen
     `Referencia: ${datos.referencia}`,
     "",
     "*Pedido*",
-    `Producto: ${PRODUCTO.nombreCompleto} (${PRODUCTO.capsulasPorFrasco} cápsulas por frasco)`,
+    `Producto: ${producto.ficha.nombreCompleto} (${producto.ficha.capsulasPorFrasco} cápsulas por frasco)`,
     `Cantidad: ${paquete.nombre} (${paquete.capsulas} cápsulas)`,
     `Precio del paquete: ${formatoUSD(paquete.precioCentavos)}`,
     `Envío: ${t.envio.estado === "definido" ? textoEnvio(t.envio) : "por confirmar"}`,

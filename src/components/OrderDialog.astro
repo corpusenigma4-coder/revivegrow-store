@@ -1,10 +1,13 @@
 ---
 /** Formulario de pedido contra entrega en 3 pasos (datos → revisar → enviar). Lógica: src/scripts/pedido.ts */
-import { PAQUETES, PAQUETE_INICIAL, TIENDA } from "../config/tienda";
+import { PRODUCTO_PREDETERMINADO, type ProductoVenta } from "../config/catalogo";
+import { TIENDA } from "../config/tienda";
 import { PROVINCIAS } from "../lib/provincias";
 import { ahorroPaquete, formatoUSD } from "../lib/pedido";
 import Icon from "./Icon.astro";
 import { ruta } from "../lib/ruta";
+interface Props { producto?: ProductoVenta }
+const { producto: prod = PRODUCTO_PREDETERMINADO } = Astro.props;
 ---
 <dialog class="sheet" id="dlg-pedido" aria-labelledby="dlg-titulo">
   <div class="sheet__panel">
@@ -25,13 +28,13 @@ import { ruta } from "../lib/ruta";
       <div class="sheet__body">
         <fieldset class="seg" data-campo="paquete">
           <legend>Paquete</legend>
-          {PAQUETES.map((p) => (
+          {prod.paquetes.map((p) => (
             <label>
-              <input type="radio" name="paquete-dialogo" value={p.id} checked={p.id === PAQUETE_INICIAL} data-paquete />
+              <input type="radio" name="paquete-dialogo" value={p.id} checked={p.id === prod.paqueteInicial} data-paquete />
               <span>
                 <b>{p.nombre} · {formatoUSD(p.precioCentavos)}</b>
                 {p.capsulas} cápsulas
-                {ahorroPaquete(p).ahorroCentavos > 0 && <em>Ahorras {formatoUSD(ahorroPaquete(p).ahorroCentavos)}</em>}
+                {ahorroPaquete(p, prod).ahorroCentavos > 0 && <em>Ahorras {formatoUSD(ahorroPaquete(p, prod).ahorroCentavos)}</em>}
               </span>
             </label>
           ))}
@@ -55,7 +58,7 @@ import { ruta } from "../lib/ruta";
             <label for="f-provincia">Provincia</label>
             <select class="input" id="f-provincia" name="provincia" autocomplete="address-level1" required aria-describedby="h-envio e-provincia">
               <option value="">Elige…</option>
-              {PROVINCIAS.map((p) => <option value={p} disabled={TIENDA.envio.sinCobertura.includes(p)}>{p}</option>)}
+              {PROVINCIAS.map((p) => <option value={p} disabled={prod.envio.sinCobertura.includes(p)}>{p}</option>)}
             </select>
             <p class="field__error" id="e-provincia"></p>
           </div>

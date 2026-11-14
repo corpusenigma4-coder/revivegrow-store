@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
   envio_centavos INTEGER,
   total_centavos INTEGER,
   estado TEXT NOT NULL DEFAULT 'nuevo',
+  producto TEXT NOT NULL DEFAULT 'testo-gh',
   prueba INTEGER NOT NULL DEFAULT 0,
   ip_hash TEXT,
   notificado_en TEXT,

@@ -16,7 +16,32 @@ usa la B y, si el servidor falla, vuelve a ofrecer WhatsApp sin decir que el ped
 
 ---
 
-## 1. Publicar en Cloudflare Pages (sin claves en el repositorio)
+## 0. Situación actual: web en GitHub Pages (revivegrow.store)
+Las dos landings (`/` TESTO-GH y `/flo-ovarian-support/`) se publican solas en GitHub Pages con cada cambio
+en `main`. GitHub Pages **no ejecuta código de servidor**, así que hoy los pedidos funcionan con la
+modalidad A (WhatsApp con el pedido escrito; la clienta pulsa «Enviar»).
+
+### Activar el aviso automático sin mover la web (recomendado)
+Se despliega solo el servidor de pedidos como **Cloudflare Worker** (carpeta `worker/`, gratis) y la web
+le envía los pedidos. Acceso imprescindible:
+1. **Cuenta de Cloudflare** (gratuita) — para el Worker y la base de datos D1.
+2. **WhatsApp Cloud API de Meta** — token permanente, ID del número emisor y plantilla `nuevo_pedido`
+   aprobada (sección 3). El emisor debe ser un número distinto del 096 070 2682, que recibe los avisos.
+
+Pasos (una vez):
+```bash
+cd worker
+npx wrangler login
+npx wrangler d1 create revivegrow-pedidos      # copia el database_id en worker/wrangler.toml
+npx wrangler secret put WHATSAPP_TOKEN
+npx wrangler secret put IP_SALT
+npx wrangler deploy                            # da la URL https://revivegrow-pedidos.<cuenta>.workers.dev
+```
+Luego escribe en `src/config/tienda.ts` → `apiPedidos: "https://revivegrow-pedidos.<cuenta>.workers.dev/api/pedido"`.
+Desde ese momento ambas landings registran el pedido, muestran «Pedido registrado N.º …» y te llega
+el aviso a WhatsApp. Si el servidor falla, la web vuelve a ofrecer WhatsApp sin decir que se guardó.
+
+## 1. Alternativa: publicar todo en Cloudflare Pages (sin claves en el repositorio)
 
 1. Entra en <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 2. Autoriza a Cloudflare en GitHub y elige el repositorio `corpusenigma4-coder/revivegrow-store`.
