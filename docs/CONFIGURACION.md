@@ -24,7 +24,7 @@ usa la B y, si el servidor falla, vuelve a ofrecer WhatsApp sin decir que el ped
    - Framework preset: **Astro**
    - Build command: `npm run build`
    - Build output directory: `dist`
-   - Production branch: la rama donde esté la landing (hoy `claude/relaxed-babbage-hyuy2u`; `main` sigue teniendo la tienda francesa anterior).
+   - Production branch: `main`.
    - Variable de entorno: `NODE_VERSION = 22.23.4` (por si la imagen de compilación no lee `.nvmrc`).
 4. Guarda. Cloudflare publica en `https://<proyecto>.pages.dev` y recompila con cada cambio en GitHub.
 

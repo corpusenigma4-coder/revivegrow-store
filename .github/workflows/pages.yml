@@ -1,9 +1,10 @@
-# Publica la landing (vista previa) en GitHub Pages en cada cambio de la rama de trabajo,
-# para tenerla siempre lista para ver. También se puede lanzar a mano desde la pestaña Actions.
+# Publica la landing (vista previa) en GitHub Pages en cada cambio de main, para tenerla siempre
+# lista para ver. GitHub solo permite desplegar Pages desde main (regla del entorno github-pages).
+# También se puede lanzar a mano desde la pestaña Actions.
 name: Publicar landing en GitHub Pages
 on:
   push:
-    branches: [claude/relaxed-babbage-hyuy2u]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

@@ -39,8 +39,13 @@ npm run check:launch  # pendientes antes del lanzamiento
 
 Configuración de Cloudflare, D1, WhatsApp y Turnstile: [docs/CONFIGURACION.md](docs/CONFIGURACION.md).
 
+## Publicación
+Cada cambio en `main` se publica solo en **GitHub Pages** (`.github/workflows/pages.yml`).
+Los pedidos usan WhatsApp con mensaje prellenado (GitHub Pages no ejecuta la función de servidor;
+para la modalidad con base de datos y aviso automático, ver Cloudflare en docs/CONFIGURACION.md).
+
 ## Historial
 Este repositorio contenía la tienda francesa anterior de REVIVE GROW (almohada cervical, PayPal, GitHub Pages).
-Sigue intacta en la rama `main` (commit `9c5e974`) y en el historial; sus imágenes y documentos se conservan en
+Se conserva en el historial (commit `9c5e974`); sus imágenes y documentos se conservan en
 `assets-sources/archivo-tienda-fr/` y `docs/archivo-tienda-fr/`. Los flujos de publicación en GitHub Pages y el
 diagnóstico de PayPal se retiraron de esta rama para no publicar la nueva landing en el dominio anterior.
