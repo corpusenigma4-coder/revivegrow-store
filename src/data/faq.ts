@@ -1,6 +1,7 @@
 import { TIENDA } from "../config/tienda.ts";
 import { PRODUCTO, DIAS_POR_FRASCO, textoDuracion } from "../config/producto.ts";
 import { formatoUSD } from "../lib/pedido.ts";
+import { ruta } from "../lib/ruta.ts";
 
 const envio = TIENDA.envio;
 
@@ -58,7 +59,7 @@ export const FAQ: { p: string; r: string }[] = [
   },
   {
     p: "¿Puedo devolverlo?",
-    r: 'Sí, con el frasco cerrado y el sello intacto, dentro del plazo legal. Si recibes un producto dañado, equivocado o con el sello roto, lo cambiamos sin costo. Revisa la <a href="/devoluciones/">política de cambios y devoluciones</a>.',
+    r: `Sí, con el frasco cerrado y el sello intacto, dentro del plazo legal. Si recibes un producto dañado, equivocado o con el sello roto, lo cambiamos sin costo. Revisa la <a href="${ruta("/devoluciones/")}">política de cambios y devoluciones</a>.`,
   },
   {
     p: "¿Quién fabrica el producto y quién lo vende?",

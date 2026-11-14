@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import logo from "../assets/img/logo.webp";
 import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
 import { PRODUCTO } from "../config/producto";
+import { ruta } from "../lib/ruta";
 const e = TIENDA.empresa;
 const anio = new Date().getFullYear();
 ---
@@ -20,11 +21,11 @@ const anio = new Date().getFullYear();
       <nav aria-labelledby="pie-info">
         <h2 id="pie-info">Información</h2>
         <ul>
-          <li><a href="/envios/">Envíos y entregas</a></li>
-          <li><a href="/devoluciones/">Cambios y devoluciones</a></li>
-          <li><a href="/terminos/">Términos y condiciones</a></li>
-          <li><a href="/privacidad/">Política de privacidad</a></li>
-          <li><a href="/contacto/">Contacto</a></li>
+          <li><a href={ruta("/envios/")}>Envíos y entregas</a></li>
+          <li><a href={ruta("/devoluciones/")}>Cambios y devoluciones</a></li>
+          <li><a href={ruta("/terminos/")}>Términos y condiciones</a></li>
+          <li><a href={ruta("/privacidad/")}>Política de privacidad</a></li>
+          <li><a href={ruta("/contacto/")}>Contacto</a></li>
         </ul>
       </nav>
       <div>

@@ -1,0 +1,46 @@
+# Publica la landing (vista previa) en GitHub Pages en cada cambio de la rama de trabajo,
+# para tenerla siempre lista para ver. También se puede lanzar a mano desde la pestaña Actions.
+name: Publicar landing en GitHub Pages
+on:
+  push:
+    branches: [claude/relaxed-babbage-hyuy2u]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Compilar con la dirección de GitHub Pages
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Dirección publicada
+        run: echo "Landing publicada en ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"

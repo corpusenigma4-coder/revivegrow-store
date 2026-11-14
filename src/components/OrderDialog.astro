@@ -4,6 +4,7 @@ import { PAQUETES, PAQUETE_INICIAL, TIENDA } from "../config/tienda";
 import { PROVINCIAS } from "../lib/provincias";
 import { ahorroPaquete, formatoUSD } from "../lib/pedido";
 import Icon from "./Icon.astro";
+import { ruta } from "../lib/ruta";
 ---
 <dialog class="sheet" id="dlg-pedido" aria-labelledby="dlg-titulo">
   <div class="sheet__panel">
@@ -82,7 +83,7 @@ import Icon from "./Icon.astro";
         <div class="field" data-campo="acepta">
           <label class="check">
             <input type="checkbox" id="f-acepta" name="acepta" required aria-describedby="e-acepta" />
-            <span>Acepto los <a class="link" href="/terminos/" target="_blank">términos y condiciones</a> y la <a class="link" href="/privacidad/" target="_blank">política de privacidad</a>. Mis datos se usan solo para gestionar y entregar este pedido.</span>
+            <span>Acepto los <a class="link" href={ruta("/terminos/")} target="_blank">términos y condiciones</a> y la <a class="link" href={ruta("/privacidad/")} target="_blank">política de privacidad</a>. Mis datos se usan solo para gestionar y entregar este pedido.</span>
           </label>
           <p class="field__error" id="e-acepta"></p>
         </div>

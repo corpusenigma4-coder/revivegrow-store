@@ -9,6 +9,7 @@ import { PAQUETES, PAQUETE_INICIAL, TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } f
 import { PRODUCTO, DIAS_POR_FRASCO, DURACION, textoDuracion } from "../config/producto";
 import { ahorroPaquete, formatoUSD, paquetePorId } from "../lib/pedido";
 import { FAQ } from "../data/faq";
+import { ruta } from "../lib/ruta";
 
 const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
@@ -28,7 +29,7 @@ const jsonLd = [
     "@type": "Product",
     name: PRODUCTO.nombreCompleto,
     description: `${PRODUCTO.tipo}, ${PRODUCTO.capsulasPorFrasco} cápsulas.`,
-    image: new URL("/og-revivegrow-ec.jpg", TIENDA.url).href,
+    image: new URL(ruta("/og-revivegrow-ec.jpg"), Astro.site ?? TIENDA.url).href,
     brand: { "@type": "Brand", name: PRODUCTO.marca },
     offers: PAQUETES.map((p) => ({
       "@type": "Offer",

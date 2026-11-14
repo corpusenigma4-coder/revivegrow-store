@@ -1,10 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
+import { ruta } from "../lib/ruta";
 ---
 <Base title="Página no encontrada · REVIVE GROW" description="La página que buscas no existe." secundaria>
   <section class="container narrow legal" style="text-align:center">
     <h1>Página no encontrada</h1>
     <p>El enlace que seguiste no existe o cambió de dirección.</p>
-    <p><a class="btn btn--cta" href="/">Ver TESTO-GH</a></p>
+    <p><a class="btn btn--cta" href={ruta("/")}>Ver TESTO-GH</a></p>
   </section>
 </Base>

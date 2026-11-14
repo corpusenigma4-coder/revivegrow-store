@@ -15,6 +15,7 @@ import {
 } from "../lib/pedido";
 import { PAQUETES } from "../config/tienda";
 import { PRODUCTO } from "../config/producto";
+import { ruta } from "../lib/ruta";
 
 type Modo = "servidor" | "whatsapp";
 type Fbq = (...a: unknown[]) => void;
@@ -116,7 +117,7 @@ function detectarModo(): Promise<Modo> {
     try {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 3500);
-      const r = await fetch("/api/pedido", { headers: { accept: "application/json" }, signal: ctrl.signal, cache: "no-store" });
+      const r = await fetch(ruta("/api/pedido"), { headers: { accept: "application/json" }, signal: ctrl.signal, cache: "no-store" });
       clearTimeout(t);
       if (r.ok && (r.headers.get("content-type") ?? "").includes("json")) {
         const j = (await r.json()) as { activo?: boolean; turnstileSiteKey?: string | null };
@@ -373,7 +374,7 @@ $("[data-confirmar]")?.addEventListener("click", async () => {
   btn.textContent = "Registrando tu pedido…";
   const fd = new FormData(form!);
   try {
-    const r = await fetch("/api/pedido", {
+    const r = await fetch(ruta("/api/pedido"), {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({

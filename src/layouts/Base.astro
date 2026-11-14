@@ -7,6 +7,7 @@ import logo from "../assets/img/logo.webp";
 import Icon from "../components/Icon.astro";
 import Footer from "../components/Footer.astro";
 import { TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
+import { ruta } from "../lib/ruta";
 
 interface Props {
   title: string;
@@ -17,8 +18,9 @@ interface Props {
 }
 const { title, description, jsonLd = [], secundaria = false } = Astro.props;
 const vistaPrevia = TIENDA.estado !== "operativa";
-const canonical = new URL(Astro.url.pathname, TIENDA.url).href;
-const ogImage = new URL("/og-revivegrow-ec.jpg", TIENDA.url).href;
+const origen = Astro.site ?? new URL(TIENDA.url);
+const canonical = new URL(Astro.url.pathname, origen).href;
+const ogImage = new URL(ruta("/og-revivegrow-ec.jpg"), origen).href;
 const robots = vistaPrevia ? "noindex, nofollow" : "index, follow";
 const pixel = TIENDA.metaPixelId;
 ---
@@ -33,7 +35,7 @@ const pixel = TIENDA.metaPixelId;
     <link rel="canonical" href={canonical} />
     <meta name="theme-color" content="#f6f1e9" />
     <meta name="format-detection" content="telephone=no" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={ruta("/favicon.svg")} type="image/svg+xml" />
     <link rel="preload" href={fuenteLatin} as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_EC" />
@@ -65,12 +67,12 @@ const pixel = TIENDA.metaPixelId;
     )}
     <header class="header">
       <div class="container header__in">
-        <a class="header__logo" href="/" aria-label="REVIVE GROW, inicio">
+        <a class="header__logo" href={ruta("/")} aria-label="REVIVE GROW, inicio">
           <Image src={logo} alt="REVIVE GROW" height={40} widths={[167, 334]} sizes="167px" loading="eager" />
         </a>
         <div class="header__right">
           {secundaria ? (
-            <a class="header__wa" href="/#oferta"><Icon name="tag" size={18} /> Ver la oferta</a>
+            <a class="header__wa" href={ruta("/#oferta")}><Icon name="tag" size={18} /> Ver la oferta</a>
           ) : (
             <span class="header__cod"><Icon name="cash" size={20} /> Pagas al recibir</span>
           )}
