@@ -63,7 +63,19 @@ Solo lo que muestra el frente del envase: **TESTO-GH**, marca **GENETICS Nutriti
 **Multi Vitamin For Men** (multivitamínico para hombres), **60 cápsulas**. Precios iguales a la versión anterior:
 1 frasco $27,40 · 2 frascos $37,40 (120 cápsulas, ahorro $17,40 / 31,8 %).
 
-### Lo que falta y NO se inventó
+### Etiqueta posterior (13-etiqueta-posterior.webp) e imágenes 09–12
+Composición transcrita a `src/config/producto.ts`: porción 2 cápsulas, 30 porciones (**30 días por frasco**,
+60 con 2). D3 20 mcg, B6 1,4 mg, B12 2,4 mcg, zinc 10 mg, magnesio 300 mg, ácido D-aspártico 500 mg,
+fenogreco 250 mg, Tribulus terrestris 250 mg, ashwagandha KSM-66® 200 mg, extracto de maca 150 mg. Sin hormonas.
+Uso en la página: galería del hero (frente, «Tu rutina empieza contigo», etiqueta), «Lo que contiene» (vitaminas
+y minerales; botánicos), «Parte de una buena rutina» en el modo de uso, y la etiqueta ampliable.
+**Alertas de la etiqueta:** Lote y Caducidad en blanco; código de barras con apariencia de ejemplo
+(7501234560012); no indica fabricante, importador ni Notificación Sanitaria; dice «Optimizador hormonal natural»,
+«Potencia la testosterona y el GH», «Aumenta masa muscular» y, en el modo de uso, «apoyar la liberación nocturna
+de GH». Esas frases no se repiten en la web (el modo de uso se cita sin la frase de GH). Las imágenes siguen
+mostrando textos sin sentido («PITASETINE NERIM GRTON», «GEENTICS»): pedir fotos del frasco físico.
+
+### Lo que falta y NO se inventó (histórico, antes de recibir la etiqueta)
 No hay etiqueta posterior: **composición, cantidades, dosis, días por frasco, fabricante, advertencias,
 Notificación Sanitaria y lote/caducidad son desconocidos.** La página lo dice con honestidad y ofrece
 «Pedir foto de la etiqueta» por WhatsApp. Al completar `src/config/producto.ts`, la tabla nutricional,

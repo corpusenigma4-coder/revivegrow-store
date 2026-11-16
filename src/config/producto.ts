@@ -1,11 +1,9 @@
 /**
  * FICHA DEL PRODUCTO — TESTO-GH
  * ------------------------------------------------------------
- * Fuente: foto frontal del frasco (assets-sources/testo-gh/07-frasco-frontal.webp).
- * Los materiales recibidos NO incluyen la etiqueta posterior: composición, cantidades,
- * dosis, fabricante y advertencias están en `null` y NO se inventan.
- * Cuando el proveedor envíe fotos reales de la etiqueta posterior, completa estos campos:
- * las secciones correspondientes de la página aparecen solas.
+ * Fuentes: frente del frasco (assets-sources/testo-gh/07-frasco-frontal.webp) y etiqueta
+ * posterior (13-etiqueta-posterior.webp): composición, porción, modo de uso y advertencias.
+ * La etiqueta posterior tiene Lote y Caducidad EN BLANCO y no indica fabricante ni Notificación Sanitaria.
  */
 export interface Activo { nombre: string; cantidad: string; vdr?: string | null; detalle?: string }
 
@@ -48,16 +46,36 @@ export const PRODUCTO: FichaProducto = {
   marca: "GENETICS Nutrition & Business",
   capsulasPorFrasco: 60,
   proveedor: "NOVA SHOP",
+  // La etiqueta posterior dice "Distribuido por GENETICS®" (www.genetics-nb.com); no indica fabricante.
   fabricante: null,
   // Especificación de NOVA SHOP: "Envase de 60 cápsulas (tratamiento para un mes completo)".
   duracionProveedor: { diasPorFrasco: 30, texto: "aprox. 1 mes" },
-  porcion: null,
-  modoDeUso: null,
+  // Etiqueta posterior: porción 2 cápsulas, 30 porciones por envase ("60 cápsulas · 30 días de suministro").
+  porcion: { capsulas: 2, porcionesPorEnvase: 30 },
+  // Literal de la etiqueta, sin la frase final sobre la hormona de crecimiento (afirmación no publicable).
+  modoDeUso:
+    "Tomar 2 cápsulas al día con una comida: 30 minutos antes de entrenar en días de ejercicio, o antes de dormir en días de descanso. No exceder la dosis.",
   publico: null,
   almacenamiento: null,
   ingredientes: null,
-  activos: [],
-  advertencias: [],
+  activos: [
+    { nombre: "Vitamina D3", cantidad: "20 mcg", vdr: "100 %" },
+    { nombre: "Vitamina B6", cantidad: "1,4 mg", vdr: "109 %" },
+    { nombre: "Vitamina B12", cantidad: "2,4 mcg", vdr: "100 %" },
+    { nombre: "Zinc", cantidad: "10 mg", vdr: "100 %" },
+    { nombre: "Magnesio", cantidad: "300 mg", vdr: "80 %" },
+    { nombre: "Ácido D-aspártico", cantidad: "500 mg", vdr: null },
+    { nombre: "Fenogreco", cantidad: "250 mg", vdr: null, detalle: "50 % saponinas" },
+    { nombre: "Tribulus terrestris", cantidad: "250 mg", vdr: null },
+    { nombre: "Ashwagandha KSM-66®", cantidad: "200 mg", vdr: null },
+    { nombre: "Extracto de maca", cantidad: "150 mg", vdr: null },
+  ],
+  advertencias: [
+    "Mantener fuera del alcance de los niños.",
+    "No usar en menores de 15 años, embarazadas o lactantes.",
+    "Los complementos no sustituyen una dieta variada y un estilo de vida saludable.",
+    "Consulte a su médico.",
+  ],
 };
 
 /** Días que rinde un frasco según la dosis de la etiqueta; null mientras no se conozca la dosis. */
@@ -91,6 +109,8 @@ export const VERIFICACION_PRODUCTO = {
   /** La etiqueta aprobada en la Notificación Sanitaria coincide con el frasco que se vende, incluidas las
    *  leyendas impresas ("Increase Testosterone", "Increase Muscle Mass", "Support Libido"). */
   etiquetaCoincideConNotificacion: false,
-  /** Composición revisada: sin hormonas ni sustancias prohibidas (el nombre "GH" puede sugerir hormona de crecimiento). */
+  /** Composición revisada: sin hormonas ni sustancias prohibidas (el nombre "GH" puede sugerir hormona de crecimiento).
+   *  La etiqueta posterior recibida declara vitaminas, minerales, ácido D-aspártico y extractos vegetales (sin hormonas);
+   *  falta confirmarlo con la Notificación Sanitaria y un frasco físico. */
   composicionRevisada: false,
 };

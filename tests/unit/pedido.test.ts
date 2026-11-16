@@ -27,26 +27,27 @@ test("ahorro real del paquete doble frente a 2 frascos individuales", () => {
   assert.equal(ahorroPaquete(uno).ahorroCentavos, 0);
 });
 
-test("duración: sin dosis confirmada no se calcula; con dosis sí", () => {
-  assert.equal(diasDeConsumo(dos), null);
-  assert.equal(costoPorDiaCentavos(dos), null);
-  assert.equal(diasDeConsumo(uno, 30), 30);
-  assert.equal(diasDeConsumo(dos, 30), 60);
-  assert.equal(costoPorDiaCentavos(dos, 30), 62);
+test("TESTO-GH: 2 cápsulas al día según la etiqueta → 30 días por frasco", () => {
+  assert.equal(diasDeConsumo(uno), 30);
+  assert.equal(diasDeConsumo(dos), 60);
+  assert.equal(costoPorDiaCentavos(dos), 62);
+  assert.equal(costoPorDiaCentavos(uno), 91);
+  assert.equal(diasDeConsumo(dos, null), null);
 });
 
-test("producto TESTO-GH: 60 cápsulas, sin composición inventada", () => {
+test("producto TESTO-GH: 60 cápsulas y composición transcrita de la etiqueta", () => {
   assert.equal(PRODUCTO.nombre, "TESTO-GH");
   assert.equal(PRODUCTO.capsulasPorFrasco, 60);
   assert.equal(dos.capsulas, 120);
-  assert.equal(PRODUCTO.ingredientes, null);
-  assert.equal(PRODUCTO.modoDeUso, null);
+  assert.deepEqual(PRODUCTO.porcion, { capsulas: 2, porcionesPorEnvase: 30 });
+  assert.equal(PRODUCTO.activos.length, 10);
+  assert.ok(!/GH|hormona/i.test(PRODUCTO.modoDeUso ?? ""), "el modo de uso no repite la afirmación sobre GH");
 });
 
-test("duración del proveedor: aproximada y marcada como dato del proveedor", () => {
-  assert.equal(DURACION?.fuente, "proveedor");
-  assert.equal(textoDuracion(1), "aprox. 1 mes");
-  assert.equal(textoDuracion(2), "aprox. 2 meses");
+test("duración: la etiqueta reemplaza la estimación del proveedor", () => {
+  assert.equal(DURACION?.fuente, "etiqueta");
+  assert.equal(textoDuracion(1), "30 días");
+  assert.equal(textoDuracion(2), "60 días");
 });
 
 test("paquete doble preseleccionado y destacado", () => {

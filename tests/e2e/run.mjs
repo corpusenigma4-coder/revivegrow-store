@@ -65,9 +65,9 @@ try {
     await page.goto(BASE + "/");
     await assert.doesNotReject(page.waitForSelector("h1:has-text('TESTO-GH')"));
     const texto = await page.textContent("body");
-    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "Pedir foto de la etiqueta", "aprox. 1 mes", "aprox. 2 meses", "indicada por el proveedor", "$18,70 por mes aprox."])
+    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "10 ingredientes", "30 días", "60 días", "$0,62 por día", "Ácido D-aspártico", "Ashwagandha KSM-66®", "500 mg", "Vitamina D3", "No usar en menores de 15 años", "Revisa la etiqueta"])
       assert.ok(texto.includes(t), `falta «${t}»`);
-    for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "hormona", "anabólic", "grasa", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso", "maca"])
+    for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "optimizador hormonal", "hormona de crecimiento", "liberación nocturna", "anabólic", "grasa", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso"])
       assert.ok(!texto.toLowerCase().includes(prohibido.toLowerCase()), `texto no permitido: «${prohibido}»`);
     assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true, "2 frascos preseleccionado");
     const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -184,21 +184,29 @@ try {
     await ctx.close();
   });
 
-  await prueba("WhatsApp flotante y solicitud de foto de la etiqueta", async () => {
+  await prueba("WhatsApp flotante, galería y etiqueta ampliable", async () => {
     const { ctx, page } = await nuevaPagina();
     await page.goto(BASE + "/");
     const href = await page.getAttribute(".fab", "href");
     assert.ok(href.startsWith("https://wa.me/593960702682?text="));
     assert.match(decodeURIComponent(href), /TESTO-GH/);
-    const et = await page.getAttribute("a:has-text('Pedir foto de la etiqueta')", "href");
-    assert.match(decodeURIComponent(et), /etiqueta posterior de TESTO-GH/);
+    // Galería del hero: 3 imágenes, se desliza y los puntos siguen la posición
+    assert.equal(await page.locator("[data-galeria] .gal__slide").count(), 3);
+    await page.locator("[data-gal-track]").evaluate((t) => t.scrollTo({ left: t.clientWidth * 2 }));
+    await page.waitForFunction(() => document.querySelectorAll("[data-gal-dot]")[2].classList.contains("is-on"));
+    await page.screenshot({ path: `${OUT}/movil-galeria-etiqueta.png` });
+    // Etiqueta ampliable
+    const b = page.locator("[data-ampliar]").first();
+    await b.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    await b.click();
+    await page.waitForSelector("#dlg-imagen[open] img[src*='etiqueta']");
     await ctx.close();
   });
 
   await prueba("Escritorio: diseño a dos columnas y diálogo centrado", async () => {
     const { ctx, page, errores } = await nuevaPagina({ viewport: { width: 1366, height: 860 } });
     await page.goto(BASE + "/");
-    await page.waitForFunction(() => [...document.querySelectorAll(".hero__media img")].every((i) => i.complete && i.naturalWidth > 0));
+    await page.waitForFunction(() => [...document.querySelectorAll(".hero__media img[loading=eager]")].every((i) => i.complete && i.naturalWidth > 0));
     await page.screenshot({ path: `${OUT}/escritorio-inicio.png` });
     await revelarTodo(page);
     await page.screenshot({ path: `${OUT}/escritorio-completa.png`, fullPage: true });

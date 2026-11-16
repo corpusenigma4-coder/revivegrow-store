@@ -1,28 +1,47 @@
 ---
-import { Picture } from "astro:assets";
+import { Picture, getImage } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
 import PackSelector from "../components/PackSelector.astro";
 import OrderDialog from "../components/OrderDialog.astro";
+import Galeria from "../components/Galeria.astro";
 import frasco from "../assets/img/testo-gh-frasco.webp";
+import rutinaEmpieza from "../assets/img/testo/rutina-empieza.webp";
+import etiqueta from "../assets/img/testo/etiqueta.webp";
+import contiene from "../assets/img/testo/contiene.webp";
+import botanicos from "../assets/img/testo/botanicos.webp";
+import buenaRutina from "../assets/img/testo/buena-rutina.webp";
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, enlaceWhatsApp, MENSAJE_CONSULTA } from "../config/tienda";
-import { PRODUCTO, DIAS_POR_FRASCO, DURACION, textoDuracion } from "../config/producto";
-import { ahorroPaquete, formatoUSD, paquetePorId } from "../lib/pedido";
+import { PRODUCTO, DURACION, textoDuracion } from "../config/producto";
+import { ahorroPaquete, costoPorDiaCentavos, formatoUSD, paquetePorId } from "../lib/pedido";
 import { FAQ } from "../data/faq";
 import { ruta } from "../lib/ruta";
 import { CATALOGO } from "../config/catalogo";
 
+const testo = CATALOGO["testo-gh"];
 const dos = paquetePorId("dos")!;
 const uno = paquetePorId("uno")!;
 const ahorro = ahorroPaquete(dos);
 const inicial = paquetePorId(PAQUETE_INICIAL)!;
 const waPedido = enlaceWhatsApp("Hola REVIVE GROW, quiero hacer un pedido de TESTO-GH con pago contra entrega.");
-const waEtiqueta = enlaceWhatsApp("Hola REVIVE GROW, ¿me pueden enviar la foto de la etiqueta posterior de TESTO-GH (ingredientes y modo de uso)?");
 const formas = TIENDA.pago.formasAlRecibir;
-const tieneComposicion = PRODUCTO.activos.length > 0 || Boolean(PRODUCTO.ingredientes);
+const dias = DURACION?.diasPorFrasco ?? 30;
+const porDia = costoPorDiaCentavos(dos, testo.diasPorFrasco);
+const zoomEtiqueta = await getImage({ src: etiqueta, format: "webp", width: 1024 });
+
+/** Composición de la etiqueta posterior, en dos grupos. */
+const porNombre = (n: string) => PRODUCTO.activos.find((a) => a.nombre.startsWith(n))!;
+const vitaminas = ["Vitamina D3", "Vitamina B6", "Vitamina B12", "Zinc", "Magnesio"].map(porNombre);
+const botanicosLista = [
+  { a: porNombre("Ácido D-aspártico"), t: "Aminoácido: es el componente con mayor cantidad por porción." },
+  { a: porNombre("Fenogreco"), t: "Semilla de uso tradicional en la cocina de la India y el Mediterráneo; extracto con 50 % de saponinas." },
+  { a: porNombre("Tribulus"), t: "Extracto de Tribulus terrestris, planta de flores amarillas." },
+  { a: porNombre("Ashwagandha"), t: "Extracto de raíz de ashwagandha (Withania somnifera), planta de la tradición ayurvédica." },
+  { a: porNombre("Extracto de maca"), t: "Raíz andina, parte de la alimentación tradicional de los Andes." },
+];
 
 const titulo = "TESTO-GH Multi Vitamin For Men | Pago contra entrega en Ecuador · REVIVE GROW";
-const descripcion = `TESTO-GH, multivitamínico para hombres de ${PRODUCTO.marca}. ${PRODUCTO.capsulasPorFrasco} cápsulas por frasco. 2 frascos por ${formatoUSD(dos.precioCentavos)} (ahorras ${formatoUSD(ahorro.ahorroCentavos)}). Pagas al recibir.`;
+const descripcion = `TESTO-GH de ${PRODUCTO.marca}: vitaminas, minerales y extractos botánicos en 2 cápsulas al día. ${PRODUCTO.capsulasPorFrasco} cápsulas (${dias} días). 2 frascos por ${formatoUSD(dos.precioCentavos)} (ahorras ${formatoUSD(ahorro.ahorroCentavos)}). Pagas al recibir.`;
 
 const jsonLd = [
   {
@@ -44,26 +63,38 @@ const jsonLd = [
   },
 ];
 const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFormat: "webp" as const, quality: 80, widths: [480, 760, 1024] };
+const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as const, quality: 78, widths: [480, 760, 1100] };
 ---
-<Base title={titulo} description={descripcion} jsonLd={jsonLd} producto={CATALOGO["testo-gh"]}>
+<Base title={titulo} description={descripcion} jsonLd={jsonLd} producto={testo}>
   <!-- ============================================================ HERO + OFERTA -->
   <section class="hero" aria-labelledby="titulo-producto">
     <div class="container hero__grid">
-      <figure class="hero__media hero__media--studio">
-        <Picture {...fotoProps} sizes="(min-width: 920px) 560px, 100vw" alt="Frasco de TESTO-GH Multi Vitamin For Men, 60 cápsulas" loading="eager" fetchpriority="high" />
-        <span class="hero__price">2 frascos · {formatoUSD(dos.precioCentavos)} <small>Ahorras {formatoUSD(ahorro.ahorroCentavos)}</small></span>
-        <div class="hero__tags">
-          <span class="tag"><Icon name="capsule" size={15} /> {PRODUCTO.capsulasPorFrasco} cápsulas</span>
-          <span class="tag"><Icon name="user" size={15} /> Para hombres</span>
-        </div>
+      <figure class="hero__media hero__media--studio hero__media--galeria">
+        <Galeria
+          etiqueta="Fotos de TESTO-GH"
+          diapositivas={[
+            { src: frasco, alt: "Frasco de TESTO-GH Multi Vitamin For Men, 60 cápsulas", fondo: "#fdfdfd" },
+            { src: rutinaEmpieza, alt: "TESTO-GH, multivitamínico para hombres de 60 cápsulas, sobre un pedestal", fondo: "#011333" },
+            { src: etiqueta, alt: "Etiqueta posterior de TESTO-GH con la información nutricional, el modo de uso y las advertencias", fondo: "#fefefe" },
+          ]}
+        >
+          <Fragment slot="primera">
+            <span class="hero__price">2 frascos · {formatoUSD(dos.precioCentavos)} <small>Ahorras {formatoUSD(ahorro.ahorroCentavos)}</small></span>
+          </Fragment>
+        </Galeria>
       </figure>
 
       <div class="buy" id="comprar">
         <span class="eyebrow">{PRODUCTO.marca}</span>
         <h1 id="titulo-producto">TESTO-GH <span>Multivitamínico para hombres · {PRODUCTO.capsulasPorFrasco} cápsulas</span></h1>
         <p class="buy__lead">
-          Un complemento en cápsulas pensado para hombres con una rutina activa. Pídelo hoy y <strong>pagas cuando lo recibes</strong>.
+          Vitaminas, minerales y extractos botánicos en <strong>2 cápsulas al día</strong>. Pídelo hoy y <strong>pagas cuando lo recibes</strong>.
         </p>
+        <ul class="chips" aria-label="Datos clave">
+          <li class="chip"><Icon name="capsule" size={16} /> 10 ingredientes</li>
+          <li class="chip"><Icon name="clock" size={16} /> {dias} días por frasco</li>
+          <li class="chip"><Icon name="user" size={16} /> Para hombres</li>
+        </ul>
 
         <PackSelector grupo="hero" />
         <p class="pack-note" data-aviso-paquete hidden></p>
@@ -85,7 +116,7 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
         {DURACION && (
           <p class="small">
             {DURACION.fuente === "etiqueta"
-              ? `* Duración calculada con la dosis de la etiqueta: ${DURACION.diasPorFrasco} días por frasco.`
+              ? `* Duración calculada con la dosis de la etiqueta: 2 cápsulas al día, ${DURACION.diasPorFrasco} días por frasco.`
               : "* Duración aproximada indicada por el proveedor (60 cápsulas para un mes). Sigue siempre el modo de uso impreso en el frasco."}
           </p>
         )}
@@ -93,67 +124,34 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
     </div>
   </section>
 
-  <!-- ============================================================ PRODUCTO -->
-  <section class="section section--white" id="producto" aria-labelledby="t-producto">
+  <!-- ============================================================ LO QUE CONTIENE -->
+  <section class="section section--white" id="formula" aria-labelledby="t-formula">
     <div class="container">
       <div class="head" data-reveal>
-        <span class="eyebrow">Qué es</span>
-        <h2 id="t-producto">Tu multivitamínico, en un frasco práctico</h2>
-        <p class="lead">TESTO-GH se presenta como <em>Multi Vitamin For Men</em>: un multivitamínico en cápsulas pensado para el hombre activo, que entrena, trabaja y quiere cuidar su alimentación con un solo producto.</p>
-      </div>
-      <div class="grid grid--3">
-        <article class="card ingr" data-reveal>
-          <div class="ingr__top">
-            <span class="ingr__icon"><Icon name="user" size={28} /></span>
-            <div class="ingr__qty"><strong>Hombres</strong><small>adultos</small></div>
-          </div>
-          <h3>Multi Vitamin For Men</h3>
-          <p>Así lo identifica su envase: un multivitamínico pensado para el hombre adulto que cuida su alimentación y su rutina.</p>
-        </article>
-        <article class="card ingr" data-reveal>
-          <div class="ingr__top">
-            <span class="ingr__icon"><Icon name="capsule" size={28} /></span>
-            <div class="ingr__qty"><strong>{PRODUCTO.capsulasPorFrasco}</strong><small>cápsulas por frasco</small></div>
-          </div>
-          <h3>Formato en cápsulas</h3>
-          <p>Fácil de llevar y de tomar. {textoDuracion(1) ? `Cada frasco rinde ${textoDuracion(1)}${DURACION?.fuente === "proveedor" ? " según el proveedor" : ""}; con 2 frascos recibes ${dos.capsulas} cápsulas.` : `Con el paquete de 2 frascos recibes ${dos.capsulas} cápsulas.`}</p>
-        </article>
-        <article class="card ingr" data-reveal>
-          <div class="ingr__top">
-            <span class="ingr__icon"><Icon name="shield" size={28} /></span>
-            <div class="ingr__qty"><strong>Sellado</strong><small>de fábrica</small></div>
-          </div>
-          <h3>{PRODUCTO.marca}</h3>
-          <p>Frasco original con sello de seguridad en la tapa. Verifica que esté intacto al recibirlo.</p>
-        </article>
+        <span class="eyebrow">Lo que contiene</span>
+        <h2 id="t-formula">10 ingredientes en 2 cápsulas al día</h2>
+        <p class="lead">Cantidades por porción diaria, tal como figuran en la etiqueta del frasco.</p>
       </div>
 
-      {tieneComposicion ? (
-        <div class="split" style="margin-top:1.5rem">
-          {PRODUCTO.activos.length > 0 && (
-            <table class="facts">
-              <caption>Información nutricional{PRODUCTO.porcion && ` · porción ${PRODUCTO.porcion.capsulas} cápsulas`}</caption>
-              <thead><tr><th scope="col">Nutriente</th><th scope="col">Por porción</th><th scope="col">%VDR</th></tr></thead>
-              <tbody>{PRODUCTO.activos.map((a) => <tr><td>{a.nombre}</td><td>{a.cantidad}</td><td>{a.vdr ?? "*"}</td></tr>)}</tbody>
-            </table>
-          )}
-          {PRODUCTO.ingredientes && (
-            <details class="details" open>
-              <summary>Ingredientes <Icon name="chevron" size={20} /></summary>
-              <div class="details__body"><p>{PRODUCTO.ingredientes}</p></div>
-            </details>
-          )}
+      <div class="mix" data-reveal>
+        <div class="mix__img"><Picture src={contiene} {...imgProps} sizes="(min-width: 920px) 520px, 100vw" alt="TESTO-GH: vitaminas D3, B6 y B12; minerales zinc y magnesio" loading="lazy" /></div>
+        <div class="mix__body">
+          <h3>Vitaminas y minerales</h3>
+          <ul class="rows">
+            {vitaminas.map((a) => <li><span>{a.nombre}</span><b>{a.cantidad}</b><small>{a.vdr} VD</small></li>)}
+          </ul>
         </div>
-      ) : (
-        <div class="note" style="margin-top:1.25rem" data-reveal>
-          <Icon name="info" size={20} />
-          <span>
-            <strong>Composición y modo de uso:</strong> los publicaremos tal como figuran en la etiqueta posterior del frasco.
-            Si quieres verlos antes de pedir, te enviamos la foto de la etiqueta por WhatsApp.
-            <a class="link" href={waEtiqueta} target="_blank" rel="noopener" data-evento="Contact">Pedir foto de la etiqueta</a>
-          </span>
+      </div>
+
+      <div class="mix mix--rev" data-reveal>
+        <div class="mix__img"><Picture src={botanicos} {...imgProps} sizes="(min-width: 920px) 520px, 100vw" alt="TESTO-GH junto a fenogreco, ashwagandha y tribulus" loading="lazy" /></div>
+        <div class="mix__body">
+          <h3>Botánicos y aminoácido</h3>
+          <ul class="rows rows--desc">
+            {botanicosLista.map(({ a, t }) => <li><span>{a.nombre}{a.detalle && <em> · {a.detalle}</em>}</span><b>{a.cantidad}</b><p>{t}</p></li>)}
+          </ul>
         </div>
-      )}
+      </div>
     </div>
   </section>
 
@@ -167,13 +165,13 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
       <div class="grid grid--4">
         <article class="card why" data-reveal>
           <span class="why__icon"><Icon name="capsule" /></span>
-          <h3>Formato práctico</h3>
-          <p>Cápsulas listas para integrar a tu día, en casa, en el trabajo o después de entrenar.</p>
+          <h3>Todo en un frasco</h3>
+          <p>Vitaminas, minerales y botánicos juntos: no necesitas combinar varios productos.</p>
         </article>
         <article class="card why" data-reveal>
           <span class="why__icon"><Icon name="tag" /></span>
           <h3>Mejor precio x2</h3>
-          <p>{dos.capsulas} cápsulas por {formatoUSD(dos.precioCentavos)}: cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
+          <p>{dos.capsulas} cápsulas ({dias * 2} días) por {formatoUSD(dos.precioCentavos)}: cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
         </article>
         <article class="card why" data-reveal>
           <span class="why__icon"><Icon name="chat" /></span>
@@ -189,44 +187,46 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
     </div>
   </section>
 
-  <!-- ============================================================ USO Y PRECAUCIONES -->
+  <!-- ============================================================ RUTINA -->
   <section class="section section--white" id="uso" aria-labelledby="t-uso">
     <div class="container split">
+      <div class="mix__img" data-reveal>
+        <Picture src={buenaRutina} {...imgProps} sizes="(min-width: 920px) 560px, 100vw" alt="Hombre desayunando junto a un frasco de TESTO-GH: alimentación, movimiento y descanso" loading="lazy" />
+      </div>
       <div class="stack" data-reveal>
         <span class="eyebrow">Cómo se toma</span>
-        <h2 id="t-uso" style="font-size:var(--fs-h2)">Sigue la etiqueta, sin excederte</h2>
-        {PRODUCTO.modoDeUso ? (
-          <p class="lead">Según la etiqueta: {PRODUCTO.modoDeUso} {PRODUCTO.publico}</p>
-        ) : (
-          <p class="lead">Toma TESTO-GH siguiendo el modo de uso impreso en la etiqueta del frasco y no superes la dosis recomendada.</p>
-        )}
-        {DIAS_POR_FRASCO && (
-          <div class="duration">
-            <div><strong>{DIAS_POR_FRASCO} días</strong><span>con 1 frasco ({uno.capsulas} cápsulas)</span></div>
-            <div><strong>{DIAS_POR_FRASCO * 2} días</strong><span>con 2 frascos ({dos.capsulas} cápsulas)</span></div>
-          </div>
-        )}
-        {PRODUCTO.almacenamiento && <p class="note"><Icon name="box" size={20} /> <span>{PRODUCTO.almacenamiento}</span></p>}
+        <h2 id="t-uso" style="font-size:var(--fs-h2)">2 cápsulas al día, con una comida</h2>
+        <p class="lead">Según la etiqueta: {PRODUCTO.modoDeUso}</p>
+        <div class="duration">
+          <div><strong>{dias} días</strong><span>con 1 frasco ({uno.capsulas} cápsulas)</span></div>
+          <div><strong>{dias * 2} días</strong><span>con 2 frascos{porDia ? ` · ${formatoUSD(porDia)} al día` : ""}</span></div>
+        </div>
+        <p class="note"><Icon name="info" size={20} /> <span>Es un complemento: funciona como parte de tus hábitos de alimentación, movimiento y descanso, no los reemplaza.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ETIQUETA -->
+  <section class="section" id="etiqueta" aria-labelledby="t-etiqueta">
+    <div class="container split">
+      <div class="stack" data-reveal>
+        <span class="eyebrow">Transparencia</span>
+        <h2 id="t-etiqueta" style="font-size:var(--fs-h2)">Revisa la etiqueta antes de pedir</h2>
+        <button type="button" class="label-btn" data-ampliar={zoomEtiqueta.src} data-alt="Etiqueta posterior de TESTO-GH" aria-label="Ampliar la etiqueta posterior de TESTO-GH">
+          <Picture src={etiqueta} {...imgProps} widths={[480, 760]} sizes="(min-width: 920px) 520px, 100vw" alt="Etiqueta posterior de TESTO-GH: información nutricional, modo de uso y advertencias" loading="lazy" />
+          <span class="zoom"><Icon name="zoom" size={14} /> Ampliar</span>
+        </button>
       </div>
       <div class="stack" data-reveal>
         <details class="details" open>
-          <summary>{PRODUCTO.advertencias.length ? "Advertencias de la etiqueta" : "Antes de consumirlo"} <Icon name="chevron" size={20} /></summary>
+          <summary>Advertencias de la etiqueta <Icon name="chevron" size={20} /></summary>
           <div class="details__body">
-            <ul class="warnings">
-              {(PRODUCTO.advertencias.length
-                ? PRODUCTO.advertencias
-                : [
-                    "Producto para hombres adultos. Manténgase fuera del alcance de los niños.",
-                    "No apto para mujeres embarazadas o en período de lactancia.",
-                    "Si tomas algún medicamento o tienes una condición de salud, consulta a tu médico antes de consumirlo.",
-                    "No superes la dosis recomendada en la etiqueta.",
-                    "No lo uses si el sello de seguridad está roto o no lo tiene.",
-                  ]
-              ).map((a) => <li><Icon name="alert" size={16} /> {a}</li>)}
-            </ul>
+            <ul class="warnings">{PRODUCTO.advertencias.map((a) => <li><Icon name="alert" size={16} /> {a}</li>)}</ul>
           </div>
         </details>
+        <p class="note note--warn"><Icon name="alert" size={20} /> <span><strong>Nota de REVIVE GROW:</strong> consulta a tu médico antes de tomarlo si tienes alguna condición de tiroides, hígado o presión arterial, o si tomas medicamentos. Producto para hombres adultos.</span></p>
         <p class="note"><Icon name="info" size={20} /> <span>Es un suplemento alimenticio: complementa tu alimentación, no la reemplaza, y no sustituye ningún tratamiento médico.</span></p>
+        <p class="small">Distribuido por GENETICS®, según la etiqueta.</p>
       </div>
     </div>
   </section>
@@ -310,6 +310,13 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
   <Fragment slot="despues">
     <OrderDialog />
 
+    <dialog class="viewer" id="dlg-imagen" aria-label="Etiqueta ampliada">
+      <div class="viewer__in">
+        <img data-visor alt="" width="1024" height="1536" decoding="async" />
+        <button type="button" class="icon-btn" data-cerrar-visor aria-label="Cerrar"><Icon name="close" /></button>
+      </div>
+    </dialog>
+
     <div class="sticky" data-sticky aria-hidden="true">
       <div class="sticky__info">
         <small><span data-sel-nombre>{inicial.nombre}</span> · pagas al recibir</small>
@@ -326,4 +333,19 @@ const fotoProps = { src: frasco, formats: ["avif", "webp"] as const, fallbackFor
 
 <script>
   import "../scripts/pedido";
+
+  const visor = document.querySelector<HTMLDialogElement>("#dlg-imagen");
+  const img = visor?.querySelector<HTMLImageElement>("[data-visor]");
+  document.querySelectorAll<HTMLButtonElement>("[data-ampliar]").forEach((b) =>
+    b.addEventListener("click", () => {
+      if (!visor || !img) return;
+      img.src = b.dataset.ampliar!;
+      img.alt = b.dataset.alt ?? "";
+      visor.showModal();
+    }),
+  );
+  visor?.addEventListener("click", (e) => {
+    const t = e.target as Element;
+    if (t === visor || t.closest("[data-cerrar-visor]")) visor.close();
+  });
 </script>

@@ -9,7 +9,11 @@ const envio = TIENDA.envio;
 export const FAQ: { p: string; r: string }[] = [
   {
     p: "¿Qué es TESTO-GH?",
-    r: `Según su envase, TESTO-GH (${PRODUCTO.marca}) es un <strong>multivitamínico para hombres</strong> (Multi Vitamin For Men) en cápsulas. Cada frasco trae <strong>${PRODUCTO.capsulasPorFrasco} cápsulas</strong>.${PRODUCTO.ingredientes ? ` Ingredientes: ${PRODUCTO.ingredientes}` : ""}`,
+    r: `Según su envase, TESTO-GH (${PRODUCTO.marca}) es un <strong>multivitamínico para hombres</strong> (Multi Vitamin For Men) en cápsulas. Cada frasco trae <strong>${PRODUCTO.capsulasPorFrasco} cápsulas</strong>. Por porción de 2 cápsulas contiene: ${PRODUCTO.activos.map((a) => `${a.nombre} ${a.cantidad}`).join(", ")}.`,
+  },
+  {
+    p: "¿Contiene hormonas?",
+    r: "No. Según su etiqueta, sus ingredientes son vitaminas (D3, B6, B12), minerales (zinc y magnesio), ácido D-aspártico y extractos de fenogreco, tribulus, ashwagandha y maca. No es un medicamento ni un tratamiento hormonal.",
   },
   {
     p: "¿Cómo se toma?",
