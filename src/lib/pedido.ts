@@ -140,6 +140,38 @@ export function fechaCortaEcuador(fecha: Date): string {
   return `${x.dd}/${x.mm}/${x.aaaa}`;
 }
 
+/* ---------------------------------------------------------------- entrega estimada (días hábiles) */
+
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+/** Suma días hábiles (lunes a viernes) a una fecha, en hora de Ecuador. Devuelve fechas "de calendario" en UTC. */
+function sumarHabiles(desde: Date, n: number): Date {
+  const d = new Date(desde.getTime() + OFFSET_EC);
+  const f = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  let quedan = n;
+  while (quedan > 0) {
+    f.setUTCDate(f.getUTCDate() + 1);
+    const dia = f.getUTCDay();
+    if (dia !== 0 && dia !== 6) quedan--;
+  }
+  return f;
+}
+
+/** Rango estimado de entrega: hoy + `min` y + `max` días hábiles. */
+export function rangoEntrega(ahora: Date, dias: { min: number; max: number }) {
+  return { desde: sumarHabiles(ahora, dias.min), hasta: sumarHabiles(ahora, dias.max) };
+}
+
+/** "entre el miércoles 18 y el jueves 19 de noviembre" · meses distintos: "… 30 de noviembre y el martes 1 de diciembre". */
+export function textoRangoEntrega(r: { desde: Date; hasta: Date }): string {
+  const dia = (f: Date) => `${DIAS[f.getUTCDay()]} ${f.getUTCDate()}`;
+  const mes = (f: Date) => MESES[f.getUTCMonth()];
+  return r.desde.getUTCMonth() === r.hasta.getUTCMonth()
+    ? `entre el ${dia(r.desde)} y el ${dia(r.hasta)} de ${mes(r.hasta)}`
+    : `entre el ${dia(r.desde)} de ${mes(r.desde)} y el ${dia(r.hasta)} de ${mes(r.hasta)}`;
+}
+
 /* ---------------------------------------------------------------- número de pedido */
 
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O ni 1/I
@@ -279,6 +311,7 @@ export function mensajePedido({ numero, fecha, datos, paquete, prueba, producto 
     `Precio del paquete: ${formatoUSD(paquete.precioCentavos)}`,
     `Envío: ${t.envio.estado === "definido" ? textoEnvio(t.envio) : "por confirmar"}`,
     `Total: ${textoTotal(t)}`,
+    producto.envio.plazo ? `Entrega estimada: ${producto.envio.plazo}` : null,
     "",
     "Pago: contra entrega (pago al recibir).",
   ];

@@ -13,6 +13,7 @@ import Icon from "../components/Icon.astro";
 import PackSelector from "../components/PackSelector.astro";
 import OrderDialog from "../components/OrderDialog.astro";
 import Galeria from "../components/Galeria.astro";
+import Urgencia from "../components/Urgencia.astro";
 import principal from "../assets/img/cinturon/principal.webp";
 import funciones from "../assets/img/cinturon/funciones.webp";
 import infografia from "../assets/img/cinturon/infografia.webp";
@@ -117,6 +118,8 @@ const detalles = [
           <li class="chip"><Icon name="ajuste" size={16} /> Ajustable</li>
           <li class="chip"><Icon name="usb" size={16} /> USB 5 V</li>
         </ul>
+
+        <Urgencia producto={prod} />
 
         <PackSelector grupo="hero" producto={prod} titulo="Elige tu paquete Black Friday" />
         <p class="pack-note" data-aviso-paquete hidden></p>
@@ -283,6 +286,7 @@ const detalles = [
             Uno para ti y otro para regalar. Ahorras {formatoUSD(ahorro.ahorroCentavos)} ({formatoPorcentaje(ahorro.porcentaje)}) frente a comprar 2 por separado ({formatoUSD(ahorro.porSeparadoCentavos)}): {formatoUSD(ahorro.precioPorFrascoCentavos)} cada uno, con <strong>envío gratis</strong>.
           </p>
           <PackSelector grupo="oferta" producto={prod} titulo="Tu paquete" />
+          <Urgencia producto={prod} variante="oferta" />
           <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
             <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span> · envío gratis</span></span>
           </a>

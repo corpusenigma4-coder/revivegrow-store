@@ -16,6 +16,8 @@ export interface ConfigEnvio {
   porProvincia: Record<string, number>;
   sinCobertura: readonly string[];
   plazo: string | null;
+  /** Días hábiles de entrega para calcular las fechas estimadas (lunes a viernes). */
+  diasHabiles: { min: number; max: number } | null;
   courier: string | null;
 }
 
@@ -100,7 +102,8 @@ export const TIENDA = {
     /** Provincias sin cobertura de pago contra entrega. Ej.: ["Galápagos"] */
     sinCobertura: [] as string[],
     /** Plazo estimado, ej.: "24 a 72 horas hábiles según la ciudad". null = se informa por WhatsApp. */
-    plazo: null as string | null,
+    plazo: "2 a 3 días hábiles" as string | null,
+    diasHabiles: { min: 2, max: 3 },
     /** Empresa de mensajería. */
     courier: null as string | null,
   } as ConfigEnvio,
@@ -124,6 +127,12 @@ export const TIENDA = {
     plazoConservacion: null as string | null,
     /** ¿El proveedor (NOVA SHOP) recibe los datos del cliente para despachar? */
     proveedorRecibeDatos: null as boolean | null,
+  },
+
+  /** Urgencia real indicada por el dueño de la tienda (sin cifras ni contadores inventados). */
+  urgencia: {
+    altaDemanda: true,
+    texto: "Alta demanda: se está vendiendo rápido",
   },
 
   /** Píxel de Meta: queda inactivo mientras sea null. */

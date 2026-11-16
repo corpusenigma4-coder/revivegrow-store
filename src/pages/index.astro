@@ -5,6 +5,7 @@ import Icon from "../components/Icon.astro";
 import PackSelector from "../components/PackSelector.astro";
 import OrderDialog from "../components/OrderDialog.astro";
 import Galeria from "../components/Galeria.astro";
+import Urgencia from "../components/Urgencia.astro";
 import frasco from "../assets/img/testo-gh-frasco.webp";
 import rutinaEmpieza from "../assets/img/testo/rutina-empieza.webp";
 import etiqueta from "../assets/img/testo/etiqueta.webp";
@@ -95,6 +96,8 @@ const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as
           <li class="chip"><Icon name="clock" size={16} /> {dias} días por frasco</li>
           <li class="chip"><Icon name="user" size={16} /> Para hombres</li>
         </ul>
+
+        <Urgencia producto={testo} />
 
         <PackSelector grupo="hero" />
         <p class="pack-note" data-aviso-paquete hidden></p>
@@ -264,6 +267,7 @@ const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as
           <h2 id="t-oferta">2 frascos por solo {formatoUSD(dos.precioCentavos)}</h2>
           <p class="lead">Ahorras {formatoUSD(ahorro.ahorroCentavos)} frente a comprar 2 frascos por separado ({formatoUSD(ahorro.porSeparadoCentavos)}). Recibes {dos.capsulas} cápsulas{textoDuracion(2) && ` (${textoDuracion(2)}${DURACION?.fuente === "proveedor" ? " según el proveedor" : ""})`} y cada frasco te sale a {formatoUSD(ahorro.precioPorFrascoCentavos)}.</p>
           <PackSelector grupo="oferta" titulo="Tu paquete" />
+          <Urgencia producto={testo} variante="oferta" />
           <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
             <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span></span></span>
           </a>

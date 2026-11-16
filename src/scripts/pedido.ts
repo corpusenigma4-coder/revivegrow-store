@@ -10,7 +10,7 @@ import { TIENDA, enlaceWhatsApp } from "../config/tienda";
 import { PRODUCTO_PREDETERMINADO, productoPorId } from "../config/catalogo";
 import {
   celularVisible, costoEnvio, disponibilidad, fechaCortaEcuador, formatoUSD, mensajePedido, numeroPedido,
-  paqueteDisponible, paquetePorId, textoEnvio, textoTotal, totalPedido, validarPedido,
+  paqueteDisponible, paquetePorId, rangoEntrega, textoEnvio, textoRangoEntrega, textoTotal, totalPedido, validarPedido,
   type Campo, type DatosPedido, type Paquete,
 } from "../lib/pedido";
 import { ruta } from "../lib/ruta";
@@ -279,6 +279,8 @@ function pintarRevision(p: Paquete, datos: DatosPedido) {
     fila("Envío", t.envio.estado === "definido" ? textoEnvio(t.envio) : "Por confirmar"),
     fila("Total a pagar al recibir", textoTotal(t), "total"),
   );
+  const entrega = textoEntrega();
+  if (entrega) $("[data-resumen-pedido]")?.append(fila("Entrega estimada", entrega.replace(/^entre el /, "").replace(" y el ", " – ")));
   $("[data-resumen-entrega]")?.replaceChildren(
     fila("Nombre", datos.nombre),
     fila("Celular", celularVisible(datos.celular)),
@@ -448,9 +450,22 @@ function barraFija() {
   vigilados.forEach((v) => io.observe(v));
 }
 
+/* ================================================================ entrega estimada */
+
+function textoEntrega(): string | null {
+  const d = PROD.envio.diasHabiles;
+  return d ? textoRangoEntrega(rangoEntrega(new Date(), d)) : null;
+}
+
+function pintarEntrega() {
+  const t = textoEntrega();
+  if (t) $$("[data-entrega]").forEach((el) => (el.textContent = t));
+}
+
 /* ================================================================ inicio */
 
 fijarPaquete(estado.paquete);
 aplicarDisponibilidad();
+pintarEntrega();
 barraFija();
 if (location.hash === "#pedido") history.replaceState(null, "", location.pathname);

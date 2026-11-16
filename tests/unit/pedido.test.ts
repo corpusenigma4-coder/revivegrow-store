@@ -121,3 +121,24 @@ test("mensaje de WhatsApp con todos los datos del pedido", () => {
 });
 
 test("la tienda está operativa", () => assert.equal(TIENDA.estado, "operativa"));
+
+test("entrega estimada en días hábiles (2 a 3), saltando fines de semana", async () => {
+  const { rangoEntrega, textoRangoEntrega } = await import("../../src/lib/pedido.ts");
+  const d = { min: 2, max: 3 };
+  // Lunes 16/11/2026 10:00 en Ecuador → miércoles 18 y jueves 19
+  assert.equal(textoRangoEntrega(rangoEntrega(new Date("2026-11-16T15:00:00Z"), d)), "entre el miércoles 18 y el jueves 19 de noviembre");
+  // Jueves 19/11 → lunes 23 y martes 24
+  assert.equal(textoRangoEntrega(rangoEntrega(new Date("2026-11-19T15:00:00Z"), d)), "entre el lunes 23 y el martes 24 de noviembre");
+  // Sábado 28/11 → martes 1 y miércoles 2 de diciembre
+  assert.equal(textoRangoEntrega(rangoEntrega(new Date("2026-11-28T15:00:00Z"), d)), "entre el martes 1 y el miércoles 2 de diciembre");
+  // Jueves 26/11 → lunes 30 de noviembre y martes 1 de diciembre
+  assert.equal(textoRangoEntrega(rangoEntrega(new Date("2026-11-26T15:00:00Z"), d)), "entre el lunes 30 de noviembre y el martes 1 de diciembre");
+  // Domingo 15/11 a las 22:00 en Ecuador (lunes 03:00 UTC) cuenta desde el domingo
+  assert.equal(textoRangoEntrega(rangoEntrega(new Date("2026-11-16T03:00:00Z"), d)), "entre el martes 17 y el miércoles 18 de noviembre");
+});
+
+test("el mensaje del pedido incluye la entrega estimada", () => {
+  const v = validarPedido(valido);
+  const m = mensajePedido({ numero: "RG-1", fecha: new Date(), datos: v.datos, paquete: v.paquete! });
+  assert.ok(m.includes("Entrega estimada: 2 a 3 días hábiles"));
+});

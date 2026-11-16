@@ -1,0 +1,23 @@
+---
+/**
+ * Urgencia real + entrega estimada. La fecha se calcula en el navegador (hoy + días hábiles);
+ * sin JavaScript se muestra el plazo general. Sin contadores ni cifras inventadas.
+ */
+import Icon from "./Icon.astro";
+import { TIENDA } from "../config/tienda";
+import type { ProductoVenta } from "../config/catalogo";
+interface Props { producto: ProductoVenta; variante?: "hero" | "oferta" }
+const { producto, variante = "hero" } = Astro.props;
+const plazo = producto.envio.plazo;
+---
+<div class:list={["urg", `urg--${variante}`]}>
+  {TIENDA.urgencia.altaDemanda && variante === "hero" && (
+    <p class="urg__demanda"><span class="pulso" aria-hidden="true"></span> {TIENDA.urgencia.texto}</p>
+  )}
+  {plazo && (
+    <p class="urg__entrega">
+      <Icon name="truck" size={22} />
+      <span>Pide hoy y recíbelo <strong data-entrega>en {plazo}</strong><small>Entrega en {plazo} · pagas al recibir</small></span>
+    </p>
+  )}
+</div>
