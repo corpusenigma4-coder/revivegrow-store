@@ -10,24 +10,25 @@ import { PRODUCTO } from "../config/producto.ts";
 import { FICHA_CINTURON, ESPECIFICACIONES_CINTURON } from "../config/producto-cinturon.ts";
 import { formatoUSD } from "../lib/pedido.ts";
 
-const P = (txt: string) => `{{P:${txt}}}`;
-const v = (valor: string | null | undefined, falta: string) => (valor ? valor : P(falta));
+/** Dato pendiente: no se muestra al cliente (se ve `alt`, texto neutro); `npm run check:launch` lo lista. */
+const P = (txt: string, alt = "") => `{{P:${txt}|${alt}}}`;
+const v = (valor: string | null | undefined, falta: string, alt = "") => (valor ? valor : P(falta, alt));
 
 const e = TIENDA.empresa;
-const vendedor = `${v(e.razonSocial, "nombre o razón social del vendedor según el RUC")}, con RUC ${v(e.ruc, "número de RUC")} y domicilio en ${v(e.domicilio, "domicilio")}`;
+const vendedor = `${v(e.razonSocial, "nombre o razón social del vendedor según el RUC", "REVIVE GROW")}${e.ruc ? `, con RUC ${e.ruc}` : P("número de RUC")}${e.domicilio ? ` y domicilio en ${e.domicilio}` : P("domicilio")}`;
 const contacto = `WhatsApp ${TIENDA.whatsapp.visible}${e.correo ? ` o correo ${e.correo}` : ""}`;
 
 const envio = TIENDA.envio;
 const textoCostoEnvio =
   envio.costoCentavos === null
-    ? `El costo de envío ${P("definir tarifa de envío (src/config/tienda.ts → envio.costoCentavos)")} se informa por WhatsApp antes del despacho, y el pedido solo se despacha cuando el cliente acepta el total final.`
+    ? `El costo de envío${P("definir tarifa de envío (src/config/tienda.ts → envio.costoCentavos)")} se informa por WhatsApp antes del despacho, y el pedido solo se despacha cuando el cliente acepta el total final.`
     : envio.costoCentavos === 0
       ? "El envío no tiene costo para el cliente."
       : `El costo de envío es de ${formatoUSD(envio.costoCentavos)}${Object.keys(envio.porProvincia).length ? ", salvo en las provincias con tarifa especial que se indican al hacer el pedido" : ""}. Se muestra en el resumen antes de confirmar.`;
 
 const formasPago = TIENDA.pago.formasAlRecibir?.length
   ? `Formas de pago aceptadas al recibir: ${TIENDA.pago.formasAlRecibir.join(", ")}.`
-  : `Formas de pago aceptadas al recibir: ${P("confirmar con la empresa de mensajería (efectivo, transferencia, etc.)")}.`;
+  : `Formas de pago aceptadas al recibir: ${P("confirmar con la empresa de mensajería (efectivo, transferencia, etc.)", "las que te confirmamos por WhatsApp al coordinar la entrega")}.`;
 
 const iva =
   TIENDA.pago.preciosIncluyenIva === null
@@ -43,7 +44,7 @@ export const LEGAL: PaginaLegal[] = [
   {
     slug: "privacidad",
     titulo: "Política de privacidad",
-    descripcion: "Cómo REVIVE GROW trata los datos personales de quienes hacen pedidos en revivegrow.ec.",
+    descripcion: "Cómo REVIVE GROW trata los datos personales de quienes hacen pedidos en revivegrow.store.",
     secciones: [
       {
         titulo: "Responsable del tratamiento",
@@ -73,9 +74,9 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Con quién los compartimos",
         parrafos: [
-          `Con la empresa de mensajería que realiza la entrega (${v(envio.courier, "nombre de la empresa de mensajería")}), solo con los datos de entrega.`,
+          `Con la empresa de mensajería que realiza la entrega${envio.courier ? ` (${envio.courier})` : P("nombre de la empresa de mensajería")}, solo con los datos de entrega.`,
           TIENDA.privacidad.proveedorRecibeDatos === null
-            ? `Con el proveedor del producto, si realiza el despacho por cuenta de la tienda: ${P("confirmar si NOVA SHOP recibe los datos del cliente para despachar")}.`
+            ? `Con el proveedor del producto, si realiza el despacho por cuenta de la tienda, solo con los datos de entrega.${P("confirmar si NOVA SHOP recibe los datos del cliente para despachar")}`
             : TIENDA.privacidad.proveedorRecibeDatos
               ? "Con el proveedor del producto, que realiza el despacho por cuenta de la tienda, solo con los datos de entrega."
               : "El proveedor del producto no recibe tus datos personales.",
@@ -86,7 +87,7 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Cuánto tiempo los conservamos",
         parrafos: [
-          `Conservamos los datos del pedido durante ${v(TIENDA.privacidad.plazoConservacion, "plazo de conservación (por ejemplo, el exigido por la normativa tributaria)")}. Después se eliminan o anonimizan.`,
+          `Conservamos los datos del pedido durante ${v(TIENDA.privacidad.plazoConservacion, "plazo de conservación (por ejemplo, el exigido por la normativa tributaria)", "el tiempo necesario para gestionar el pedido y cumplir las obligaciones legales y tributarias")}. Después se eliminan o anonimizan.`,
         ],
       },
       {
@@ -123,13 +124,13 @@ export const LEGAL: PaginaLegal[] = [
       {
         titulo: "Quién vende",
         parrafos: [
-          `La tienda revivegrow.ec es operada por ${vendedor}. REVIVE GROW comercializa los productos ${PRODUCTO.nombreCompleto}, de la marca ${PRODUCTO.marca} (fabricante: ${v(PRODUCTO.fabricante, "fabricante o titular según la etiqueta posterior y la Notificación Sanitaria")}), y el ${FICHA_CINTURON.nombre} modelo ${FICHA_CINTURON.modelo}, que vende bajo su marca REVIVEGROW (proveedor: ${P("razón social del proveedor del cinturón")}). REVIVE GROW no es el fabricante de estos productos.`,
+          `La tienda ${TIENDA.dominio} es operada por ${vendedor}. REVIVE GROW comercializa los productos ${PRODUCTO.nombreCompleto}, de la marca ${PRODUCTO.marca} ${PRODUCTO.fabricante ? ` (fabricante: ${PRODUCTO.fabricante})` : P("fabricante o titular según la etiqueta posterior y la Notificación Sanitaria")}, y el ${FICHA_CINTURON.nombre} modelo ${FICHA_CINTURON.modelo}, que vende bajo su marca REVIVEGROW${P("razón social del proveedor del cinturón")}. REVIVE GROW no es el fabricante de estos productos.`,
         ],
       },
       {
         titulo: "Productos",
         parrafos: [
-          `${PRODUCTO.tipo} (Multi Vitamin For Men, según el envase). Frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas. Composición: ${v(PRODUCTO.ingredientes, "lista de ingredientes y cantidades de la etiqueta posterior")}. ${TIENDA.sanitario.notificacionSanitaria ? `Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.` : `Notificación Sanitaria: ${P("número de Notificación Sanitaria ARCSA verificado")}.`}`,
+          `${PRODUCTO.tipo} (Multi Vitamin For Men, según el envase). Frasco de ${PRODUCTO.capsulasPorFrasco} cápsulas. Composición por porción de 2 cápsulas: ${PRODUCTO.activos.map((a) => `${a.nombre} ${a.cantidad}`).join(", ")}. ${TIENDA.sanitario.notificacionSanitaria ? `Notificación Sanitaria: ${TIENDA.sanitario.notificacionSanitaria}.` : P("número de Notificación Sanitaria ARCSA verificado")}`,
           `${FICHA_CINTURON.nombreCompleto}: ${ESPECIFICACIONES_CINTURON.filter(([k]) => ["Tipo", "Zona de colocación", "Alimentación", "Largo", "Alto"].includes(k)).map(([k, x]) => `${k.toLowerCase()}: ${x}`).join("; ")}. Es un accesorio de confort; no es un dispositivo médico. Úsalo según su manual y las precauciones publicadas.`,
           "TESTO-GH es un suplemento alimenticio: no es un medicamento y no sustituye una alimentación variada ni un tratamiento médico. Lee la etiqueta, las advertencias y el modo de uso antes de consumirlo.",
         ],
@@ -193,7 +194,7 @@ export const LEGAL: PaginaLegal[] = [
         parrafos: [
           envio.sinCobertura.length
             ? `Entregamos con pago contra entrega en el Ecuador continental, excepto en: ${envio.sinCobertura.join(", ")}. ${P("confirmar cobertura exacta con la empresa de mensajería")}`
-            : `Cobertura de entrega con pago contra entrega: ${P("confirmar provincias y ciudades atendidas por la empresa de mensajería")}. Si tu localidad no tiene cobertura, te avisaremos por WhatsApp antes de despachar.`,
+            : `Entregamos con pago contra entrega en las ciudades atendidas por nuestra empresa de mensajería.${P("confirmar provincias y ciudades atendidas por la empresa de mensajería")} Si tu localidad no tiene cobertura, te avisaremos por WhatsApp antes de despachar.`,
         ],
       },
       { titulo: "Costo de envío", parrafos: [`${PRODUCTO.nombre}: ${textoCostoEnvio}`, `${FICHA_CINTURON.nombre}: envío totalmente gratis.`] },
@@ -202,18 +203,18 @@ export const LEGAL: PaginaLegal[] = [
         parrafos: [
           envio.plazo
             ? `Plazo estimado de entrega: ${envio.plazo}, contados desde la confirmación del pedido. Es un plazo estimado y puede variar por causas ajenas a la tienda.`
-            : `Plazo estimado de entrega: ${P("plazo según la empresa de mensajería")}. Te lo confirmaremos por WhatsApp según tu ciudad.`,
+            : `El plazo estimado de entrega te lo confirmamos por WhatsApp según tu ciudad.${P("plazo según la empresa de mensajería")}`,
         ],
       },
       {
         titulo: "Empresa de mensajería",
-        parrafos: [`Las entregas las realiza ${v(envio.courier, "nombre de la empresa de mensajería")}.`],
+        parrafos: [`Las entregas las realiza ${v(envio.courier, "nombre de la empresa de mensajería", "nuestra empresa de mensajería")}.`],
       },
       {
         titulo: "Al recibir",
         parrafos: [
           "Verifica que el paquete esté cerrado y que el sello de seguridad del frasco esté intacto. Si el sello está roto o falta, no lo consumas y escríbenos por WhatsApp.",
-          `Si no se logra la entrega: ${P("número de intentos de entrega y qué ocurre si el cliente no está")}.`,
+          `Si no se logra la entrega, te contactamos por WhatsApp para coordinar un nuevo intento.${P("número de intentos de entrega y qué ocurre si el cliente no está")}`,
         ],
       },
     ],
@@ -240,8 +241,8 @@ export const LEGAL: PaginaLegal[] = [
         titulo: "Cómo solicitarlo",
         parrafos: [
           `Escríbenos por WhatsApp al ${TIENDA.whatsapp.visible} indicando tu número de pedido. Te indicaremos cómo hacernos llegar el producto.`,
-          `Costo del envío de la devolución por arrepentimiento: ${v(TIENDA.devoluciones.costoEnvioDevolucion, "quién asume el costo del envío de la devolución")}.`,
-          `Reembolso: ${v(TIENDA.devoluciones.formaReembolso, "forma y plazo del reembolso")}.`,
+          `Costo del envío de la devolución por arrepentimiento: ${v(TIENDA.devoluciones.costoEnvioDevolucion, "quién asume el costo del envío de la devolución", "te lo indicamos por WhatsApp al gestionar tu solicitud")}.`,
+          `Reembolso: ${v(TIENDA.devoluciones.formaReembolso, "forma y plazo del reembolso", "por el medio que acordemos contigo por WhatsApp")}.`,
         ],
       },
     ],
@@ -253,6 +254,6 @@ export function pendientesLegales(): { pagina: string; texto: string }[] {
   const out: { pagina: string; texto: string }[] = [];
   for (const pg of LEGAL)
     for (const s of pg.secciones)
-      for (const t of [...s.parrafos, ...(s.lista ?? [])]) for (const m of t.matchAll(/\{\{P:(.+?)\}\}/g)) out.push({ pagina: pg.slug, texto: m[1] });
+      for (const t of [...s.parrafos, ...(s.lista ?? [])]) for (const m of t.matchAll(/\{\{P:(.+?)\|(.*?)\}\}/g)) out.push({ pagina: pg.slug, texto: m[1] });
   return out;
 }

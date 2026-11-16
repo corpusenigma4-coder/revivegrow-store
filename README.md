@@ -1,10 +1,10 @@
 # REVIVE GROW Ecuador — landing de venta contra entrega
 
 Landing de **TESTO-GH Multi Vitamin For Men** (GENETICS Nutrition & Business, 60 cápsulas) para Ecuador: español, USD, pago contra entrega,
-pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudflare Pages**.
+pedidos por WhatsApp. Publicada en **https://revivegrow.store** (GitHub Pages).
 
-> **Estado: vista previa.** `noindex`, aviso visible y pedidos marcados como PRUEBA hasta completar los
-> requisitos sanitarios y comerciales (`npm run check:launch`). Ver [docs/CUMPLIMIENTO.md](docs/CUMPLIMIENTO.md).
+> **Estado: operativa.** Las dos landings están abiertas a la venta e indexables. `npm run check:launch` lista
+> (solo para el dueño, nunca en la web) los datos administrativos que aún pueden completarse.
 
 ## Landings
 | Ruta | Producto | Precios |

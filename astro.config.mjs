@@ -7,7 +7,7 @@ import { defineConfig } from "astro/config";
 // la página usa automáticamente WhatsApp con mensaje prellenado.
 const base = process.env.BASE_PATH ? `${process.env.BASE_PATH.replace(/\/$/, "")}/` : "/";
 export default defineConfig({
-  site: process.env.SITE_URL || "https://revivegrow.ec",
+  site: process.env.SITE_URL || "https://revivegrow.store",
   base,
   trailingSlash: "ignore",
   build: { format: "directory", assets: "assets", inlineStylesheets: "always" },

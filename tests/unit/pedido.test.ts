@@ -120,4 +120,4 @@ test("mensaje de WhatsApp con todos los datos del pedido", () => {
   ]) assert.ok(m.includes(parte), parte);
 });
 
-test("la tienda sigue en vista previa", () => assert.equal(TIENDA.estado, "vista-previa"));
+test("la tienda está operativa", () => assert.equal(TIENDA.estado, "operativa"));

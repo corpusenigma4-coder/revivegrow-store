@@ -65,14 +65,16 @@ try {
     await page.goto(BASE + "/");
     await assert.doesNotReject(page.waitForSelector("h1:has-text('TESTO-GH')"));
     const texto = await page.textContent("body");
-    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "Vista previa", "10 ingredientes", "30 días", "60 días", "$0,62 por día", "Ácido D-aspártico", "Ashwagandha KSM-66®", "500 mg", "Vitamina D3", "No usar en menores de 15 años", "Revisa la etiqueta"])
+    for (const t of ["TESTO-GH", "Multi Vitamin For Men", "GENETICS Nutrition & Business", "$37,40", "$27,40", "AHORRA $17,40", "31,8 %", "$18,70 c/u", "$54,80", "120 cápsulas", "60 cápsulas", "PEDIR AHORA — PAGA AL RECIBIR", "Unidades limitadas", "10 ingredientes", "30 días", "60 días", "$0,62 por día", "Ácido D-aspártico", "Ashwagandha KSM-66®", "500 mg", "Vitamina D3", "No usar en menores de 15 años", "Revisa la etiqueta"])
       assert.ok(texto.includes(t), `falta «${t}»`);
     for (const prohibido of ["testosterona", "testosterone", "músculo", "masa muscular", "libido", "optimizador hormonal", "hormona de crecimiento", "liberación nocturna", "anabólic", "grasa", "más fuerza", "energía total", "garantizado", "comprobado", "certificad", "cura ", "días de uso"])
       assert.ok(!texto.toLowerCase().includes(prohibido.toLowerCase()), `texto no permitido: «${prohibido}»`);
     assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true, "2 frascos preseleccionado");
     const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     assert.ok(ancho <= 0, `desbordamiento horizontal de ${ancho}px`);
-    assert.equal(await page.getAttribute("meta[name=robots]", "content"), "noindex, nofollow");
+    assert.equal(await page.getAttribute("meta[name=robots]", "content"), "index, follow");
+    assert.equal(await page.locator(".preview-bar").count(), 0, "sin barra de vista previa");
+    assert.ok(!texto.includes("Vista previa") && !texto.includes("PRUEBA") && !texto.includes("Pendiente"), "sin avisos internos");
     await page.screenshot({ path: `${OUT}/movil-inicio.png` });
     await revelarTodo(page);
     await page.screenshot({ path: `${OUT}/movil-completa.png`, fullPage: true });
@@ -114,7 +116,8 @@ try {
     const href = await page.getAttribute("[data-enviar-wa]", "href");
     assert.ok(href.startsWith("https://wa.me/593960702682?text="));
     const msg = decodeURIComponent(href.split("text=")[1]);
-    for (const t of ["PEDIDO DE PRUEBA", "Pedido: RG-", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Producto: TESTO-GH", "Cantidad: 2 frascos (120 cápsulas)", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar", "Fecha: "])
+    assert.ok(!msg.includes("PRUEBA"), "el pedido no se marca como prueba");
+    for (const t of ["Pedido: RG-", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Provincia: Pichincha", "Ciudad/cantón: Quito", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Producto: TESTO-GH", "Cantidad: 2 frascos (120 cápsulas)", "Precio del paquete: $37,40", "Envío: por confirmar", "Total: $37,40 + envío por confirmar", "Fecha: "])
       assert.ok(msg.includes(t), `mensaje sin «${t}»`);
     await page.screenshot({ path: `${OUT}/movil-revision.png` });
     const [popup] = await Promise.all([ctx.waitForEvent("page"), page.click("[data-enviar-wa]")]);
@@ -224,7 +227,9 @@ try {
     for (const ruta of ["/", "/cinturon-termico/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
       const r = await page.goto(BASE + ruta);
       assert.equal(r.status(), 200, ruta);
-      if (!["/", "/cinturon-termico/"].includes(ruta)) assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
+      assert.equal(await page.locator("mark.pendiente, .preview-bar").count(), 0, `${ruta} muestra avisos internos`);
+      const t = await page.textContent("main");
+      for (const x of ["Pendiente", "{{P:", "PRUEBA", "Vista previa", "src/config"]) assert.ok(!t.includes(x), `${ruta} contiene «${x}»`);
       for (const h of await page.$$eval("a[href^='/']", (as) => as.map((a) => a.getAttribute("href").split("#")[0])))
         if (h && !visitadas.has(h)) { visitadas.add(h); assert.equal((await fetch(BASE + h)).status, 200, `enlace roto ${h}`); }
     }
@@ -243,7 +248,7 @@ try {
     await page.waitForSelector("h1:has-text('Cinturón térmico con masaje')");
     assert.equal(await page.getAttribute("body", "data-producto"), "cinturon");
     const texto = await page.textContent("body");
-    for (const t of ["BLACK FRIDAY", "$35,00", "$26,60", "AHORRA $18,20", "$53,20", "$17,50 c/u", "Envío totalmente gratis", "JY-2678", "Abdomen", "USB de 5 V", "100 cm, ajustable", "20 cm", "Tejido suave tipo felpa", "Banda envolvente ajustable", "Contenido del paquete", "Ajústalo sin apretar", "Mantén secas las partes eléctricas", "No lo uses mientras duermes", "No lo uses sobre piel dañada", "Suspende su uso si sientes molestias o calor excesivo", "PEDIR AHORA — PAGA AL RECIBIR", "Vista previa", "Cómo se coloca", "Calor", "Masaje"])
+    for (const t of ["BLACK FRIDAY", "$35,00", "$26,60", "AHORRA $18,20", "$53,20", "$17,50 c/u", "Envío totalmente gratis", "JY-2678", "Abdomen", "USB de 5 V", "100 cm, ajustable", "20 cm", "Tejido suave tipo felpa", "Banda envolvente ajustable", "Contenido del paquete", "Ajústalo sin apretar", "Mantén secas las partes eléctricas", "No lo uses mientras duermes", "No lo uses sobre piel dañada", "Suspende su uso si sientes molestias o calor excesivo", "PEDIR AHORA — PAGA AL RECIBIR", "Cómo se coloca", "Calor", "Masaje"])
       assert.ok(texto.includes(t), `falta «${t}»`);
     for (const prohibido of ["FLO", "cápsula", "Ovarian", "inositol", "Violeta", "Rebeca", "$8", "$15", "°C", "inalámbric", "batería incorporada", "lavadora", "grasa", "reduce medidas", "hormonal", "0,4 kg", "20 × 5 × 15", "AmanGO"])
       assert.ok(!texto.includes(prohibido), `texto no permitido: «${prohibido}»`);

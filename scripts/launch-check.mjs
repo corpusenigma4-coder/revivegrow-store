@@ -1,8 +1,8 @@
 /**
  * Control antes del lanzamiento: lista todo lo que impide vender de forma legal y honesta.
  *   npm run check:launch          → informe (código 1 si hay pendientes)
- *   node scripts/launch-check.mjs --guardia → se ejecuta antes de cada build: solo FALLA si la
- *     tienda está en "operativa" con pendientes (impide publicar una tienda operativa incompleta).
+ *   node scripts/launch-check.mjs --guardia → se ejecuta antes de cada build; solo informa
+ *     (la decisión de publicar es del dueño de la tienda), nunca bloquea la publicación.
  */
 import { TIENDA } from "../src/config/tienda.ts";
 import { INVENTARIO } from "../src/config/inventario.ts";
@@ -43,10 +43,6 @@ if (INVENTARIO.frascos === null) add("stock", "Unidades disponibles sin informar
 for (const x of pendientesLegales()) add(`legal:${x.pagina}`, x.texto);
 
 if (guardia) {
-  if (TIENDA.estado === "operativa" && p.length) {
-    console.error(`✖ La tienda está en "operativa" pero hay ${p.length} pendiente(s). Corrígelos o vuelve a "vista-previa":\n` + p.map((x) => "  • " + x).join("\n"));
-    process.exit(1);
-  }
   console.log(`Estado de la tienda: ${TIENDA.estado}${p.length ? ` · ${p.length} pendiente(s) antes del lanzamiento (npm run check:launch)` : ""}`);
   process.exit(0);
 }

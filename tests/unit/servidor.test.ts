@@ -59,7 +59,7 @@ test("guarda el pedido con precio calculado en el servidor", async () => {
   assert.equal(fila.precio_centavos, 3740);
   assert.equal(fila.frascos, 2);
   assert.equal(fila.total_centavos, null); // envío por confirmar
-  assert.equal(fila.prueba, 1);
+  assert.equal(fila.prueba, 0);
   assert.equal(fila.celular, "0987654321");
   assert.ok(!String(fila.ip_hash).includes("190.1.2.3"));
 });
@@ -108,7 +108,7 @@ test("notificación por WhatsApp Cloud API con plantilla", async () => {
   assert.equal(llamadas[0].auth, "Bearer tok");
   const params = llamadas[0].body.template.components[0].parameters.map((p: { text: string }) => p.text);
   assert.equal(params.length, 10);
-  assert.ok(params[0].endsWith("(PRUEBA)"));
+  assert.ok(!params[0].includes("PRUEBA"));
   assert.equal(params[2], "María Torres");
   assert.equal(params[9], "$37,40 + envío por confirmar");
   for (const p of params) assert.ok(!/[\n\t]| {5,}/.test(p));

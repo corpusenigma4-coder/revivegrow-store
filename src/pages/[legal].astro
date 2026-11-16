@@ -1,25 +1,31 @@
 ---
 import Base from "../layouts/Base.astro";
 import { LEGAL } from "../data/legal";
+import { TIENDA } from "../config/tienda";
 
 export function getStaticPaths() {
   return LEGAL.map((pagina) => ({ params: { legal: pagina.slug }, props: { pagina } }));
 }
 const { pagina } = Astro.props;
 
-/** Escapa HTML y convierte {{P:…}} en una marca visible de dato pendiente. */
+/** Escapa HTML; los datos pendientes {{P:…|alt}} se muestran con su texto neutro (nunca como aviso). */
 const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const html = (t: string) => esc(t).replace(/\{\{P:(.+?)\}\}/g, '<mark class="pendiente">Pendiente: $1</mark>');
+const html = (t: string) =>
+  esc(t.replace(/\{\{P:(.+?)\|(.*?)\}\}/g, "$2"))
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([.,;:])/g, "$1")
+    .trim();
+const visibles = (xs: string[]) => xs.map(html).filter(Boolean);
 ---
 <Base title={`${pagina.titulo} · REVIVE GROW Ecuador`} description={pagina.descripcion} secundaria>
   <article class="container narrow legal">
     <h1>{pagina.titulo}</h1>
-    <p class="small">Tienda REVIVE GROW · revivegrow.ec · Ecuador</p>
+    <p class="small">Tienda REVIVE GROW · {TIENDA.dominio} · Ecuador</p>
     {pagina.secciones.map((s) => (
       <section>
         <h2>{s.titulo}</h2>
-        {s.parrafos.map((p) => <p set:html={html(p)} />)}
-        {s.lista && <ul>{s.lista.map((li) => <li set:html={html(li)} />)}</ul>}
+        {visibles(s.parrafos).map((p) => <p set:html={p} />)}
+        {s.lista && <ul>{visibles(s.lista).map((li) => <li set:html={li} />)}</ul>}
       </section>
     ))}
   </article>

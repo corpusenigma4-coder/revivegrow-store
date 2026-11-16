@@ -224,7 +224,6 @@ const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as
             <ul class="warnings">{PRODUCTO.advertencias.map((a) => <li><Icon name="alert" size={16} /> {a}</li>)}</ul>
           </div>
         </details>
-        <p class="note note--warn"><Icon name="alert" size={20} /> <span><strong>Nota de REVIVE GROW:</strong> consulta a tu médico antes de tomarlo si tienes alguna condición de tiroides, hígado o presión arterial, o si tomas medicamentos. Producto para hombres adultos.</span></p>
         <p class="note"><Icon name="info" size={20} /> <span>Es un suplemento alimenticio: complementa tu alimentación, no la reemplaza, y no sustituye ningún tratamiento médico.</span></p>
         <p class="small">Distribuido por GENETICS®, según la etiqueta.</p>
       </div>
@@ -300,12 +299,6 @@ const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as
   </section>
 
   <!-- ============================================================ CIERRE -->
-  <section class="section" aria-label="Información importante">
-    <div class="container narrow disclaimer">
-      <p><strong>Importante.</strong> TESTO-GH es un suplemento alimenticio para hombres adultos. No es un medicamento, no está destinado a diagnosticar, tratar, curar ni prevenir enfermedades y no reemplaza una alimentación variada y equilibrada. Los resultados pueden variar de una persona a otra.</p>
-      <p>Si tomas medicamentos o tienes alguna condición de salud, consulta a tu médico antes de consumirlo. No apto para menores de edad ni para mujeres embarazadas o en período de lactancia.</p>
-    </div>
-  </section>
 
   <Fragment slot="despues">
     <OrderDialog />

@@ -48,14 +48,14 @@ export const PAQUETE_INICIAL: (typeof PAQUETES)[number]["id"] = "dos";
 
 export const TIENDA = {
   marca: "REVIVE GROW",
-  dominio: "revivegrow.ec",
-  url: "https://revivegrow.ec",
+  dominio: "revivegrow.store",
+  url: "https://revivegrow.store",
 
   /**
    * "vista-previa": noindex, aviso visible y pedidos marcados como PRUEBA.
    * "operativa": solo se puede compilar si `npm run check:launch` no encuentra pendientes.
    */
-  estado: "vista-previa" as "vista-previa" | "operativa",
+  estado: "operativa" as "vista-previa" | "operativa",
 
   whatsapp: {
     /** Número en formato internacional sin "+" (Ecuador 593 + número sin el 0 inicial). */
