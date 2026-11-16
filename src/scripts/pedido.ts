@@ -29,7 +29,7 @@ function rastrear(evento: string, datos?: Record<string, unknown>) {
   if (fbq) fbq("track", evento, datos);
 }
 
-/** Producto de esta landing: <body data-producto="flo">; por defecto, TESTO-GH. */
+/** Producto de esta landing: <body data-producto="cinturon">; por defecto, TESTO-GH. */
 const PROD = productoPorId(document.body.dataset.producto) ?? PRODUCTO_PREDETERMINADO;
 const PAQUETES = PROD.paquetes;
 const API = TIENDA.apiPedidos ?? ruta("/api/pedido");
@@ -92,7 +92,7 @@ function aplicarDisponibilidad() {
     stock.forEach((s) => {
       s.setAttribute("data-cifra", "");
       const c = $("[data-stock-cifra]", s);
-      if (c) c.textContent = `${disp.frascos} frasco${disp.frascos === 1 ? "" : "s"} disponibles (actualizado el ${fechaCortaEcuador(new Date(disp.actualizadoEl!))}). `;
+      if (c) c.textContent = `${disp.frascos} ${disp.frascos === 1 ? PROD.unidad : PROD.unidadPlural} disponibles (actualizado el ${fechaCortaEcuador(new Date(disp.actualizadoEl!))}). `;
     });
   }
   // Si el paquete preseleccionado no alcanza con el stock real, se cambia y SE AVISA.
@@ -274,7 +274,7 @@ function pintarRevision(p: Paquete, datos: DatosPedido) {
   const t = totalPedido(p, datos.provincia, PROD.envio);
   $("[data-resumen-pedido]")?.replaceChildren(
     fila("Producto", PROD.ficha.nombreCompleto),
-    fila("Cantidad", `${p.nombre} (${p.capsulas} cápsulas)`),
+    fila("Cantidad", `${p.nombre} (${p.detalle})`),
     fila("Precio del paquete", formatoUSD(p.precioCentavos)),
     fila("Envío", t.envio.estado === "definido" ? textoEnvio(t.envio) : "Por confirmar"),
     fila("Total a pagar al recibir", textoTotal(t), "total"),

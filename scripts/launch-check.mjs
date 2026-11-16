@@ -7,7 +7,7 @@
 import { TIENDA } from "../src/config/tienda.ts";
 import { INVENTARIO } from "../src/config/inventario.ts";
 import { PRODUCTO, VERIFICACION_PRODUCTO } from "../src/config/producto.ts";
-import { VERIFICACION_FLO } from "../src/config/producto-flo.ts";
+import { VERIFICACION_CINTURON } from "../src/config/producto-cinturon.ts";
 import { pendientesLegales } from "../src/data/legal.ts";
 
 const guardia = process.argv.includes("--guardia");
@@ -28,10 +28,12 @@ if (!PRODUCTO.porcion && PRODUCTO.duracionProveedor) add("producto", `Duración 
 if (!PRODUCTO.advertencias.length) add("producto", "Advertencias de la etiqueta (producto.ts)");
 if (!PRODUCTO.fabricante) add("producto", "Fabricante o titular del producto (producto.ts)");
 else if (new Date(`${s.caducidadLoteEnVenta}-01`) <= new Date()) add("producto", `El lote en venta caduca en ${s.caducidadLoteEnVenta}: no vender producto vencido`);
-if (!VERIFICACION_FLO.notificacionSanitaria) add("FLO", "Notificación Sanitaria ARCSA e importador de FLO Ovarian Support (producto importado)");
-if (!VERIFICACION_FLO.caducidadLote) add("FLO", "Caducidad del lote de FLO en venta");
-if (!VERIFICACION_FLO.fuenteResenas) add("FLO", "Fuente documentada de las 4 reseñas (enlace o captura de la plataforma original y fecha)");
-if (!VERIFICACION_FLO.publicidadRevisada) add("FLO", "Revisión ARCSA de los textos y de las reseñas (mencionan efectos en la salud: vello, período, piel)");
+const vc = VERIFICACION_CINTURON;
+if (!vc.accesoriosIncluidos) add("cinturón", "Accesorios incluidos en la caja (p. ej. cable USB)");
+if (!vc.nivelesYModos) add("cinturón", "Número de niveles de calor / modos de masaje y cómo se cambia de función (manual)");
+if (!vc.cuidados) add("cinturón", "Instrucciones de limpieza y cuidado del manual");
+if (!vc.largoConfirmado) add("cinturón", "Largo definitivo: la ficha dice 100 cm y la infografía del proveedor 105 cm");
+if (!vc.medidasPaquete) add("cinturón", "Medidas y peso del paquete (20 × 5 × 15 cm y 0,4 kg sin aclarar)");
 for (const [k, v] of Object.entries(TIENDA.empresa)) if (!v && k !== "correo") add("empresa", `Dato administrativo pendiente: empresa.${k}`);
 if (TIENDA.envio.costoCentavos === null && !Object.keys(TIENDA.envio.porProvincia).length) add("envío", "Costo de envío sin definir (se comunica por WhatsApp; aceptable, pero confírmalo)");
 if (!TIENDA.envio.courier) add("envío", "Empresa de mensajería sin definir");

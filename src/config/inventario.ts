@@ -18,8 +18,8 @@ export const INVENTARIO = {
   diasValidez: 3,
 };
 
-/** Unidades reales de FLO Ovarian Support (mismas reglas que arriba). */
-export const INVENTARIO_FLO = {
+/** Unidades reales del cinturón térmico JY-2678 (mismas reglas que arriba). */
+export const INVENTARIO_CINTURON = {
   frascos: null as number | null,
   actualizadoEl: null as string | null,
   diasValidez: 3,

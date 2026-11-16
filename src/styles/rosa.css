@@ -1,0 +1,147 @@
+/* =====================================================================
+   Tema "rosa" — landing del cinturón térmico con masaje (/cinturon-termico/)
+   Rosa REVIVEGROW + gris felpa del producto + negro Black Friday.
+   Títulos en Fraunces (serif editorial, femenina); texto en Archivo.
+   ===================================================================== */
+.tema-rosa {
+  --bg: #fff7f9;
+  --bg-2: #fdecf2;
+  --surface: #ffffff;
+  --ink: #2a1320;
+  --ink-2: #5e4452;     /* 8.2:1 */
+  --navy: #8a1347;      /* títulos frambuesa 8.8:1 */
+  --navy-2: #a3195b;
+  --line: #f6d9e4;
+  --line-2: #ebbccd;
+  --gold: #f06292;
+  --gold-ink: #a3195b;  /* 7:1 */
+  --cta: #c2185b;       /* 5.9:1 con blanco */
+  --cta-hover: #9c1149;
+  --warn-bg: #fff0f5;
+  --warn-ink: #8a1347;
+  --bf: #140a10;
+  --bf-pink: #ff4f9a;   /* 6.3:1 sobre negro */
+  --felpa: #ecebee;
+  --serif: "Fraunces Variable", "Iowan Old Style", Georgia, serif;
+  --r: 18px;
+  --r-lg: 26px;
+  --shadow: 0 1px 2px rgb(138 19 71 / 0.06), 0 14px 34px -14px rgb(138 19 71 / 0.28);
+  --shadow-lg: 0 2px 6px rgb(138 19 71 / 0.08), 0 28px 60px -22px rgb(138 19 71 / 0.4);
+}
+.tema-rosa h1, .tema-rosa h2, .tema-rosa h3 { font-family: var(--serif); font-stretch: 100%; font-weight: 600; letter-spacing: -0.015em; }
+.tema-rosa h1 em, .tema-rosa h2 em { font-style: italic; font-weight: 500; color: var(--navy-2); }
+.tema-rosa .header { background: rgb(255 247 249 / 0.92); border-bottom-color: var(--line); }
+.tema-rosa .eyebrow { color: var(--gold-ink); }
+.tema-rosa .btn--cta { box-shadow: 0 12px 26px -10px rgb(194 24 91 / 0.7); }
+.tema-rosa .pack input:checked + .pack__card { box-shadow: inset 0 0 0 2.5px var(--cta), var(--shadow); background: #fffafc; }
+.tema-rosa .pack input:checked + .pack__card .pack__radio { box-shadow: inset 0 0 0 2px var(--cta); }
+.tema-rosa .pack__radio::after { background: var(--cta); }
+.tema-rosa .pack__ribbon { background: var(--bf); color: #fff; }
+.tema-rosa .pack__ribbon svg { color: var(--bf-pink); }
+.tema-rosa .pack__save { background: var(--bf-pink); color: var(--bf); }
+.tema-rosa .seg input:checked + span { box-shadow: inset 0 0 0 2.5px var(--cta); }
+.tema-rosa .section--navy { background: var(--bf); }
+.tema-rosa .section--navy .eyebrow { color: var(--bf-pink); }
+.tema-rosa .step__n { background: var(--bf-pink); color: var(--bf); }
+.tema-rosa .footer { background: #1d0c15; }
+.tema-rosa .footer h2 { color: #ff9cc4; }
+.tema-rosa .chip svg { color: var(--cta); }
+.tema-rosa .facts td:first-child { white-space: normal; font-weight: 700; }
+.tema-rosa .facts td:last-child { white-space: normal; text-align: left; }
+
+/* ---------- barra Black Friday */
+.bf-bar { background: var(--bf); color: #fff; text-align: center; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.55rem var(--gutter); line-height: 1.35; }
+.bf-bar strong { color: var(--bf-pink); letter-spacing: 0.12em; }
+.bf-bar span { white-space: nowrap; }
+
+/* ---------- hero */
+.rosa-hero { padding-block: clamp(0.75rem, 0.5rem + 2vw, 3rem) clamp(2.5rem, 2rem + 3vw, 4.5rem); background: radial-gradient(120% 60% at 50% 0%, #ffe1ec 0%, rgb(255 247 249 / 0) 70%); }
+.rosa-media { position: relative; margin: 0; border-radius: var(--r-lg); background: #f6f4ef; box-shadow: var(--shadow-lg); overflow: hidden; }
+.bf-badge {
+  position: absolute; left: 0.75rem; top: 0.75rem; display: grid; text-align: center; padding: 0.55rem 0.9rem 0.6rem; border-radius: 16px;
+  background: var(--bf); color: #fff; line-height: 1.05; box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.6); z-index: 1;
+}
+.bf-badge small { font-size: 0.66rem; letter-spacing: 0.18em; color: var(--bf-pink); font-weight: 800; }
+.bf-badge strong { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
+.bf-badge span { font-size: 0.72rem; font-weight: 700; }
+.tema-rosa .buy h1 { font-size: clamp(2.1rem, 1.5rem + 3vw, 3.4rem); color: var(--navy); line-height: 1.02; font-weight: 600; }
+.tema-rosa .buy h1 span { font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--navy-2); font-size: 0.6em; letter-spacing: 0; margin-top: 0.45rem; }
+.modelo { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.14em; color: var(--ink-2); text-transform: uppercase; }
+.free-ship { display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 0.95rem; border-radius: var(--r); background: var(--bf); color: #fff; font-weight: 700; font-size: 0.95rem; }
+.free-ship svg { color: var(--bf-pink); flex: none; }
+.free-ship small { display: block; font-weight: 500; color: #f1d6e2; font-size: 0.8rem; }
+
+/* ---------- dos funciones */
+.funciones { display: grid; gap: 0.9rem; }
+@media (min-width: 720px) { .funciones { grid-template-columns: 1fr 1fr; } }
+.funcion { border-radius: var(--r-lg); padding: 1.35rem 1.3rem; display: grid; gap: 0.55rem; align-content: start; }
+.funcion--calor { background: linear-gradient(160deg, #ffe3ec, #ffd2df); }
+.funcion--masaje { background: linear-gradient(160deg, #efe6ff, #e2d6fb); }
+.funcion__icon { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; background: #fff; color: var(--cta); box-shadow: 0 6px 16px -8px rgb(138 19 71 / 0.4); }
+.funcion--masaje .funcion__icon { color: #6d3fc0; }
+.funcion h3 { font-size: 1.5rem; color: var(--ink); }
+.funcion ul { display: grid; gap: 0.35rem; }
+.funcion li { list-style: none; display: flex; gap: 0.5rem; font-size: 0.95rem; color: var(--ink-2); }
+.funcion li svg { flex: none; margin-top: 0.15rem; color: var(--cta); }
+.funcion--masaje li svg { color: #6d3fc0; }
+.dos-en-uno { margin-top: 0.9rem; display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.1rem; border-radius: var(--r); background: var(--bf); color: #fff; font-weight: 700; }
+.dos-en-uno strong { font-family: var(--serif); font-size: 1.6rem; color: var(--bf-pink); white-space: nowrap; }
+.dos-en-uno span { font-weight: 500; color: #f1d6e2; font-size: 0.92rem; }
+
+/* ---------- detalles con fotos reales */
+.detalles { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (min-width: 920px) { .detalles { grid-template-columns: repeat(4, 1fr); gap: 1rem; } }
+.detalle { background: var(--surface); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+.detalle img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.detalle div { padding: 0.75rem 0.85rem 0.9rem; display: grid; gap: 0.2rem; }
+.detalle h3 { font-size: 1.05rem; color: var(--navy); line-height: 1.15; }
+.detalle p { font-size: 0.85rem; color: var(--ink-2); line-height: 1.4; }
+
+/* ---------- cómo se coloca */
+.colocar { display: grid; gap: clamp(1.25rem, 1rem + 2vw, 3rem); align-items: center; }
+@media (min-width: 920px) { .colocar { grid-template-columns: 1fr 1fr; } }
+.colocar__img img { width: 100%; border-radius: var(--r-lg); box-shadow: var(--shadow); background: #fff; }
+.pasos { display: grid; gap: 0.7rem; counter-reset: paso; }
+.pasos li { list-style: none; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.85rem; align-items: start; background: var(--surface); padding: 0.95rem 1rem; border-radius: var(--r); box-shadow: inset 0 0 0 1px var(--line); }
+.pasos li::before { counter-increment: paso; content: counter(paso); grid-row: span 2; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--cta); color: #fff; font-weight: 850; }
+.pasos b { font-size: 1rem; }
+.pasos span { font-size: 0.92rem; color: var(--ink-2); }
+
+/* ---------- ficha técnica y contenido */
+.ficha { display: grid; gap: 1rem; align-items: start; }
+@media (min-width: 920px) { .ficha { grid-template-columns: 1.3fr 0.7fr; } }
+.caja { background: var(--surface); border-radius: var(--r-lg); padding: 1.2rem 1.25rem; box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 0.6rem; }
+.caja h3 { font-size: 1.3rem; color: var(--navy); }
+.caja ul { display: grid; gap: 0.45rem; }
+.caja li { list-style: none; display: flex; gap: 0.5rem; font-size: 0.95rem; color: var(--ink-2); }
+.caja li svg { flex: none; margin-top: 0.15rem; color: var(--cta); }
+
+/* ---------- precauciones */
+.precauciones { background: var(--warn-bg); border-radius: var(--r-lg); padding: 1.2rem 1.25rem; box-shadow: inset 0 0 0 1px var(--line-2); display: grid; gap: 0.7rem; }
+.precauciones h3 { font-size: 1.3rem; color: var(--navy); display: flex; gap: 0.5rem; align-items: center; }
+.precauciones ul { display: grid; gap: 0.5rem; }
+@media (min-width: 720px) { .precauciones ul { grid-template-columns: 1fr 1fr; } }
+.precauciones li { list-style: none; display: flex; gap: 0.55rem; font-size: 0.95rem; color: var(--ink); }
+.precauciones li svg { flex: none; color: var(--cta); margin-top: 0.15rem; }
+
+/* ---------- oferta Black Friday */
+.bf-offer { background: var(--bf); color: #fff; border-radius: calc(var(--r-lg) + 6px); padding: clamp(1.25rem, 1rem + 2vw, 2.75rem); display: grid; gap: 1.5rem; align-items: center; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; }
+.bf-offer::before { content: ""; position: absolute; inset: -40% -20% auto auto; width: 70%; aspect-ratio: 1; background: radial-gradient(circle, rgb(255 79 154 / 0.35), transparent 65%); pointer-events: none; }
+@media (min-width: 920px) { .bf-offer { grid-template-columns: 0.85fr 1fr; } }
+.bf-offer__img { position: relative; border-radius: var(--r-lg); overflow: hidden; background: #f6f4ef; }
+.bf-offer__img img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+@media (max-width: 919px) { .bf-offer__img img { aspect-ratio: 16 / 10; object-position: 50% 100%; } }
+.bf-offer__box { position: relative; display: grid; gap: 1rem; }
+.bf-kicker { font-size: 0.8rem; letter-spacing: 0.3em; font-weight: 800; color: var(--bf-pink); }
+.bf-offer h2 { font-size: clamp(2rem, 1.5rem + 2.4vw, 3rem); color: #fff; line-height: 1.05; }
+.bf-offer h2 em { color: var(--bf-pink); }
+.bf-offer .lead { color: #f1d6e2; }
+.bf-offer .pack__card { background: #fff; color: var(--ink); }
+.bf-offer .pack__card .small { color: var(--ink-2); }
+.bf-offer .packs legend { color: #fff; }
+.bf-offer .stock { background: rgb(255 255 255 / 0.08); color: #ffd1e3; }
+/* La foto principal lleva su título arriba: la etiqueta Black Friday va abajo, en formato compacto. */
+.rosa-media .bf-badge { top: auto; bottom: 2.6rem; left: 0.75rem; display: flex; align-items: baseline; gap: 0.45rem; padding: 0.45rem 0.75rem; border-radius: 12px; }
+.rosa-media .bf-badge small { font-size: 0.6rem; letter-spacing: 0.12em; }
+.rosa-media .bf-badge strong { font-size: 1.25rem; }
+.rosa-media .bf-badge span { display: none; }

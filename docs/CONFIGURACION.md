@@ -17,7 +17,7 @@ usa la B y, si el servidor falla, vuelve a ofrecer WhatsApp sin decir que el ped
 ---
 
 ## 0. Situación actual: web en GitHub Pages (revivegrow.store)
-Las dos landings (`/` TESTO-GH y `/flo-ovarian-support/`) se publican solas en GitHub Pages con cada cambio
+Las dos landings (`/` TESTO-GH y `/cinturon-termico/`) se publican solas en GitHub Pages con cada cambio
 en `main`. GitHub Pages **no ejecuta código de servidor**, así que hoy los pedidos funcionan con la
 modalidad A (WhatsApp con el pedido escrito; la clienta pulsa «Enviar»).
 

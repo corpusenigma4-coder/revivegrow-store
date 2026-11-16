@@ -30,7 +30,7 @@ export function paquetePorId(id: string, prod: ProductoVenta = PRODUCTO_PREDETER
   return prod.paquetes.find((p) => p.id === id);
 }
 
-/** Ahorro REAL frente a comprar la misma cantidad de frascos individuales. */
+/** Ahorro REAL frente a comprar la misma cantidad de unidades individuales. */
 export function ahorroPaquete(p: Paquete, prod: ProductoVenta = PRODUCTO_PREDETERMINADO) {
   const unitario = prod.paquetes.find((x) => x.frascos === 1)!;
   const porSeparado = unitario.precioCentavos * p.frascos;
@@ -234,7 +234,7 @@ export function validarPedido(
   if (datos.referencia.length < 4) errores.referencia = "Añade una referencia para el repartidor (color de casa, local cercano…).";
 
   const paquete = paquetePorId(datos.paquete, prod);
-  if (!paquete) errores.paquete = "Elige 1 o 2 frascos.";
+  if (!paquete) errores.paquete = "Elige un paquete.";
   else if (ctx.disponibilidad && !paqueteDisponible(paquete, ctx.disponibilidad))
     errores.paquete = ctx.disponibilidad.agotado
       ? "El producto está agotado en este momento."
@@ -274,8 +274,8 @@ export function mensajePedido({ numero, fecha, datos, paquete, prueba, producto 
     `Referencia: ${datos.referencia}`,
     "",
     "*Pedido*",
-    `Producto: ${producto.ficha.nombreCompleto} (${producto.ficha.capsulasPorFrasco} cápsulas por frasco)`,
-    `Cantidad: ${paquete.nombre} (${paquete.capsulas} cápsulas)`,
+    `Producto: ${producto.lineaProducto}`,
+    `Cantidad: ${paquete.nombre} (${paquete.detalle})`,
     `Precio del paquete: ${formatoUSD(paquete.precioCentavos)}`,
     `Envío: ${t.envio.estado === "definido" ? textoEnvio(t.envio) : "por confirmar"}`,
     `Total: ${textoTotal(t)}`,

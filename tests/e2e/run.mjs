@@ -221,10 +221,10 @@ try {
   await prueba("Páginas legales y contacto: cargan, enlaces internos válidos y pendientes visibles", async () => {
     const { ctx, page } = await nuevaPagina();
     const visitadas = new Set();
-    for (const ruta of ["/", "/flo-ovarian-support/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
+    for (const ruta of ["/", "/cinturon-termico/", "/privacidad/", "/terminos/", "/envios/", "/devoluciones/", "/contacto/"]) {
       const r = await page.goto(BASE + ruta);
       assert.equal(r.status(), 200, ruta);
-      if (!["/", "/flo-ovarian-support/"].includes(ruta)) assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
+      if (!["/", "/cinturon-termico/"].includes(ruta)) assert.ok(await page.locator("mark.pendiente").count() > 0, `${ruta} sin marcas de pendiente`);
       for (const h of await page.$$eval("a[href^='/']", (as) => as.map((a) => a.getAttribute("href").split("#")[0])))
         if (h && !visitadas.has(h)) { visitadas.add(h); assert.equal((await fetch(BASE + h)).status, 200, `enlace roto ${h}`); }
     }
@@ -233,55 +233,65 @@ try {
     await ctx.close();
   });
 
-  /* ======================================================== FLO Ovarian Support */
-  const FLO = BASE + "/flo-ovarian-support/";
+  /* ======================================================== Cinturón térmico con masaje */
+  const CIN = BASE + "/cinturon-termico/";
 
-  await prueba("FLO en móvil: Black Friday, precios, envío gratis, 4 reseñas y sin desbordamiento", async () => {
+  await prueba("Cinturón en móvil: producto, Black Friday, precios, ficha y precauciones", async () => {
     const { ctx, page, errores } = await nuevaPagina();
-    const r = await page.goto(FLO);
+    const r = await page.goto(CIN);
     assert.equal(r.status(), 200);
-    await page.waitForSelector("h1:has-text('FLO Ovarian Support')");
-    assert.equal(await page.getAttribute("body", "data-producto"), "flo");
+    await page.waitForSelector("h1:has-text('Cinturón térmico con masaje')");
+    assert.equal(await page.getAttribute("body", "data-producto"), "cinturon");
     const texto = await page.textContent("body");
-    for (const t of ["BLACK FRIDAY", "$35,00", "$26,60", "AHORRA $18,20", "34,2 %", "$17,50 c/u", "$53,20", "Envío totalmente gratis", "180 cápsulas", "90 cápsulas", "30 días", "60 días", "2000 mg", "50 mg", "100 mg", "680 mcg DFE", "40 : 1", "PEDIR AHORA — PAGA AL RECIBIR", "Violeta", "Nicole A.", "Cindy", "Rebeca", "Manteniendo esta rutina", "Producto soñado", "Me encanta", "Era escéptica, ahora la recomiendo", "Compra verificada", "no es un analgésico", "Vista previa"])
+    for (const t of ["BLACK FRIDAY", "$35,00", "$26,60", "AHORRA $18,20", "$53,20", "$17,50 c/u", "Envío totalmente gratis", "JY-2678", "Abdomen", "USB de 5 V", "100 cm, ajustable", "20 cm", "Tejido suave tipo felpa", "Banda envolvente ajustable", "Contenido del paquete", "Ajústalo sin apretar", "Mantén secas las partes eléctricas", "No lo uses mientras duermes", "No lo uses sobre piel dañada", "Suspende su uso si sientes molestias o calor excesivo", "PEDIR AHORA — PAGA AL RECIBIR", "Vista previa", "Cómo se coloca", "Calor", "Masaje"])
       assert.ok(texto.includes(t), `falta «${t}»`);
-    for (const prohibido of ["alivia", "elimina los cólicos", "cura ", "garantizado", "comprobado", "Dra.", "Shepherd", "Grewal"])
+    for (const prohibido of ["FLO", "cápsula", "Ovarian", "inositol", "Violeta", "Rebeca", "$8", "$15", "°C", "inalámbric", "batería incorporada", "lavadora", "grasa", "reduce medidas", "hormonal", "0,4 kg", "20 × 5 × 15", "AmanGO"])
       assert.ok(!texto.includes(prohibido), `texto no permitido: «${prohibido}»`);
     assert.equal(await page.locator("input[name='paquete-hero'][value='dos']").isChecked(), true);
-    assert.equal(await page.locator(".review").count(), 4);
+    assert.equal(await page.locator("[data-galeria] .gal__slide").count(), 4);
+    assert.equal(await page.locator(".detalle").count(), 4);
     const ancho = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     assert.ok(ancho <= 0, `desbordamiento horizontal de ${ancho}px`);
-    assert.match(await page.getAttribute("meta[property='og:image']", "content"), /og-flo\.jpg$/);
-    await page.waitForFunction(() => [...document.querySelectorAll(".flo-media img")].every((i) => i.complete && i.naturalWidth > 0));
-    await page.screenshot({ path: `${OUT}/flo-movil-inicio.png` });
-    await revelarTodo(page);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: `${OUT}/flo-movil-completa.png`, fullPage: true });
+    assert.match(await page.getAttribute("meta[property='og:image']", "content"), /og-cinturon\.jpg$/);
+    assert.match(await page.title(), /Cinturón térmico con masaje/);
+    for (const alt of await page.$$eval("img", (is) => is.map((i) => i.alt))) assert.ok(!/FLO|cápsula/i.test(alt), alt);
+    await page.waitForFunction(() => [...document.querySelectorAll(".rosa-media img[loading=eager]")].every((i) => i.complete && i.naturalWidth > 0));
+    await page.screenshot({ path: `${OUT}/cinturon-movil-inicio.png` });
     assert.deepEqual(errores, []);
     await ctx.close();
   });
 
-  await prueba("FLO: pedido por WhatsApp con producto, envío gratis y total exacto", async () => {
+  await prueba("Cinturón: ambas ofertas calculan bien y el pedido por WhatsApp identifica el producto", async () => {
     const { ctx, page, errores } = await nuevaPagina();
-    await page.goto(FLO);
+    await page.goto(CIN);
+    // 1 cinturón
     await page.click("label:has(input[name='paquete-hero'][value='uno'])");
     assert.equal((await page.textContent("#comprar [data-sel-precio]")).trim(), "$26,60");
-    await page.click("label:has(input[name='paquete-hero'][value='dos'])");
     await page.click("#comprar [data-abrir-pedido]");
     await page.waitForSelector("#dlg-pedido[open]");
+    assert.equal(await page.locator("input[name='paquete-dialogo'][value='uno']").isChecked(), true);
     await llenar(page);
-    assert.match(await page.textContent("[data-envio-hint]"), /Gratis/);
     await page.click("[data-btn-revisar]");
     await page.waitForSelector("[data-paso='2']:not([hidden])");
-    const resumen = await page.textContent("[data-paso='2']");
-    for (const t of ["FLO Ovarian Support — O Positiv Health", "2 frascos (180 cápsulas)", "Gratis", "$35,00"]) assert.ok(resumen.includes(t), `resumen sin «${t}»`);
-    assert.ok(!resumen.includes("por confirmar"), "FLO no debe tener envío por confirmar");
+    let resumen = await page.textContent("[data-paso='2']");
+    for (const t of ["Cinturón térmico con masaje REVIVEGROW — modelo JY-2678", "1 cinturón (modelo JY-2678)", "Gratis", "$26,60"]) assert.ok(resumen.includes(t), `resumen sin «${t}»`);
+    let msg = decodeURIComponent((await page.getAttribute("[data-enviar-wa]", "href")).split("text=")[1]);
+    assert.ok(msg.includes("Total: $26,60") && msg.includes("Cantidad: 1 cinturón"), msg);
+    // Cambiar a 2 cinturones desde el formulario: el total se actualiza
+    await page.click("[data-volver]");
+    await page.click("label:has(input[name='paquete-dialogo'][value='dos'])");
+    await page.click("[data-btn-revisar]");
+    await page.waitForSelector("[data-paso='2']:not([hidden])");
+    resumen = await page.textContent("[data-paso='2']");
+    assert.ok(resumen.includes("2 cinturones (modelo JY-2678)") && resumen.includes("$35,00"), resumen);
     assert.equal(await page.locator("[data-alerta-envio]").isHidden(), true);
-    const msg = decodeURIComponent((await page.getAttribute("[data-enviar-wa]", "href")).split("text=")[1]);
-    for (const t of ["Producto: FLO Ovarian Support — O Positiv Health (90 cápsulas por frasco)", "Cantidad: 2 frascos (180 cápsulas)", "Precio del paquete: $35,00", "Envío: Gratis", "Total: $35,00", "Nombre: Carlos Andrade", "Dirección: Av. 6 de Diciembre", "Referencia: Edificio gris", "Ciudad/cantón: Quito"])
-      assert.ok(msg.includes(t), `mensaje sin «${t}»`);
-    await page.screenshot({ path: `${OUT}/flo-movil-revision.png` });
     assert.ok((await page.getAttribute("[data-enviar-wa]", "href")).startsWith("https://wa.me/593960702682?text="));
+    msg = decodeURIComponent((await page.getAttribute("[data-enviar-wa]", "href")).split("text=")[1]);
+    for (const t of ["Producto: Cinturón térmico con masaje REVIVEGROW, modelo JY-2678", "Cantidad: 2 cinturones (modelo JY-2678)", "Precio del paquete: $35,00", "Envío: Gratis", "Total: $35,00", "Nombre: Carlos Andrade", "Celular: 099 876 5432", "Ciudad/cantón: Quito", "Provincia: Pichincha", "Dirección: Av. 6 de Diciembre", "Pago: contra entrega"])
+      assert.ok(msg.includes(t), `mensaje sin «${t}»`);
+    assert.ok(!/cápsula|FLO|frasco/i.test(msg), "mensaje con restos de otro producto");
+    assert.ok((await page.textContent("[data-paso='2']")).includes("pulsar «Enviar» en WhatsApp"));
+    await page.screenshot({ path: `${OUT}/cinturon-movil-revision.png` });
     const [popup] = await Promise.all([ctx.waitForEvent("page"), page.click("[data-enviar-wa]")]);
     await popup.close().catch(() => {});
     await page.waitForSelector("[data-resultado='wa']:not([hidden])");
@@ -289,40 +299,50 @@ try {
     await ctx.close();
   });
 
-  await prueba("FLO: con servidor de pedidos envía producto=flo y muestra el número", async () => {
+  await prueba("Cinturón: todos los botones de compra abren el formulario; servidor recibe producto=cinturon", async () => {
     const { ctx, page } = await nuevaPagina();
     let cuerpo = null;
     await page.route("**/api/pedido", (route) =>
       route.request().method() === "GET"
         ? route.fulfill({ json: { activo: true, notificacionWhatsApp: true, turnstileSiteKey: null } })
-        : ((cuerpo = route.request().postDataJSON()), route.fulfill({ json: { ok: true, numero: "RG-261120-FLO22", notificado: true } })));
-    await page.goto(FLO);
-    await page.click("#comprar [data-abrir-pedido]");
+        : ((cuerpo = route.request().postDataJSON()), route.fulfill({ json: { ok: true, numero: "RG-261120-CIN22", notificado: true } })));
+    await page.goto(CIN);
+    const botones = await page.locator("main [data-abrir-pedido]").count();
+    assert.equal(botones, 2, "botones de compra en la página");
+    for (let i = 0; i < botones; i++) {
+      const b = page.locator("main [data-abrir-pedido]").nth(i);
+      await b.scrollIntoViewIfNeeded();
+      await b.click();
+      await page.waitForSelector("#dlg-pedido[open]");
+      await page.click("#dlg-pedido [data-cerrar]");
+      await page.waitForSelector("#dlg-pedido:not([open])", { state: "attached" });
+    }
+    // Botón de la barra fija (móvil)
+    await page.mouse.wheel(0, 2500);
+    await page.waitForSelector("[data-sticky][data-visible]");
+    await page.waitForTimeout(400);
+    await page.click("[data-sticky] [data-abrir-pedido]");
+    await page.waitForSelector("#dlg-pedido[open]");
     await llenar(page);
     await page.click("[data-btn-revisar]");
     await page.click("[data-confirmar]");
     await page.waitForSelector("[data-resultado='ok']:not([hidden])");
-    assert.equal(cuerpo.producto, "flo");
+    assert.equal(cuerpo.producto, "cinturon");
     assert.equal(cuerpo.paquete, "dos");
     await ctx.close();
   });
 
-  await prueba("FLO: WhatsApp flotante, visor de la etiqueta y escritorio", async () => {
+  await prueba("Cinturón: WhatsApp de consultas, redirección desde la dirección anterior y escritorio", async () => {
     const { ctx, page } = await nuevaPagina();
-    await page.goto(FLO);
-    assert.match(decodeURIComponent(await page.getAttribute(".fab", "href")), /FLO Ovarian Support/);
-    const b = page.locator("[data-ampliar]").first();
-    await b.evaluate((el) => el.scrollIntoView({ block: "center" }));
-    await b.click();
-    await page.waitForSelector("#dlg-imagen[open] img[src*='etiqueta']");
+    await page.goto(CIN);
+    assert.match(decodeURIComponent(await page.getAttribute(".fab", "href")), /cinturón térmico con masaje JY-2678/);
+    await page.goto(BASE + "/flo-ovarian-support/");
+    await page.waitForURL(/\/cinturon-termico\/$/);
     await ctx.close();
     const d = await nuevaPagina({ viewport: { width: 1366, height: 860 } });
-    await d.page.goto(FLO);
-    await d.page.waitForFunction(() => [...document.querySelectorAll(".flo-media img")].every((i) => i.complete && i.naturalWidth > 0));
-    await d.page.screenshot({ path: `${OUT}/flo-escritorio-inicio.png` });
-    await revelarTodo(d.page);
-    await d.page.evaluate(() => window.scrollTo(0, 0));
-    await d.page.screenshot({ path: `${OUT}/flo-escritorio-completa.png`, fullPage: true });
+    await d.page.goto(CIN);
+    await d.page.waitForFunction(() => [...document.querySelectorAll(".rosa-media img[loading=eager]")].every((i) => i.complete && i.naturalWidth > 0));
+    await d.page.screenshot({ path: `${OUT}/cinturon-escritorio-inicio.png` });
     assert.deepEqual(d.errores, []);
     await d.ctx.close();
   });

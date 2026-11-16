@@ -3,26 +3,42 @@
  * Precios en centavos. El servidor recalcula siempre el precio desde aquí.
  */
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, type ConfigEnvio } from "./tienda.ts";
-import { PRODUCTO, DIAS_POR_FRASCO, type FichaProducto } from "./producto.ts";
-import { FICHA_FLO } from "./producto-flo.ts";
-import { INVENTARIO, INVENTARIO_FLO } from "./inventario.ts";
+import { PRODUCTO, DIAS_POR_FRASCO } from "./producto.ts";
+import { FICHA_CINTURON } from "./producto-cinturon.ts";
+import { INVENTARIO, INVENTARIO_CINTURON } from "./inventario.ts";
 import type { Inventario } from "../lib/pedido.ts";
 
 export interface Paquete {
   id: string;
+  /** Unidades del paquete (frascos o cinturones). */
   frascos: number;
   nombre: string;
-  capsulas: number;
+  /** Detalle que acompaña al nombre: "120 cápsulas", "modelo JY-2678"… */
+  detalle: string;
+  capsulas?: number;
   precioCentavos: number;
   destacado: boolean;
   cinta: string | null;
 }
 
-export type IdProducto = "testo-gh" | "flo";
+export type IdProducto = "testo-gh" | "cinturon";
+
+/** Datos mínimos de un producto que usan el pie de página, el formulario y los pedidos. */
+export interface FichaBase {
+  nombre: string;
+  nombreCompleto: string;
+  marca: string;
+  fabricante: string | null;
+}
 
 export interface ProductoVenta {
   id: IdProducto;
-  ficha: FichaProducto;
+  ficha: FichaBase;
+  /** Línea de producto en el pedido y en el aviso de WhatsApp. */
+  lineaProducto: string;
+  /** Palabra para una unidad: "frasco", "cinturón". */
+  unidad: string;
+  unidadPlural: string;
   paquetes: readonly Paquete[];
   paqueteInicial: string;
   envio: ConfigEnvio;
@@ -38,6 +54,9 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
   "testo-gh": {
     id: "testo-gh",
     ficha: PRODUCTO,
+    lineaProducto: `${PRODUCTO.nombreCompleto} (${PRODUCTO.capsulasPorFrasco} cápsulas por frasco)`,
+    unidad: "frasco",
+    unidadPlural: "frascos",
     paquetes: PAQUETES,
     paqueteInicial: PAQUETE_INICIAL,
     envio: TIENDA.envio,
@@ -46,20 +65,23 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
     ruta: "/",
     mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre TESTO-GH.",
   },
-  flo: {
-    id: "flo",
-    ficha: FICHA_FLO,
+  cinturon: {
+    id: "cinturon",
+    ficha: FICHA_CINTURON,
+    lineaProducto: `${FICHA_CINTURON.nombre} REVIVEGROW, modelo ${FICHA_CINTURON.modelo}`,
+    unidad: "cinturón",
+    unidadPlural: "cinturones",
     paquetes: [
-      { id: "dos", frascos: 2, nombre: "2 frascos", capsulas: 180, precioCentavos: 3500, destacado: true, cinta: "BLACK FRIDAY — LLEVA 2" },
-      { id: "uno", frascos: 1, nombre: "1 frasco", capsulas: 90, precioCentavos: 2660, destacado: false, cinta: null },
+      { id: "dos", frascos: 2, nombre: "2 cinturones", detalle: "modelo JY-2678", precioCentavos: 3500, destacado: true, cinta: "BLACK FRIDAY — LLEVA 2" },
+      { id: "uno", frascos: 1, nombre: "1 cinturón", detalle: "modelo JY-2678", precioCentavos: 2660, destacado: false, cinta: null },
     ],
     paqueteInicial: "dos",
-    // Envío totalmente gratis para FLO (el resto de condiciones de envío son las de la tienda).
+    // Envío totalmente gratis (el resto de condiciones de envío son las de la tienda).
     envio: { ...TIENDA.envio, costoCentavos: 0, porProvincia: {} },
-    inventario: INVENTARIO_FLO,
-    diasPorFrasco: FICHA_FLO.porcion ? FICHA_FLO.capsulasPorFrasco / FICHA_FLO.porcion.capsulas : null,
-    ruta: "/flo-ovarian-support/",
-    mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre FLO Ovarian Support.",
+    inventario: INVENTARIO_CINTURON,
+    diasPorFrasco: null,
+    ruta: "/cinturon-termico/",
+    mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre el cinturón térmico con masaje JY-2678.",
   },
 };
 

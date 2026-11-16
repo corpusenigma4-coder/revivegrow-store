@@ -1,0 +1,345 @@
+---
+/**
+ * Landing del cinturón térmico con masaje REVIVEGROW, modelo JY-2678 — /cinturon-termico/
+ * Independiente de la landing principal (TESTO-GH): comparte solo el formulario, la lógica de pedidos y el pie.
+ */
+import "@fontsource-variable/fraunces/wght.css";
+import "@fontsource-variable/fraunces/wght-italic.css";
+import fuenteSerif from "@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url";
+import "../styles/rosa.css";
+import { Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PackSelector from "../components/PackSelector.astro";
+import OrderDialog from "../components/OrderDialog.astro";
+import Galeria from "../components/Galeria.astro";
+import principal from "../assets/img/cinturon/principal.webp";
+import funciones from "../assets/img/cinturon/funciones.webp";
+import infografia from "../assets/img/cinturon/infografia.webp";
+import detallesImg from "../assets/img/cinturon/detalles.webp";
+import fotoBoton from "../assets/img/cinturon/boton.webp";
+import fotoBolsillo from "../assets/img/cinturon/bolsillo.webp";
+import fotoUsb from "../assets/img/cinturon/usb.webp";
+import fotoVelcro from "../assets/img/cinturon/velcro.webp";
+import { CATALOGO } from "../config/catalogo";
+import { ESPECIFICACIONES_CINTURON, FICHA_CINTURON, PROMO_CINTURON, VERIFICACION_CINTURON } from "../config/producto-cinturon";
+import { TIENDA, enlaceWhatsApp } from "../config/tienda";
+import { ahorroPaquete, fechaCortaEcuador, formatoPorcentaje, formatoUSD, paquetePorId } from "../lib/pedido";
+import { FAQ_CINTURON } from "../data/faq-cinturon";
+
+const prod = CATALOGO.cinturon;
+const dos = paquetePorId("dos", prod)!;
+const ahorro = ahorroPaquete(dos, prod);
+const inicial = paquetePorId(prod.paqueteInicial, prod)!;
+const waPedido = enlaceWhatsApp("Hola REVIVE GROW, quiero pedir el cinturón térmico con masaje JY-2678 con pago contra entrega.");
+const finPromo = PROMO_CINTURON.terminaEl ? fechaCortaEcuador(new Date(PROMO_CINTURON.terminaEl)) : null;
+const imgProps = { formats: ["avif", "webp"] as const, fallbackFormat: "webp" as const, quality: 80 };
+
+const titulo = "Cinturón térmico con masaje JY-2678 | Black Friday: 2 por $35 · Envío gratis · REVIVEGROW Ecuador";
+const descripcion = `Cinturón térmico con masaje para el abdomen REVIVEGROW, modelo JY-2678: calor, vibración suave, banda ajustable de felpa y alimentación USB 5 V. Black Friday: 2 por ${formatoUSD(dos.precioCentavos)}. Envío gratis y pago contra entrega en Ecuador.`;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: FICHA_CINTURON.nombreCompleto,
+    model: FICHA_CINTURON.modelo,
+    description: "Cinturón térmico con función de masaje (vibración) para el abdomen. Banda envolvente ajustable de felpa. Alimentación USB 5 V.",
+    brand: { "@type": "Brand", name: "REVIVEGROW" },
+    offers: prod.paquetes.map((p) => ({
+      "@type": "Offer",
+      name: p.nombre,
+      price: (p.precioCentavos / 100).toFixed(2),
+      priceCurrency: "USD",
+      availability: "https://schema.org/LimitedAvailability",
+      areaServed: "EC",
+      shippingDetails: { "@type": "OfferShippingDetails", shippingRate: { "@type": "MonetaryAmount", value: "0", currency: "USD" } },
+      seller: { "@type": "Organization", name: "REVIVE GROW" },
+    })),
+  },
+];
+
+const detalles = [
+  { foto: fotoBoton, titulo: "Botón integrado", texto: "Enciende y elige las funciones con un toque.", alt: "Botón de encendido integrado en la felpa del cinturón" },
+  { foto: fotoBolsillo, titulo: "Bolsillo interior", texto: "Guarda la conexión por dentro, sin estorbar.", alt: "Bolsillo interior del cinturón abierto" },
+  { foto: fotoUsb, titulo: "USB de 5 V", texto: "Se conecta por USB, por ejemplo a una batería externa.", alt: "Batería externa conectada por cable USB dentro del bolsillo del cinturón" },
+  { foto: fotoVelcro, titulo: "Cierre ajustable", texto: "Velcro para ajustarlo a tu medida, sin apretar.", alt: "Cierre de velcro del cinturón" },
+];
+---
+<Base
+  title={titulo}
+  description={descripcion}
+  jsonLd={jsonLd}
+  producto={prod}
+  tema="rosa"
+  ogImagen="/og-cinturon.jpg"
+  ogAlt="Cinturón térmico con masaje REVIVEGROW JY-2678. Black Friday: 2 por $35 con envío gratis."
+  colorTema="#fff7f9"
+  etiquetaCabecera="Envío gratis · Pagas al recibir"
+>
+  <link slot="head" rel="preload" href={fuenteSerif} as="font" type="font/woff2" crossorigin />
+
+  <div class="bf-bar" role="note">
+    <strong>BLACK FRIDAY</strong> · <span>2 cinturones por {formatoUSD(dos.precioCentavos)}</span> · <span>Envío gratis</span> · <span>Pagas al recibir</span>
+  </div>
+
+  <!-- ============================================================ HERO -->
+  <section class="rosa-hero" aria-labelledby="titulo-producto">
+    <div class="container hero__grid">
+      <figure class="rosa-media hero__media">
+        <Galeria
+          etiqueta="Fotos del cinturón térmico con masaje JY-2678"
+          diapositivas={[
+            { src: principal, alt: "Cinturón térmico con masaje REVIVEGROW JY-2678 de felpa gris, con botón de encendido", fondo: "#f6f4ef" },
+            { src: funciones, alt: "Cinturón REVIVEGROW con sus funciones: botón de control, cierre ajustable e interior suave", fondo: "#f4dde8" },
+            { src: infografia, alt: "Cómo se usa: mujer con el cinturón en el abdomen; banda de 20 cm de alto, plegable, con cierre ajustable, botón de encendido y elementos de calefacción", fondo: "#ffffff" },
+            { src: detallesImg, alt: "Detalles reales: botón, bolsillo interior, conexión USB y cierre de velcro", fondo: "#ffffff" },
+          ]}
+        >
+          <Fragment slot="primera">
+            <div class="bf-badge" aria-label={`Black Friday: 2 cinturones por ${formatoUSD(dos.precioCentavos)}`}>
+              <small>BLACK FRIDAY</small>
+              <strong>2 × {formatoUSD(dos.precioCentavos).replace(",00", "")}</strong>
+              <span>Ahorras {formatoUSD(ahorro.ahorroCentavos)}</span>
+            </div>
+          </Fragment>
+        </Galeria>
+      </figure>
+
+      <div class="buy" id="comprar">
+        <span class="eyebrow">Autocuidado femenino · REVIVEGROW</span>
+        <h1 id="titulo-producto">Cinturón térmico con masaje <span>Calor y vibración suave para tu abdomen</span></h1>
+        <p class="buy__lead">
+          Una banda de felpa que envuelves en tu abdomen: <strong>enciendes el calor, activas el masaje</strong> y sigues con tu día.
+        </p>
+        <ul class="chips" aria-label="Funciones">
+          <li class="chip"><Icon name="calor" size={16} /> Calor</li>
+          <li class="chip"><Icon name="vibra" size={16} /> Masaje</li>
+          <li class="chip"><Icon name="ajuste" size={16} /> Ajustable</li>
+          <li class="chip"><Icon name="usb" size={16} /> USB 5 V</li>
+        </ul>
+
+        <PackSelector grupo="hero" producto={prod} titulo="Elige tu paquete Black Friday" />
+        <p class="pack-note" data-aviso-paquete hidden></p>
+
+        <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido data-oculta-barra>
+          <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span> · envío gratis</span></span>
+        </a>
+
+        <p class="free-ship"><Icon name="gift" size={24} /> <span>Envío totalmente gratis<small>Pagas solo el precio del paquete, al recibirlo.</small></span></p>
+
+        <ul class="trust">
+          <li><Icon name="cash" /> <div>Pago contra entrega <span>— sin tarjeta ni pagos por adelantado.</span></div></li>
+          <li><Icon name="whatsapp" /> <div>Confirmación por WhatsApp <span>— te escribimos antes de enviar.</span></div></li>
+        </ul>
+
+        <p class="stock" data-stock role="status">
+          <Icon name="clock" size={20} />
+          <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Precio Black Friday{finPromo ? ` hasta el ${finPromo}` : ""} · Unidades limitadas, sujetas a disponibilidad.</span>
+        </p>
+        <p class="modelo">Modelo {FICHA_CINTURON.modelo}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ DOS FUNCIONES -->
+  <section class="section section--white" id="funciones" aria-labelledby="t-funciones">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">Dos funciones</span>
+        <h2 id="t-funciones">Un momento <em>para ti</em></h2>
+        <p class="lead">Elige el confort que prefieras.</p>
+      </div>
+      <div class="funciones">
+        <article class="funcion funcion--calor" data-reveal>
+          <span class="funcion__icon"><Icon name="calor" size={30} /></span>
+          <h3>Calor</h3>
+          <ul>
+            <li><Icon name="check" size={16} /> Sensación cálida en el abdomen</li>
+            <li><Icon name="check" size={16} /> Elementos de calefacción integrados</li>
+            <li><Icon name="check" size={16} /> Niveles ajustables desde el botón</li>
+          </ul>
+        </article>
+        <article class="funcion funcion--masaje" data-reveal>
+          <span class="funcion__icon"><Icon name="vibra" size={30} /></span>
+          <h3>Masaje</h3>
+          <ul>
+            <li><Icon name="check" size={16} /> Vibración suave</li>
+            <li><Icon name="check" size={16} /> Se activa desde el mismo botón</li>
+            <li><Icon name="check" size={16} /> Para tus pausas de relajación</li>
+          </ul>
+        </article>
+      </div>
+      <p class="dos-en-uno" data-reveal><strong>2 en 1</strong> <span>Calor + vibración en una sola banda de felpa suave.</span></p>
+    </div>
+  </section>
+
+  <!-- ============================================================ DETALLES -->
+  <section class="section" id="detalles" aria-labelledby="t-detalles">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">Fotos reales</span>
+        <h2 id="t-detalles">Pensado <em>en cada detalle</em></h2>
+      </div>
+      <div class="detalles">
+        {detalles.map((d) => (
+          <article class="detalle" data-reveal>
+            <Picture src={d.foto} {...imgProps} widths={[300, 454]} sizes="(min-width: 920px) 270px, 46vw" alt={d.alt} loading="lazy" />
+            <div><h3>{d.titulo}</h3><p>{d.texto}</p></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ CÓMO SE COLOCA -->
+  <section class="section section--white" id="uso" aria-labelledby="t-uso">
+    <div class="container colocar">
+      <div class="colocar__img" data-reveal>
+        <Picture src={infografia} {...imgProps} widths={[480, 760, 1024]} sizes="(min-width: 920px) 540px, 100vw" alt="Mujer con el cinturón térmico colocado en el abdomen, con ajuste a la cintura y botón de encendido" loading="lazy" />
+      </div>
+      <div class="stack" data-reveal>
+        <span class="eyebrow">Cómo se coloca</span>
+        <h2 id="t-uso" style="font-size:var(--fs-h2)">Listo en <em>4 pasos</em></h2>
+        <ol class="pasos">
+          <li><b>Conéctalo</b><span>Conecta el cable USB a una fuente de 5 V (por ejemplo, una batería externa) y guárdala en el bolsillo interior.</span></li>
+          <li><b>Envuélvelo</b><span>Rodea tu abdomen con la banda y ciérrala con el velcro: cómodo, sin apretar.</span></li>
+          <li><b>Enciéndelo</b><span>Pulsa el botón para encender y elegir calor, masaje o ambos, y ajusta el nivel de calor.</span></li>
+          <li><b>Al terminar</b><span>Apágalo y desconéctalo antes de quitártelo o guardarlo.</span></li>
+        </ol>
+        <p class="small">Sigue siempre el manual de uso incluido con el producto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ FICHA TÉCNICA -->
+  <section class="section" id="ficha" aria-labelledby="t-ficha">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">Características</span>
+        <h2 id="t-ficha">Ficha <em>técnica</em></h2>
+      </div>
+      <div class="ficha">
+        <table class="facts" data-reveal>
+          <caption class="visually-hidden">Especificaciones del cinturón térmico con masaje JY-2678</caption>
+          <tbody>{ESPECIFICACIONES_CINTURON.map(([k, x]) => <tr><td>{k}</td><td>{x}</td></tr>)}</tbody>
+        </table>
+        <div class="stack">
+          <div class="caja" data-reveal>
+            <h3>Contenido del paquete</h3>
+            <ul>
+              <li><Icon name="box" size={18} /> 1 cinturón térmico con masaje JY-2678 por unidad (2 en el paquete doble).</li>
+              <li><Icon name="info" size={18} /> {VERIFICACION_CINTURON.accesoriosIncluidos ? `Incluye: ${VERIFICACION_CINTURON.accesoriosIncluidos}.` : "Accesorios incluidos: te los confirmamos por WhatsApp antes de despachar."}</li>
+            </ul>
+          </div>
+          <div class="precauciones" data-reveal>
+            <h3><Icon name="alert" size={22} /> Precauciones</h3>
+            <ul>
+              <li><Icon name="check" size={16} /> Ajústalo sin apretar.</li>
+              <li><Icon name="check" size={16} /> Úsalo según las instrucciones del manual.</li>
+              <li><Icon name="check" size={16} /> Mantén secas las partes eléctricas.</li>
+              <li><Icon name="check" size={16} /> Suspende su uso si sientes molestias o calor excesivo.</li>
+              <li><Icon name="check" size={16} /> No lo uses mientras duermes.</li>
+              <li><Icon name="check" size={16} /> No lo uses sobre piel dañada o irritada.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ CONTRA ENTREGA -->
+  <section class="section section--navy" id="contra-entrega" aria-labelledby="t-cod">
+    <div class="container">
+      <div class="head" data-reveal>
+        <span class="eyebrow">Envío gratis + pago contra entrega</span>
+        <h2 id="t-cod">Lo pides hoy. <em>Pagas cuando llega.</em></h2>
+        <p class="lead">Sin tarjetas, sin transferencias por adelantado y sin costo de envío.</p>
+      </div>
+      <ol class="steps">
+        <li class="step" data-reveal><span class="step__n">1</span><h3>Elige tu paquete</h3><p>1 cinturón o 2 cinturones con ahorro Black Friday de {formatoUSD(ahorro.ahorroCentavos)}.</p></li>
+        <li class="step" data-reveal><span class="step__n">2</span><h3>Déjanos tus datos</h3><p>Nombre, celular y dirección. Menos de un minuto.</p></li>
+        <li class="step" data-reveal><span class="step__n">3</span><h3>Te confirmamos</h3><p>Te escribimos por WhatsApp para coordinar la entrega.</p></li>
+        <li class="step" data-reveal><span class="step__n">4</span><h3>Recibes y pagas</h3><p>Verificas tu paquete y pagas al recibirlo{TIENDA.pago.formasAlRecibir?.length ? ` (${TIENDA.pago.formasAlRecibir.join(" o ")})` : ""}. El envío es gratis.</p></li>
+      </ol>
+      <ul class="cod-facts">
+        <li><Icon name="lock" size={20} /> No pedimos datos de tarjeta ni bancarios.</li>
+        <li><Icon name="truck" size={20} /> {prod.envio.plazo ? `Entrega estimada: ${prod.envio.plazo}.` : "Plazo de entrega confirmado por WhatsApp según tu ciudad."}</li>
+        <li><Icon name="chat" size={20} /> ¿Dudas? Escríbenos al WhatsApp {TIENDA.whatsapp.visible}.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ OFERTA BLACK FRIDAY -->
+  <section class="section" id="oferta" aria-labelledby="t-oferta">
+    <div class="container">
+      <div class="bf-offer" data-oculta-barra>
+        <div class="bf-offer__img">
+          <Picture src={principal} {...imgProps} widths={[480, 760]} sizes="(min-width: 920px) 460px, 90vw" alt="Cinturón térmico con masaje REVIVEGROW JY-2678" loading="lazy" />
+        </div>
+        <div class="bf-offer__box">
+          <span class="bf-kicker">BLACK FRIDAY</span>
+          <h2 id="t-oferta">2 cinturones por <em>{formatoUSD(dos.precioCentavos)}</em></h2>
+          <p class="lead">
+            Uno para ti y otro para regalar. Ahorras {formatoUSD(ahorro.ahorroCentavos)} ({formatoPorcentaje(ahorro.porcentaje)}) frente a comprar 2 por separado ({formatoUSD(ahorro.porSeparadoCentavos)}): {formatoUSD(ahorro.precioPorFrascoCentavos)} cada uno, con <strong>envío gratis</strong>.
+          </p>
+          <PackSelector grupo="oferta" producto={prod} titulo="Tu paquete" />
+          <a class="btn btn--cta btn--lg btn--block" href={waPedido} data-abrir-pedido>
+            <span class="btn-stack">PEDIR AHORA — PAGA AL RECIBIR<span class="sub"><span data-sel-nombre>{inicial.nombre}</span> · <span data-sel-precio>{formatoUSD(inicial.precioCentavos)}</span> · envío gratis</span></span>
+          </a>
+          <p class="stock" data-stock role="status">
+            <Icon name="clock" size={20} />
+            <span data-stock-texto><span class="stock__count" data-stock-cifra></span>Precio Black Friday{finPromo ? ` hasta el ${finPromo}` : ""} mientras haya unidades disponibles.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ FAQ -->
+  <section class="section section--white" id="preguntas" aria-labelledby="t-faq">
+    <div class="container narrow">
+      <div class="head head--center" data-reveal>
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 id="t-faq">Todo lo que <em>quieres saber</em></h2>
+      </div>
+      <div class="faq">
+        {FAQ_CINTURON.map((f, i) => (
+          <details class="details" open={i === 0}>
+            <summary>{f.p} <Icon name="chevron" size={20} /></summary>
+            <div class="details__body"><p set:html={f.r} /></div>
+          </details>
+        ))}
+      </div>
+      <div class="stack" style="margin-top:2rem;justify-items:center;text-align:center">
+        <p class="muted">¿Tienes otra duda? Te respondemos con gusto.</p>
+        <a class="btn btn--wa" href={enlaceWhatsApp(prod.mensajeConsulta)} target="_blank" rel="noopener" data-evento="Contact"><Icon name="whatsapp" /> Escríbenos por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Información importante">
+    <div class="container narrow disclaimer">
+      <p><strong>Importante.</strong> El cinturón térmico con masaje es un accesorio de confort de uso personal. No es un dispositivo médico ni sustituye la atención médica. Si tienes dolor intenso o persistente, una condición de salud o sensibilidad reducida al calor, consulta a tu médico antes de usarlo.</p>
+    </div>
+  </section>
+
+  <Fragment slot="despues">
+    <OrderDialog producto={prod} />
+
+    <div class="sticky" data-sticky aria-hidden="true">
+      <div class="sticky__info">
+        <small><span data-sel-nombre>{inicial.nombre}</span> · envío gratis</small>
+        <strong data-sel-precio>{formatoUSD(inicial.precioCentavos)}</strong>
+      </div>
+      <a class="btn btn--cta" href={waPedido} data-abrir-pedido tabindex="-1">PEDIR AHORA</a>
+    </div>
+
+    <a class="fab" href={enlaceWhatsApp(prod.mensajeConsulta)} target="_blank" rel="noopener" aria-label="Consultas por WhatsApp" data-evento="Contact">
+      <Icon name="whatsapp" size={30} />
+    </a>
+  </Fragment>
+</Base>
+
+<script>
+  import "../scripts/pedido";
+</script>

@@ -44,12 +44,24 @@ const anio = new Date().getFullYear();
       </div>
     </div>
     <div class="footer__legal">
-      <p>
-        {producto ? `${producto.ficha.nombre} es un suplemento alimenticio para adultos. No es un medicamento y no está destinado` : "Los productos de esta tienda son suplementos alimenticios para adultos. No son medicamentos y no están destinados"} a diagnosticar, tratar, curar ni prevenir
-        enfermedades. {producto ? "No reemplaza" : "No reemplazan"} una alimentación variada y equilibrada ni un estilo de vida saludable. Consulta a tu médico si tomas
-        medicamentos o tienes alguna condición de salud.
-      </p>
-      <p>REVIVE GROW comercializa {producto ? "este producto" : "estos productos"}; no es su fabricante ni el titular de la marca. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
+      {(!producto || producto.id === "testo-gh") && (
+        <p>
+          {producto ? `${producto.ficha.nombre} es un suplemento alimenticio para adultos. No es un medicamento y no está destinado` : "TESTO-GH es un suplemento alimenticio para adultos. No es un medicamento y no está destinado"} a diagnosticar, tratar, curar ni prevenir
+          enfermedades. No reemplaza una alimentación variada y equilibrada ni un estilo de vida saludable. Consulta a tu médico si tomas
+          medicamentos o tienes alguna condición de salud.
+        </p>
+      )}
+      {(!producto || producto.id === "cinturon") && (
+        <p>
+          El cinturón térmico con masaje es un accesorio de confort de uso personal. No es un dispositivo médico y no está destinado a
+          diagnosticar, tratar, curar ni prevenir enfermedades. Úsalo según su manual y sus precauciones.
+        </p>
+      )}
+      {producto?.id === "cinturon" ? (
+        <p>REVIVE GROW vende este producto bajo su marca REVIVEGROW; no es su fabricante.</p>
+      ) : (
+        <p>REVIVE GROW comercializa {producto ? "este producto" : "estos productos"}; no es su fabricante ni el titular de la marca. Las marcas y etiquetas del producto pertenecen a sus titulares.</p>
+      )}
       <p>© {anio} REVIVE GROW · Ecuador</p>
     </div>
   </div>

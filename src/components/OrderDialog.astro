@@ -33,7 +33,7 @@ const { producto: prod = PRODUCTO_PREDETERMINADO } = Astro.props;
               <input type="radio" name="paquete-dialogo" value={p.id} checked={p.id === prod.paqueteInicial} data-paquete />
               <span>
                 <b>{p.nombre} · {formatoUSD(p.precioCentavos)}</b>
-                {p.capsulas} cápsulas
+                {p.detalle}
                 {ahorroPaquete(p, prod).ahorroCentavos > 0 && <em>Ahorras {formatoUSD(ahorroPaquete(p, prod).ahorroCentavos)}</em>}
               </span>
             </label>

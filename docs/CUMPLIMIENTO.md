@@ -1,50 +1,29 @@
 # Análisis de materiales, afirmaciones y cumplimiento
 
-# FLO Ovarian Support (O Positiv Health) — `/flo-ovarian-support/`
+# Cinturón térmico con masaje REVIVEGROW JY-2678 — `/cinturon-termico/`
+Reemplaza a la landing de FLO Ovarian Support (eliminada por completo: fotos, ingredientes, reseñas y preguntas).
+`/flo-ovarian-support/` redirige a la nueva dirección.
 
-## Materiales (`assets-sources/flo/`) y uso
+## Materiales (`assets-sources/cinturon/`) y uso
 | Archivo | Uso |
 |---|---|
-| 01-frasco-principal.jpg | Foto principal (hero) e imagen para compartir |
-| 02-capsula-vegana.png | Sección «¿Te pasa cada mes?» (mano con cápsula: sin OGM, vegano, sin gluten) |
-| 04-ingredientes.png | Sección de ingredientes |
-| 05-informacion-suplemento.png | Información del suplemento (ampliable) y fuente de la ficha |
-| 06-resenas.png | Las 4 reseñas, como tarjetas: foto recortada de cada una + texto literal |
-| 03-beneficios-marca.png | **No usada**: lista de declaraciones de la marca («regular el ciclo», «peso saludable») que en Ecuador requieren respaldo aprobado; los beneficios se explican con texto propio y prudente |
-| 07/08 doctoras | **No usadas**: son médicas reales de EE. UU. citadas por la marca; usar su imagen y nombre en nuestra tienda requiere su autorización y puede considerarse aval profesional en publicidad de un suplemento |
+| 05-revivegrow-principal.webp | Primera foto de la galería, oferta e imagen para compartir |
+| 03-revivegrow-funciones.webp | Galería (contiene el texto «Calor terapéutico» de la pieza de marca) |
+| 02-infografia-proveedor.webp | Galería y «Cómo se coloca» (muestra 105 cm de largo) |
+| 01-detalles-reales.webp | Galería y 4 recortes en «Pensado en cada detalle» (botón, bolsillo, USB, velcro) |
+| 04-dos-funciones-baja-resolucion.png | No se publica (316×261 px): su contenido se rehízo como sección «Dos funciones» |
 
-## Datos verificados en la etiqueta
-Porción 3 cápsulas · 30 porciones (90 cápsulas, **30 días por frasco; 60 días con 2**). Folato 680 mcg DFE
-(170 % VD), mio-inositol 2000 mg, DIM 100 mg, D-quiro-inositol 50 mg (vainas de algarrobo). Otros:
-celulosa, estearato de magnesio, colorantes naturales. Uso: adultos, 3 cápsulas una vez al día con agua.
-Proporción mio:D-quiro = 2000:50 = 40:1.
+## Datos publicados (ficha del proveedor)
+Modelo JY-2678 · cinturón térmico con masaje (vibración) · abdomen · banda envolvente ajustable con velcro ·
+felpa · botón integrado · elementos de calefacción con niveles ajustables · USB 5 V · 100 cm ajustable × 20 cm.
+No se publican temperaturas, número de niveles o modos, autonomía, batería, uso inalámbrico ni lavado a máquina.
 
-## Enfoque «cólicos menstruales»: por qué no se promete alivio
-La fórmula (inositoles, DIM, folato) **no es analgésica** ni está formulada para el dolor menstrual: la evidencia
-de los inositoles se refiere sobre todo a la regularidad del ciclo y la ovulación (en mujeres con SOP). La marca
-tiene otros productos para síntomas premenstruales. Por eso la landing conecta con la experiencia del periodo
-(ciclo irregular, cólicos, cambios de ánimo) **sin decir que FLO los elimina**, responde «¿Sirve para los cólicos?»
-con honestidad y recomienda consultar a la ginecóloga si el dolor es intenso. Prometer alivio de cólicos sería
-publicidad engañosa y podría generar devoluciones y reclamos.
-
-## Reseñas
-Se publican las 4, con texto literal, nombre, 5 estrellas y «Compra verificada» como figura en la imagen, más
-el aviso «experiencias personales; los resultados varían». No se muestra calificación media ni se marcan como
-clientas de REVIVE GROW (la tienda es nueva). **Pendiente:** documentar la fuente (`VERIFICACION_FLO.fuenteResenas`).
-Riesgo: mencionan efectos en la salud (vello facial, regreso del periodo, piel, retención de líquidos); la
-normativa ARCSA no permite atribuir propiedades terapéuticas en la publicidad de suplementos. Revisar antes
-de lanzar anuncios.
-
-## Precios y urgencia
-1 frasco $26,60 · 2 frascos $35,00 · ahorro real $18,20 (34,2 %) frente a 2 × $26,60 = $53,20 · envío gratis
-(el total que paga la clienta es exactamente el precio del paquete). «Black Friday» sin fecha inventada: si se
-define `PROMO_FLO.terminaEl`, la página muestra la fecha real de fin. Unidades: `INVENTARIO_FLO` (dato real).
-
-## Pendientes FLO (también en `npm run check:launch`)
-Importador y Notificación Sanitaria ARCSA (producto importado), caducidad del lote, fuente de las reseñas y
-revisión publicitaria.
+## Pendientes (también en `npm run check:launch`)
+Accesorios incluidos; número de niveles/modos y cómo se cambia de función; cuidados y limpieza (manual);
+largo definitivo (ficha 100 cm vs. infografía 105 cm); medidas/peso del paquete (20 × 5 × 15 cm, 0,4 kg).
 
 ---
+
 
 
 > **Producto actual: TESTO-GH (GENETICS Nutrition & Business).** La landing se adaptó desde la versión

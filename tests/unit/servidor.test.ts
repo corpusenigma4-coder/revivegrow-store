@@ -137,32 +137,32 @@ test("destinatario por defecto: WhatsApp de la tienda", () => {
   assert.equal(c.template.name, "nuevo_pedido");
 });
 
-test("FLO: pedido con producto, precio y envío gratis calculados en el servidor", async () => {
-  const j = await (await recibirPedido(peticion({ ...base(), producto: "flo", paquete: "dos", precioCentavos: 1 }), { DB: db }, { ahora: () => AHORA })).json();
+test("cinturón: pedido con producto, precio y envío gratis calculados en el servidor", async () => {
+  const j = await (await recibirPedido(peticion({ ...base(), producto: "cinturon", paquete: "dos", precioCentavos: 1 }), { DB: db }, { ahora: () => AHORA })).json();
   assert.equal(j.ok, true);
   const fila = db.sql.prepare("SELECT producto, precio_centavos, envio_centavos, total_centavos, frascos FROM pedidos").get() as Record<string, unknown>;
-  assert.deepEqual({ ...fila }, { producto: "flo", precio_centavos: 3500, envio_centavos: 0, total_centavos: 3500, frascos: 2 });
+  assert.deepEqual({ ...fila }, { producto: "cinturon", precio_centavos: 3500, envio_centavos: 0, total_centavos: 3500, frascos: 2 });
 });
 
 test("mismo celular y paquete en productos distintos son pedidos distintos", async () => {
   const b = base();
   const a = await (await recibirPedido(peticion({ ...b }), { DB: db }, { ahora: () => AHORA })).json();
-  const f = await (await recibirPedido(peticion({ ...base(), celular: b.celular, producto: "flo" }), { DB: db }, { ahora: () => AHORA })).json();
+  const f = await (await recibirPedido(peticion({ ...base(), celular: b.celular, producto: "cinturon" }), { DB: db }, { ahora: () => AHORA })).json();
   assert.notEqual(a.numero, f.numero);
   assert.equal(f.duplicado, false);
 });
 
 test("producto desconocido: 422", async () => {
-  const r = await recibirPedido(peticion({ ...base(), producto: "otro" }), { DB: db });
+  const r = await recibirPedido(peticion({ ...base(), producto: "flo" }), { DB: db });
   assert.equal(r.status, 422);
 });
 
-test("aviso de WhatsApp de FLO con nombre del producto y total", async () => {
+test("aviso de WhatsApp del cinturón con nombre del producto y total", async () => {
   let cuerpo: any = null;
   const fetchFalso = (async (_u: string, init: RequestInit) => { cuerpo = JSON.parse(String(init.body)); return new Response("{}", { status: 200 }); }) as unknown as typeof fetch;
-  await recibirPedido(peticion({ ...base(), producto: "flo", paquete: "uno" }), { DB: db, WHATSAPP_TOKEN: "t", WHATSAPP_PHONE_NUMBER_ID: "1" }, { ahora: () => AHORA, fetch: fetchFalso });
+  await recibirPedido(peticion({ ...base(), producto: "cinturon", paquete: "uno" }), { DB: db, WHATSAPP_TOKEN: "t", WHATSAPP_PHONE_NUMBER_ID: "1" }, { ahora: () => AHORA, fetch: fetchFalso });
   const p = cuerpo.template.components[0].parameters.map((x: { text: string }) => x.text);
-  assert.equal(p[7], "1 frasco FLO Ovarian Support (90 cápsulas) · $26,60");
+  assert.equal(p[7], "Cinturón térmico con masaje — 1 cinturón (modelo JY-2678) · $26,60");
   assert.equal(p[8], "Gratis");
   assert.equal(p[9], "$26,60");
 });

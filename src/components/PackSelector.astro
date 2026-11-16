@@ -27,9 +27,9 @@ const duracion = (frascos: number) =>
           <span class="pack__price">
             {a.ahorroCentavos > 0 && <span class="pack__save">AHORRA {formatoUSD(a.ahorroCentavos)}</span>}
             <strong>{formatoUSD(p.precioCentavos)}</strong>
-            <small>{p.frascos > 1 ? `${formatoUSD(a.precioPorFrascoCentavos)} c/u` : "precio por frasco"}</small>
+            <small>{p.frascos > 1 ? `${formatoUSD(a.precioPorFrascoCentavos)} c/u` : `precio por ${prod.unidad}`}</small>
           </span>
-          <span class="pack__meta">{p.capsulas} cápsulas{duracion(p.frascos) && ` · ${duracion(p.frascos)}${prod.id === "testo-gh" ? "*" : ""}`}</span>
+          <span class="pack__meta">{p.detalle}{duracion(p.frascos) && ` · ${duracion(p.frascos)}${prod.id === "testo-gh" ? "*" : ""}`}</span>
           {a.ahorroCentavos > 0 && (
             <span class="pack__deal">
               <s>Por separado: {p.frascos} × {formatoUSD(a.porSeparadoCentavos / p.frascos)} = {formatoUSD(a.porSeparadoCentavos)}</s>

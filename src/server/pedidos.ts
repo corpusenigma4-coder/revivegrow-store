@@ -274,7 +274,7 @@ export async function recibirPedido(req: Request, env: Entorno, op: Opciones = {
       nombre: datos.nombre, celular: datos.celular,
       destino: `${datos.ciudad}, ${datos.provincia}`,
       direccion: datos.direccion, referencia: datos.referencia,
-      producto: `${paquete.nombre} ${producto.ficha.nombre} (${paquete.capsulas} cápsulas) · ${formatoUSD(paquete.precioCentavos)}`,
+      producto: `${producto.ficha.nombre} — ${paquete.nombre} (${paquete.detalle}) · ${formatoUSD(paquete.precioCentavos)}`,
       envio: t.envio.estado === "definido" ? textoEnvio(t.envio) : "por confirmar",
       total: textoTotal(t),
     });

@@ -10,9 +10,9 @@ pedidos por WhatsApp. Dominio previsto: **revivegrow.ec** · hosting: **Cloudfla
 | Ruta | Producto | Precios |
 |---|---|---|
 | `/` | TESTO-GH (GENETICS) | 1 frasco $27,40 · 2 frascos $37,40 |
-| `/flo-ovarian-support/` | FLO Ovarian Support (O Positiv Health) | 1 frasco $26,60 · 2 frascos $35,00 · envío gratis · Black Friday |
+| `/cinturon-termico/` | Cinturón térmico con masaje REVIVEGROW JY-2678 | 1 cinturón $26,60 · 2 cinturones $35,00 · envío gratis · Black Friday |
 
-Catálogo y precios: `src/config/catalogo.ts`. Ficha FLO: `src/config/producto-flo.ts`.
+Catálogo y precios: `src/config/catalogo.ts`. Ficha del cinturón: `src/config/producto-cinturon.ts`.
 
 ## Oferta TESTO-GH
 | Paquete | Precio | Detalle |
