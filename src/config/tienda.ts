@@ -136,7 +136,7 @@ export const TIENDA = {
   },
 
   /** Píxel de Meta: queda inactivo mientras sea null. */
-  metaPixelId: null as string | null,
+  metaPixelId: "963086536619387" as string | null,
 
   /**
    * Dirección del servidor de pedidos cuando la web está en GitHub Pages (que no ejecuta servidor),

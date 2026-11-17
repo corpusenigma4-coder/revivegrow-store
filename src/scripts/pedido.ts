@@ -24,13 +24,14 @@ const aleatorio = (n: number) => crypto.getRandomValues(new Uint8Array(n));
 const nuevaClave = () =>
   typeof crypto.randomUUID === "function" ? crypto.randomUUID() : [...aleatorio(16)].map((b) => b.toString(16).padStart(2, "0")).join("");
 
-function rastrear(evento: string, datos?: Record<string, unknown>) {
-  const fbq = (window as unknown as { fbq?: Fbq }).fbq;
-  if (fbq) fbq("track", evento, datos);
-}
-
 /** Producto de esta landing: <body data-producto="cinturon">; por defecto, TESTO-GH. */
 const PROD = productoPorId(document.body.dataset.producto) ?? PRODUCTO_PREDETERMINADO;
+
+/** Envía un evento al píxel, siempre marcado con el producto de la landing. */
+function rastrear(evento: string, datos?: Record<string, unknown>) {
+  const fbq = (window as unknown as { fbq?: Fbq }).fbq;
+  if (fbq) fbq("track", evento, { content_ids: [PROD.id], content_name: PROD.ficha.nombre, content_type: "product", ...datos });
+}
 const PAQUETES = PROD.paquetes;
 const API = TIENDA.apiPedidos ?? ruta("/api/pedido");
 const disp = disponibilidad(PROD.inventario);
