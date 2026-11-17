@@ -2,9 +2,9 @@
  * CATÁLOGO: productos que se venden en la tienda, cada uno con su landing.
  * Precios en centavos. El servidor recalcula siempre el precio desde aquí.
  */
-import { PAQUETES, PAQUETE_INICIAL, PIXEL_META, TIENDA, type ConfigEnvio } from "./tienda.ts";
+import { PAQUETES, PAQUETE_INICIAL, TIENDA, type ConfigEnvio } from "./tienda.ts";
 import { PRODUCTO, DIAS_POR_FRASCO } from "./producto.ts";
-import { FICHA_CINTURON } from "./producto-cinturon.ts";
+import { FICHA_CINTURON, PIXEL_CINTURON } from "./producto-cinturon.ts";
 import { INVENTARIO, INVENTARIO_CINTURON } from "./inventario.ts";
 import type { Inventario } from "../lib/pedido.ts";
 
@@ -66,7 +66,6 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
     diasPorFrasco: DIAS_POR_FRASCO,
     ruta: "/",
     mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre TESTO-GH.",
-    metaPixelId: PIXEL_META,
   },
   cinturon: {
     id: "cinturon",
@@ -85,7 +84,7 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
     diasPorFrasco: null,
     ruta: "/cinturon-termico/",
     mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre el cinturón térmico con masaje JY-2678.",
-    metaPixelId: PIXEL_META,
+    metaPixelId: PIXEL_CINTURON,
   },
 };
 

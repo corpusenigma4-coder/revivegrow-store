@@ -4,6 +4,9 @@
  * Regla: solo datos que figuran en esos materiales. Nada de temperaturas, número de niveles,
  * modos, autonomía, batería incorporada, uso inalámbrico ni lavado a máquina.
  */
+/** Píxel de Meta "cinturon pixel": solo se carga en la landing del cinturón. */
+export const PIXEL_CINTURON = "963086536619387";
+
 export const FICHA_CINTURON = {
   nombre: "Cinturón térmico con masaje",
   nombreCompleto: "Cinturón térmico con masaje REVIVEGROW — modelo JY-2678",
