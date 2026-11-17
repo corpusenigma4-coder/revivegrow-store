@@ -48,6 +48,12 @@ export const PAQUETES = [
 /** Paquete marcado al cargar la página. El comprador puede cambiarlo; nunca se cambia solo. */
 export const PAQUETE_INICIAL: (typeof PAQUETES)[number]["id"] = "dos";
 
+/**
+ * Píxel de Meta de las landings de producto (Meta permite uno por cuenta publicitaria sin portafolio
+ * comercial). Cada evento lleva content_ids con el producto, así se separan las conversiones en Meta.
+ */
+export const PIXEL_META = "963086536619387";
+
 export const TIENDA = {
   marca: "REVIVE GROW",
   dominio: "revivegrow.store",
