@@ -7,7 +7,7 @@
  */
 import { TIENDA } from "../config/tienda.ts";
 import { PRODUCTO } from "../config/producto.ts";
-import { FICHA_CINTURON, ESPECIFICACIONES_CINTURON } from "../config/producto-cinturon.ts";
+import { FICHA_CINTURON, ESPECIFICACIONES_CINTURON, PIXEL_CINTURON } from "../config/producto-cinturon.ts";
 import { formatoUSD } from "../lib/pedido.ts";
 
 /** Dato pendiente: no se muestra al cliente (se ve `alt`, texto neutro); `npm run check:launch` lo lista. */
@@ -107,6 +107,8 @@ export const LEGAL: PaginaLegal[] = [
         parrafos: [
           TIENDA.metaPixelId
             ? "Usamos el píxel de Meta para medir la eficacia de nuestros anuncios (visitas, inicio de pedido y pedidos realizados). No enviamos a Meta tu nombre, celular ni dirección."
+            : PIXEL_CINTURON
+            ? "Usamos el píxel de Meta solo en la página del cinturón térmico, para medir la eficacia de nuestros anuncios (visitas, inicio de pedido y pedidos realizados). No enviamos a Meta tu nombre, celular ni dirección. El resto del sitio no usa cookies publicitarias."
             : "Actualmente el sitio no usa cookies publicitarias ni herramientas de seguimiento de terceros. Si en el futuro activamos el píxel de Meta para medir nuestros anuncios, lo indicaremos en esta sección.",
         ],
       },

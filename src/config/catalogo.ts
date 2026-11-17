@@ -4,7 +4,7 @@
  */
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, type ConfigEnvio } from "./tienda.ts";
 import { PRODUCTO, DIAS_POR_FRASCO } from "./producto.ts";
-import { FICHA_CINTURON } from "./producto-cinturon.ts";
+import { FICHA_CINTURON, PIXEL_CINTURON } from "./producto-cinturon.ts";
 import { INVENTARIO, INVENTARIO_CINTURON } from "./inventario.ts";
 import type { Inventario } from "../lib/pedido.ts";
 
@@ -48,6 +48,8 @@ export interface ProductoVenta {
   /** Ruta de su landing. */
   ruta: string;
   mensajeConsulta: string;
+  /** Píxel de Meta solo para esta landing (si no, se usa el de la tienda, si existe). */
+  metaPixelId?: string;
 }
 
 export const CATALOGO: Record<IdProducto, ProductoVenta> = {
@@ -82,6 +84,7 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
     diasPorFrasco: null,
     ruta: "/cinturon-termico/",
     mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre el cinturón térmico con masaje JY-2678.",
+    metaPixelId: PIXEL_CINTURON,
   },
 };
 

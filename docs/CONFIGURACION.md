@@ -122,7 +122,7 @@ Cloudflare → **Turnstile → Add widget** (dominios: el `.pages.dev` y `revive
 Añade `TURNSTILE_SITE_KEY` (texto) y `TURNSTILE_SECRET_KEY` (secret) en Pages. La página lo activa sola.
 
 ## 5. Píxel de Meta (inactivo)
-Escribe el ID en `src/config/tienda.ts` → `metaPixelId`. Eventos enviados: `PageView`, `InitiateCheckout`
+Para toda la tienda: `src/config/tienda.ts` → `metaPixelId`. Solo para una landing: `metaPixelId` de ese producto en `src/config/catalogo.ts` (el cinturón ya usa el suyo, `PIXEL_CINTURON` en `src/config/producto-cinturon.ts`). Eventos enviados: `PageView`, `InitiateCheckout`
 (abrir el formulario), `Lead` (pedido enviado a WhatsApp), `Purchase` (pedido registrado en servidor, con
 valor y moneda) y `Contact` (botones de WhatsApp). No se envían datos personales. Actualiza la sección
 de cookies de la política de privacidad al activarlo (se actualiza sola con el ID).

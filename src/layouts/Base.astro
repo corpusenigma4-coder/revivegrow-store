@@ -39,7 +39,7 @@ const origen = Astro.site ?? new URL(TIENDA.url);
 const canonical = new URL(Astro.url.pathname, origen).href;
 const ogImage = new URL(ruta(ogImagen), origen).href;
 const robots = vistaPrevia ? "noindex, nofollow" : "index, follow";
-const pixel = TIENDA.metaPixelId;
+const pixel = producto?.metaPixelId ?? TIENDA.metaPixelId;
 /** Datos del producto para los eventos del píxel (separa las ventas de cada landing en Meta). */
 const paqueteVista = producto?.paquetes.find((p) => p.id === producto.paqueteInicial) ?? producto?.paquetes[0];
 const vistaProducto = producto
@@ -74,7 +74,7 @@ const vistaProducto = producto
     <slot name="head" />
     {jsonLd.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
     {pixel && (
-      /* Píxel de Meta: solo se inserta si TIENDA.metaPixelId tiene un valor. Sin coincidencias avanzadas (no se envían datos personales). */
+      /* Píxel de Meta: solo se inserta si el producto de la página o TIENDA.metaPixelId tienen un valor. Sin coincidencias avanzadas (no se envían datos personales). */
       <script is:inline define:vars={{ pixel, vistaProducto }}>
         !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', pixel); fbq('track', 'PageView');

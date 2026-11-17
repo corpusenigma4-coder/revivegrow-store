@@ -135,8 +135,8 @@ export const TIENDA = {
     texto: "Alta demanda: se está vendiendo rápido",
   },
 
-  /** Píxel de Meta: queda inactivo mientras sea null. */
-  metaPixelId: "963086536619387" as string | null,
+  /** Píxel de Meta de toda la tienda: queda inactivo mientras sea null. Cada producto puede tener el suyo (catalogo.ts). */
+  metaPixelId: null as string | null,
 
   /**
    * Dirección del servidor de pedidos cuando la web está en GitHub Pages (que no ejecuta servidor),
