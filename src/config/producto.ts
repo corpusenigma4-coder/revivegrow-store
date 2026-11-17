@@ -39,6 +39,9 @@ export interface FichaProducto {
   advertencias: string[];
 }
 
+/** Píxel de Meta "TESTO PIXEL" (portafolio Revivegrow): solo se carga en la landing de TESTO-GH. */
+export const PIXEL_TESTO = "1902112674105886";
+
 export const PRODUCTO: FichaProducto = {
   nombre: "TESTO-GH",
   nombreCompleto: "TESTO-GH Multi Vitamin For Men",

@@ -3,7 +3,7 @@
  * Precios en centavos. El servidor recalcula siempre el precio desde aquí.
  */
 import { PAQUETES, PAQUETE_INICIAL, TIENDA, type ConfigEnvio } from "./tienda.ts";
-import { PRODUCTO, DIAS_POR_FRASCO } from "./producto.ts";
+import { PRODUCTO, DIAS_POR_FRASCO, PIXEL_TESTO } from "./producto.ts";
 import { FICHA_CINTURON, PIXEL_CINTURON } from "./producto-cinturon.ts";
 import { INVENTARIO, INVENTARIO_CINTURON } from "./inventario.ts";
 import type { Inventario } from "../lib/pedido.ts";
@@ -66,6 +66,7 @@ export const CATALOGO: Record<IdProducto, ProductoVenta> = {
     diasPorFrasco: DIAS_POR_FRASCO,
     ruta: "/",
     mensajeConsulta: "Hola REVIVE GROW, tengo una consulta sobre TESTO-GH.",
+    metaPixelId: PIXEL_TESTO,
   },
   cinturon: {
     id: "cinturon",

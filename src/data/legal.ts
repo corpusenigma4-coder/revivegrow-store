@@ -6,7 +6,7 @@
  * normativa ARCSA de suplementos alimenticios. Revisión por un abogado recomendada antes del lanzamiento.
  */
 import { TIENDA } from "../config/tienda.ts";
-import { PRODUCTO } from "../config/producto.ts";
+import { PRODUCTO, PIXEL_TESTO } from "../config/producto.ts";
 import { FICHA_CINTURON, ESPECIFICACIONES_CINTURON, PIXEL_CINTURON } from "../config/producto-cinturon.ts";
 import { formatoUSD } from "../lib/pedido.ts";
 
@@ -107,8 +107,8 @@ export const LEGAL: PaginaLegal[] = [
         parrafos: [
           TIENDA.metaPixelId
             ? "Usamos el píxel de Meta para medir la eficacia de nuestros anuncios (visitas, inicio de pedido y pedidos realizados). No enviamos a Meta tu nombre, celular ni dirección."
-            : PIXEL_CINTURON
-            ? "Usamos el píxel de Meta solo en la página del cinturón térmico, para medir la eficacia de nuestros anuncios (visitas, inicio de pedido y pedidos realizados). No enviamos a Meta tu nombre, celular ni dirección. El resto del sitio no usa cookies publicitarias."
+            : PIXEL_CINTURON || PIXEL_TESTO
+            ? "Usamos el píxel de Meta solo en las páginas de nuestros productos, para medir la eficacia de nuestros anuncios (visitas, inicio de pedido y pedidos realizados). No enviamos a Meta tu nombre, celular ni dirección. El resto del sitio no usa cookies publicitarias."
             : "Actualmente el sitio no usa cookies publicitarias ni herramientas de seguimiento de terceros. Si en el futuro activamos el píxel de Meta para medir nuestros anuncios, lo indicaremos en esta sección.",
         ],
       },
