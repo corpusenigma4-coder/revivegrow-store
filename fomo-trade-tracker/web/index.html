@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FOMO Trade Tracker</title>
+  <meta name="description" content="Monitor de solo lectura de operaciones públicas on-chain de traders.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310b981'/%3E%3Cpath d='M8 20l5-6 4 4 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>FOMO Trade Tracker</h1>
+        <p class="sub">Monitor de solo lectura · datos públicos on-chain</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="conn" class="conn conn-off" role="status" aria-live="polite">Desconectado</span>
+      <button id="btn-notify" class="btn btn-ghost" type="button" title="Activar notificaciones del sistema">🔔 Notificaciones</button>
+      <button id="btn-sound" class="btn btn-ghost" type="button" aria-pressed="true" title="Sonido de alertas">🔊 Sonido</button>
+    </div>
+  </header>
+
+  <div class="disclaimer" role="note">
+    Solo lectura: esta app <strong>no compra, no vende, no conecta wallets y nunca pide claves privadas</strong>.
+    Las operaciones se leen de transacciones públicas. No es asesoría financiera: la decisión es siempre tuya.
+  </div>
+
+  <section class="kpis" aria-label="Resumen">
+    <div class="kpi"><span class="kpi-label">Traders activos</span><span class="kpi-value" id="k-traders">—</span></div>
+    <div class="kpi"><span class="kpi-label">Wallets vigiladas</span><span class="kpi-value" id="k-wallets">—</span></div>
+    <div class="kpi kpi-buy"><span class="kpi-label">BUY 24 h</span><span class="kpi-value" id="k-buys">—</span><span class="kpi-sub" id="k-buys-usd"></span></div>
+    <div class="kpi kpi-sell"><span class="kpi-label">SELL 24 h</span><span class="kpi-value" id="k-sells">—</span><span class="kpi-sub" id="k-sells-usd"></span></div>
+    <div class="kpi kpi-warn"><span class="kpi-label">Wallets sin verificar</span><span class="kpi-value" id="k-unverified">—</span></div>
+  </section>
+
+  <main class="layout">
+    <aside class="panel traders-panel" aria-labelledby="traders-title">
+      <div class="panel-head">
+        <h2 id="traders-title">Traders seguidos</h2>
+        <button id="btn-add-trader" class="btn btn-primary btn-sm" type="button">+ Agregar</button>
+      </div>
+      <div id="traders" class="traders"></div>
+      <p id="traders-empty" class="empty" hidden>
+        Aún no sigues a ningún trader. Pulsa <strong>+ Agregar</strong> e introduce su usuario de FOMO y la wallet pública
+        que él mismo haya publicado.
+      </p>
+    </aside>
+
+    <section class="panel feed-panel" aria-labelledby="feed-title">
+      <div class="panel-head feed-head">
+        <h2 id="feed-title">Actividad <span class="live-dot" aria-hidden="true"></span><span class="muted small">en tiempo real</span></h2>
+        <div class="filters">
+          <div class="seg" role="group" aria-label="Filtrar por tipo">
+            <button class="seg-btn is-active" data-side="" type="button">Todas</button>
+            <button class="seg-btn seg-buy" data-side="BUY" type="button">BUY</button>
+            <button class="seg-btn seg-sell" data-side="SELL" type="button">SELL</button>
+            <button class="seg-btn" data-side="XFER" type="button" title="Entradas/salidas sin pago en la misma transacción">Transf.</button>
+          </div>
+          <select id="f-trader" aria-label="Filtrar por trader"><option value="">Todos los traders</option></select>
+          <select id="f-chain" aria-label="Filtrar por red"><option value="">Todas las redes</option></select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="trades" aria-describedby="feed-title">
+          <thead>
+            <tr>
+              <th scope="col">Tipo</th>
+              <th scope="col">Trader</th>
+              <th scope="col">Token</th>
+              <th scope="col" class="num">Cantidad</th>
+              <th scope="col" class="num">Precio</th>
+              <th scope="col" class="num">Valor USD</th>
+              <th scope="col">Red</th>
+              <th scope="col" class="num">Hace</th>
+            </tr>
+          </thead>
+          <tbody id="trades"></tbody>
+        </table>
+      </div>
+      <p id="trades-empty" class="empty" hidden>Sin operaciones todavía. Cuando un trader seguido compre o venda, aparecerá aquí al instante.</p>
+      <div class="more"><button id="btn-more" class="btn btn-ghost" type="button" hidden>Cargar más</button></div>
+    </section>
+
+    <aside class="panel chains-panel" aria-labelledby="chains-title">
+      <div class="panel-head"><h2 id="chains-title">Estado de redes</h2></div>
+      <ul id="chains" class="chains"></ul>
+      <p class="muted small">Las redes sin wallets asignadas quedan en reposo y no consumen peticiones.</p>
+    </aside>
+  </main>
+
+  <!-- Modal: trader -->
+  <dialog id="dlg-trader" class="dialog">
+    <form method="dialog" id="form-trader" class="form">
+      <h3 id="dlg-trader-title">Agregar trader</h3>
+      <label>Nombre para mostrar <input name="display_name" required maxlength="60" autocomplete="off"></label>
+      <label>Usuario en FOMO <input name="fomo_handle" maxlength="41" placeholder="@usuario" autocomplete="off"></label>
+      <label>Notas <textarea name="notes" maxlength="1000" rows="2"></textarea></label>
+      <p class="form-error" hidden></p>
+      <div class="form-actions">
+        <button value="cancel" class="btn btn-ghost" type="button" data-close>Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: wallet -->
+  <dialog id="dlg-wallet" class="dialog">
+    <form method="dialog" id="form-wallet" class="form">
+      <h3>Agregar wallet a <span id="dlg-wallet-trader"></span></h3>
+      <label>Dirección pública (Solana o EVM)
+        <input name="address" required maxlength="64" autocomplete="off" spellcheck="false" placeholder="7xKX… o 0x…">
+      </label>
+      <fieldset class="evm-chains" hidden>
+        <legend>Redes EVM a vigilar (la misma dirección sirve en todas)</legend>
+        <div id="evm-chain-checks" class="checks"></div>
+      </fieldset>
+      <label>Estado de verificación
+        <select name="verification">
+          <option value="unverified">No verificada — no la atribuyo con certeza</option>
+          <option value="declared">Declarada — el trader la publicó como suya</option>
+          <option value="confirmed">Confirmada — declarada y comprobada con operaciones de su perfil</option>
+        </select>
+      </label>
+      <label>Enlace a la evidencia (https://…) <input name="evidence_url" maxlength="500" placeholder="Publicación donde el trader muestra su wallet"></label>
+      <label>Nota de la comprobación <textarea name="evidence_note" maxlength="1000" rows="2" placeholder="Ej.: compra de TOKEN X el 21/11 14:05 visible en su perfil coincide con la tx …"></textarea></label>
+      <div class="callout">
+        <strong>¿Cómo verificar?</strong> Usa solo wallets que el propio trader haya hecho públicas (o la tuya).
+        Luego compara 2-3 operaciones visibles en su perfil de FOMO (token, hora, importe) con las detectadas aquí.
+        No uses buscadores de wallets de terceros: los Términos de FOMO prohíben la búsqueda inversa de usuarios.
+      </div>
+      <p class="form-error" hidden></p>
+      <div class="form-actions">
+        <button class="btn btn-ghost" type="button" data-close>Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar wallet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: verificar wallet -->
+  <dialog id="dlg-verify" class="dialog dialog-wide">
+    <form method="dialog" id="form-verify" class="form">
+      <h3>Verificación de wallet</h3>
+      <p class="mono small" id="verify-address"></p>
+      <ol class="steps">
+        <li>Confirma que el trader publicó esta dirección como suya (o que es la tuya) y guarda el enlace.</li>
+        <li>Abre su perfil en la app de FOMO y compara sus últimas operaciones con las detectadas abajo.</li>
+        <li>Si coinciden al menos 2 (mismo token, hora e importe aproximados), márcala como confirmada.</li>
+      </ol>
+      <div class="verify-list" id="verify-list"></div>
+      <label>Estado
+        <select name="verification">
+          <option value="unverified">No verificada</option>
+          <option value="declared">Declarada</option>
+          <option value="confirmed">Confirmada</option>
+        </select>
+      </label>
+      <label>Enlace a la evidencia <input name="evidence_url" maxlength="500"></label>
+      <label>Nota de la comprobación <textarea name="evidence_note" maxlength="1000" rows="2"></textarea></label>
+      <p class="form-error" hidden></p>
+      <div class="form-actions">
+        <button class="btn btn-ghost" type="button" data-close>Cerrar</button>
+        <button class="btn btn-primary" type="submit">Guardar estado</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Panel: detalle de operación -->
+  <dialog id="dlg-trade" class="dialog dialog-wide">
+    <div class="detail">
+      <div class="detail-head">
+        <span id="d-side" class="pill"></span>
+        <h3 id="d-title"></h3>
+        <button class="btn btn-ghost btn-sm" type="button" data-close aria-label="Cerrar">✕</button>
+      </div>
+      <div id="d-warning" class="warning" hidden></div>
+      <dl id="d-grid" class="grid"></dl>
+      <p id="d-notes" class="muted small"></p>
+    </div>
+  </dialog>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
